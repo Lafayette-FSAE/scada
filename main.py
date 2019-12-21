@@ -12,6 +12,10 @@ with open("config.yaml", 'r') as stream:
 
 print(config)
 
+bus = can.interface.Bus(bustype='socketcan', channel='vcan0', bitrate='125000')
+nodes = []
+
+
 if(config['emulate_nodes']):
 	# append emulators directory to include path
 	import sys
@@ -19,10 +23,10 @@ if(config['emulate_nodes']):
 
 	# check which emulators are enabled
 	if(config['emulate_tsi']):
-		import tsi_emulator as tsi
-		
-		tsi.init(bustype = config['bustype'])
-		tsi.node_id = 3
+		import tsi_emulator
+
+		tsi = tsi_emulator.Listener(bus, node_id=3)
+		nodes.append(tsi)
 
 
 	if(config['emulate_packs']):
@@ -33,3 +37,13 @@ if(config['emulate_nodes']):
 
 	if(config['emulate_motorcontroller']):
 		pass
+
+notifier = can.Notifier(bus, nodes)
+
+sync = can.Message(arbitration_id=0x80, data=0x00)
+sync.is_extended_id = False
+bus.send_periodic(sync, 1)
+
+for msg in bus:
+	# print(msg)
+	pass
