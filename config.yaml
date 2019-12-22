@@ -23,9 +23,19 @@ ams_pdo:
   - current
   - ambient_temp
   - state_of_charge
+  - state_of_charge
   - unused
   - unused
   - unused
+  - unused
+
+data_processor_pdo1:
+  - average_current         # TS current averaged over 10 seconds
+  - net_state_of_charge     # Sum of State of Charge of both packs
+  - estimated_car_velocity  # Motor Velocity * Gear Ratio * Wheel Circumference
+  - PackTemp_Farenheit      # For the true patriots
+  - unused
+  - unused  # etc.
   - unused
   - unused
 
@@ -45,8 +55,19 @@ sdo_data:
       subindex: 0
       poll_rate: 0.5
 
+
 # modules
 logger:
+  enable: yes
   database_path: /home/fsae/log.db
   wipe_database_on_reset: yes
+
+data_processor:
+  enable: yes
+
+gui:
+  enable: no
+
+web_server:
+  enable: no
 

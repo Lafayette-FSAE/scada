@@ -42,6 +42,11 @@ if(config['emulate_nodes']):
 	if(config['emulate_motorcontroller']):
 		pass
 
+
+# modules
+sys.path.append('modules')
+import data_processor
+
 notifier = can.Notifier(bus, nodes)
 
 sync = can.Message(arbitration_id=0x80, data=0x00)

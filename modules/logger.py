@@ -1,6 +1,12 @@
 import can
 import can_messages
 
+"""
+Reads Data from the CAN bus and writes it to a database
+
+"""
+
+
 class Listener(can.Listener):
 	def __init__(self, bus, node_id):
 		self.bus = bus
