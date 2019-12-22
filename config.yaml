@@ -4,6 +4,6 @@ emulate_nodes: yes
 
 # enable specific node emulation
 emulate_tsi: yes
-emulate_packs: no
+emulate_packs: yes
 emulate_cockpit: no
 emulate_motorcontroller: no

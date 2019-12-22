@@ -1,13 +1,5 @@
 import can
-
-def transmit_pdo(node_id, data):
-	cob_id = 0x180 + node_id
-
-	message = can.Message(arbitration_id=cob_id, data=data)
-	message.is_extended_id = False
-
-	return message
-
+import can_messages
 
 class Listener(can.Listener):
 	def __init__(self, bus, node_id):
@@ -15,19 +7,14 @@ class Listener(can.Listener):
 		self.node_id = node_id
 
 	def on_message_received(self, msg):
-		print("TSI message received")
-		if msg.arbitration_id == 0x80:
+
+		function, node = can_messages.separate_cob_id(msg.arbitration_id)
+
+		# sync
+		if function == 0x80:
 			print("sync")
-			#TODO add more PDOs
-			#TODO add feature to count syncs before sending PDO
-			message = transmit_pdo(node_id=self.node_id, data=[0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10])
+
+			data = [0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10]
+
+			message = can_messages.transmit_pdo(self.node_id, data)
 			self.bus.send(message)
-			# Add more CANopen responses here
-
-
-# sync = can.Message(arbitration_id=0x80, data=0x00)
-# bus.send_periodic(sync, 1)
-
-# for msg in bus:
-# 	# print(msg)
-# 	pass
