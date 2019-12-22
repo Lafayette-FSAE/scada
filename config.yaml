@@ -7,3 +7,46 @@ emulate_tsi: yes
 emulate_packs: yes
 emulate_cockpit: no
 emulate_motorcontroller: no
+
+# structure of data in PDOs
+tsi_pdo:
+  - coolingtemp1
+  - coolingtemp2
+  - flowrate
+  - state
+  - throttle
+  - unused
+  - unused
+  - unused
+
+ams_pdo:
+  - current
+  - ambient_temp
+  - state_of_charge
+  - unused
+  - unused
+  - unused
+  - unused
+  - unused
+
+
+# Other data to keep track of
+# need to poll this data manually
+sdo_data:
+
+  - Cell1Temp:
+      node_id: 2
+      index: 2011
+      poll_rate: 10
+
+  - MotorTemp:
+      node_id: 1
+      index: 2010
+      subindex: 0
+      poll_rate: 0.5
+
+# modules
+logger:
+  database_path: /home/fsae/log.db
+  wipe_database_on_reset: yes
+

@@ -16,6 +16,7 @@ with open("config.yaml", 'r') as stream:
 bus = can.interface.Bus(bustype='socketcan', channel='vcan0', bitrate='125000')
 nodes = []
 
+print(config['sdo_data'])
 
 if(config['emulate_nodes']):
 	# append emulators directory to include path
