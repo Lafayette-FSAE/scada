@@ -51,9 +51,9 @@ if(config['emulate_nodes']):
 # modules
 sys.path.append('modules')
 
-import data_processor
+import calibration_functions
 
-data_processor.init(config)
+import data_processor
 processor = data_processor.Listener(node_id=4)
 
 notifier.add_listener(processor)
