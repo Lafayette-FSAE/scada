@@ -39,16 +39,22 @@ for group in sensorGroups:
 		i = i + 1
 	sensorValues[group] = labelValueDict
 
+driveFSMLabels = {}
 driveFSMFrame = tk.LabelFrame(root, text='Drive State FSM', relief=tk.RIDGE, borderwidth=3)
 driveFSMFrame.pack(padx=2, pady=2, fill=tk.BOTH, expand=False)
 driveFSMNodes = config['drive_states']
 for node in driveFSMNodes:
-	tk.Label(driveFSMFrame, text=node, relief=tk.GROOVE, bg='dodger blue', height=2).pack(side='left', padx=5, pady=10, fill=tk.BOTH, expand=True)
+	label = tk.Label(driveFSMFrame, text=node, relief=tk.GROOVE, bg='dodger blue', height=2)
+	label.pack(side='left', padx=5, pady=10, fill=tk.BOTH, expand=True)
+	driveFSMLabels[node] = label
 
+sloopLabels = {}
 sloopFrame = tk.LabelFrame(root, text='Safety Loop State', relief=tk.RIDGE, borderwidth=3)
 sloopFrame.pack(padx=2, pady=2, fill=tk.BOTH, expand=False)
 sloopNodes = config['sloop_nodes']
 for node in sloopNodes:
-	tk.Label(sloopFrame, text=node, relief=tk.GROOVE, bg='green2', height=2).pack(side='left', padx=5, pady=10, fill=tk.BOTH, expand=True)
+	label = tk.Label(sloopFrame, text=node, relief=tk.GROOVE, bg='green2', height=2)
+	label.pack(side='left', padx=5, pady=10, fill=tk.BOTH, expand=True)
+	sloopLabels[node] = label
 
 root.mainloop()
