@@ -47,13 +47,15 @@ def cal_function(target, requires):
 def packtemp_farenheit(args):
 	temp, *other = args
 
-	return temp * (9/5) + 32
+	temp_faranheit = temp * (9/5) + 32
 
-# @cal_function(target='TS Voltage', requires=['pack1 - voltage', 'pack2 - voltage'])
-# def net_soc(args):
-# 	pack1, pack2, *other = args
+	return temp_faranheit
 
-# 	return pack1 + pack2
+@cal_function(target='TSVoltage', requires=['pack1 - voltage', 'pack2 - voltage'])
+def net_soc(args):
+	pack1, pack2, *other = args
+
+	return pack1 + pack2
 
 def process(target):
 	"""
@@ -117,13 +119,18 @@ class Listener(can.Listener):
 			# Build PDO
 			pdo_length = 1
 			# pdo_length = object_dictionary['1A03sub0']
-			try:
-				data = [int(processed_data['PackTemp_Farenheit'])]
-			except:
-				return
+			# try:
+			# 	data = [int(processed_data['PackTemp_Farenheit'])]
+			# except:
+			# 	return
+
+			data = []
 
 			for key in pdo_structure:
-				data.append(processed_data[key])
+				try:
+					data.append(int(processed_data[key]))
+				except:
+					data.append(0x00)
 
 			print(data)
 
@@ -138,6 +145,14 @@ class Listener(can.Listener):
 			if node_id == 2: # pack1
 
 				node = 'pack1'
+
+				for index, byte in enumerate(msg.data, start=0):
+					key = '{} - {}'.format(node, ams_pdo[index])
+					bus_data[key] = byte
+
+			if node_id == 1: # pack2
+
+				node = 'pack2'
 
 				for index, byte in enumerate(msg.data, start=0):
 					key = '{} - {}'.format(node, ams_pdo[index])

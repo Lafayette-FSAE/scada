@@ -38,6 +38,9 @@ if(config['emulate_nodes']):
 		pack1 = ams_emulator.Listener(node_id=2)
 		notifier.add_listener(pack1)
 
+		pack2 = ams_emulator.Listener(node_id=1)
+		notifier.add_listener(pack2)
+
 	if(config['emulate_cockpit']):
 		pass
 

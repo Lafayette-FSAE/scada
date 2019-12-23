@@ -7,12 +7,12 @@ object_dictionary = {
 
 	# Transmit PDO
 	'1A03':		0,
-	'1A03sub0':	2, 		# Number of PDO entries
+	'1A03sub0':	5, 		# Number of PDO entries
 	'1A03sub1':	'2010',	# Entry 1
 	'1A03sub2':	'2011', # Entry 2
 	'1A03sub3':	'2012', # Entry 3
-	'1A03sub4':	0,
-	'1A03sub5':	0,
+	'1A03sub4':	'2020',
+	'1A03sub5':	'2020',
 	'1A03sub6':	0,
 	'1A03sub7':	0,
 
@@ -22,10 +22,13 @@ object_dictionary = {
 	'2012': 30,		# Cell2 Temp
 	'2013': 30,		# Cell3 Temp
 
+	# Voltages
+	'2020': 51,		# Pack Voltage
+
 	# Error Thresholds
-	'2020': 0,		# Cell Temp
-	'2020sub0':	0,	# Min Temp
-	'2020sub1':	60,	# Max Temp
+	'2100': 0,		# Cell Temp
+	'2100sub0':	0,	# Min Temp
+	'2100sub1':	60,	# Max Temp
 }
 
 
