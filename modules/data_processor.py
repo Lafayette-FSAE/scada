@@ -1,6 +1,7 @@
 import can
 import can_messages
 
+
 """
 Reads Data from the CAN bus and performs basic processing
 to calibrate it and convert it to to other forms.
@@ -9,17 +10,18 @@ Writes processed data back to CAN bus as a PDO
 
 """
 
-bus_data = {
-	'PackTemp': 32
-}
+bus_data = {}
+calibration_functions = {}
+ams_pdo = []
+
+def init(config):
+	ams_pdo = config['ams_pdo']
+
+
 
 processed_data = {
 	'PackTemp_Farenheit': 0,
 	'Test': 0,
-}
-
-calibration_functions = {
-	'Test': 1
 }
 
 def cal_function(target, requires):
@@ -34,13 +36,14 @@ def cal_function(target, requires):
 @cal_function(target='PackTemp_Farenheit', requires=['PackTemp'])
 def packtemp_farenheit(args):
 	temp, *other = args
+
 	return temp * (9/5) + 32
 
 @cal_function(target='Net_State_Of_Charge', requires=['Pack1-SOC', 'Pack2-SOC'])
 def net_soc(args):
 	pack1, pack2, *other = args
-	return pack1 + pack2
 
+	return pack1 + pack2
 
 def process(target):
 	"""
@@ -88,7 +91,7 @@ def process_all():
 
 		processed_data[target] = result
 
-process_all()
+# process_all()
 
 
 
@@ -99,8 +102,15 @@ class Listener(can.Listener):
 
 	def on_message_received(self, msg):
 
-		function, node = can_messages.separate_cob_id(msg.arbitration_id)
+		# print("test")
+
+		# function, node = can_messages.separate_cob_id(msg.arbitration_id)
+
+		print(hex(msg.arbitration_id))
 
 		# Deal with TPDOs
-		if function == 0x180:
-			pass
+		# if function == 0x180:
+		# 	print(msg.data)
+
+
+

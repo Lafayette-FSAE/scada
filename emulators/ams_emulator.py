@@ -47,7 +47,7 @@ class Listener(can.Listener):
 				data_index = object_dictionary['1A03sub{}'.format(i + 1)]
 				data.append(object_dictionary[data_index])
 
-			print(data)
+			# print(data)
 
 			message = can_messages.transmit_pdo(self.node_id, data)
 			self.bus.send(message)
@@ -62,6 +62,6 @@ class Listener(can.Listener):
 
 			value = object_dictionary[index_string]
 
-			print(value)
+			# print(value)
 
 			

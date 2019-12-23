@@ -13,12 +13,14 @@ with open("config.yaml", 'r') as stream:
 	except yaml.YAMLError as exc:
 		print(exc)
 
-bus = can.interface.Bus(bustype='socketcan', channel='vcan0', bitrate='125000')
-nodes = []
 
-print(config['sdo_data'])
+bus = can_messages.bus
+notifier = can.Notifier(bus, [])
+
+# bus = can.interface.Bus(bustype='socketcan', channel='vcan0', bitrate='125000')
 
 if(config['emulate_nodes']):
+
 	# append emulators directory to include path
 	sys.path.append('emulators')
 
@@ -27,14 +29,14 @@ if(config['emulate_nodes']):
 		import tsi_emulator
 
 		tsi = tsi_emulator.Listener(bus, node_id=3)
-		nodes.append(tsi)
+		notifier.add_listener(tsi)
 
 
 	if(config['emulate_packs']):
 		import ams_emulator
 
 		pack1 = ams_emulator.Listener(bus, node_id=2)
-		nodes.append(pack1)
+		notifier.add_listener(pack1)
 
 	if(config['emulate_cockpit']):
 		pass
@@ -45,19 +47,32 @@ if(config['emulate_nodes']):
 
 # modules
 sys.path.append('modules')
+
 import data_processor
 
-notifier = can.Notifier(bus, nodes)
+data_processor.init(config)
+processor = data_processor.Listener(bus, node_id=4)
+
+notifier.add_listener(processor)
+
+print(bus.filters)
 
 sync = can.Message(arbitration_id=0x80, data=0x00)
 sync.is_extended_id = False
 
 pack_read = can_messages.sdo_read(2, [0x20, 0x12], [0x00])
 
+data = [0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10]
+message = can_messages.transmit_pdo(3, data)
+
+bus2 = can.interface.Bus(bustype='socketcan', channel='vcan0', bitrate='125000')
+
+# bus.send_periodic(message, 0.1)
 bus.send_periodic(sync, 1)
-# bus.send_periodic(pack_read, 2)
 
+# for node in nodes:
+	# print(node.bus == bus2)
 
-for msg in bus:
-	# print(msg)
+for msg in bus2:
+	print(msg)
 	pass

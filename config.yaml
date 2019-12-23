@@ -33,7 +33,7 @@ data_processor_pdo1:
   - average_current         # TS current averaged over 10 seconds
   - net_state_of_charge     # Sum of State of Charge of both packs
   - estimated_car_velocity  # Motor Velocity * Gear Ratio * Wheel Circumference
-  - PackTemp_Farenheit      # For the true patriots
+  - PackTemp_Farenheit      # What country are we in?
   - unused
   - unused  # etc.
   - unused
@@ -44,16 +44,16 @@ data_processor_pdo1:
 # need to poll this data manually
 sdo_data:
 
-  - Cell1Temp:
-      node_id: 2
-      index: 2011
-      poll_rate: 10
+  Cell1Temp:
+    node_id: 2
+    index: 2011
+    poll_rate: 10
 
-  - MotorTemp:
-      node_id: 1
-      index: 2010
-      subindex: 0
-      poll_rate: 0.5
+  MotorTemp:
+    node_id: 1
+    index: 2010
+    subindex: 0
+    poll_rate: 0.5
 
 
 # modules
