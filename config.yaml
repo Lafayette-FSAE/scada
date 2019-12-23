@@ -8,6 +8,12 @@ emulate_packs: yes
 emulate_cockpit: no
 emulate_motorcontroller: no
 
+# CAN node ids
+can_ids:
+  tsi: 3
+  pack1: 2
+
+
 # structure of data in PDOs
 tsi_pdo:
   - coolingtemp1
@@ -20,10 +26,10 @@ tsi_pdo:
   - unused
 
 ams_pdo:
-  - current
+  - Cell1Temp
   - ambient_temp
-  - state_of_charge
-  - state_of_charge
+  - state_of_charge1
+  - state_of_charge2
   - unused
   - unused
   - unused

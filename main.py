@@ -14,7 +14,7 @@ with open("config.yaml", 'r') as stream:
 		print(exc)
 
 
-bus = can_messages.bus
+bus = can.interface.Bus(bustype='socketcan', channel='vcan0', bitrate='125000')
 notifier = can.Notifier(bus, [])
 
 # bus = can.interface.Bus(bustype='socketcan', channel='vcan0', bitrate='125000')
@@ -28,14 +28,14 @@ if(config['emulate_nodes']):
 	if(config['emulate_tsi']):
 		import tsi_emulator
 
-		tsi = tsi_emulator.Listener(bus, node_id=3)
+		tsi = tsi_emulator.Listener(node_id=3)
 		notifier.add_listener(tsi)
 
 
 	if(config['emulate_packs']):
 		import ams_emulator
 
-		pack1 = ams_emulator.Listener(bus, node_id=2)
+		pack1 = ams_emulator.Listener(node_id=2)
 		notifier.add_listener(pack1)
 
 	if(config['emulate_cockpit']):
@@ -51,7 +51,7 @@ sys.path.append('modules')
 import data_processor
 
 data_processor.init(config)
-processor = data_processor.Listener(bus, node_id=4)
+processor = data_processor.Listener(node_id=4)
 
 notifier.add_listener(processor)
 
@@ -65,14 +65,11 @@ pack_read = can_messages.sdo_read(2, [0x20, 0x12], [0x00])
 data = [0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10]
 message = can_messages.transmit_pdo(3, data)
 
-bus2 = can.interface.Bus(bustype='socketcan', channel='vcan0', bitrate='125000')
-
 # bus.send_periodic(message, 0.1)
-bus.send_periodic(sync, 1)
+bus.send_periodic(sync, .1)
 
 # for node in nodes:
 	# print(node.bus == bus2)
 
-for msg in bus2:
-	print(msg)
+for msg in bus:
 	pass

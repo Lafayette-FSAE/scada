@@ -7,9 +7,6 @@ NOTE: don't forget to set is_extended_id to false on each message
 
 """
 
-bus = can.interface.Bus(bustype='socketcan', channel='vcan0', bitrate='125000')
-
-
 def separate_cob_id(cob_id):
 	# get last (hex) digit of cob_id
 	node_id = cob_id % 16

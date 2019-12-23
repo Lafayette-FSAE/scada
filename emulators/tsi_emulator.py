@@ -5,7 +5,7 @@ bus = can.interface.Bus(bustype='socketcan', channel='vcan0', bitrate='125000')
 
 
 class Listener(can.Listener):
-	def __init__(self, bus, node_id):
+	def __init__(self, node_id):
 		self.node_id = node_id
 
 	def on_message_received(self, msg):
