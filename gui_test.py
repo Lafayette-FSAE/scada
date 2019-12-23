@@ -11,30 +11,33 @@ with open("config.yaml", 'r') as stream:
 
 root = tk.Tk()
 # root.geometry('1280x720')
+root.resizable(0, 0)
 root.title('pySCADA GUI')
 
-sensorLabels = {}
+sensorValues = {}
 sensorInfoFrame = tk.LabelFrame(root, text='Sensors', relief=tk.RIDGE, borderwidth=3)
 sensorInfoFrame.pack(padx=2, pady=2, fill=tk.Y, expand=True)
 sensorGroups = config['sensors']
-for node in sensorGroups:
-	frame = tk.LabelFrame(sensorInfoFrame, text=node, relief=tk.RIDGE, borderwidth=2)
+for group in sensorGroups:
+	frame = tk.LabelFrame(sensorInfoFrame, text=group, relief=tk.RIDGE, borderwidth=2)
 	frame.pack(side='left', padx=5, pady=10, fill=tk.BOTH, expand=True)
 	i = 0
 	maxWidth = 0
 	labelValueDict = {}
-	for sensor in sensorGroups[node]:
+	for sensor in sensorGroups[group]:
 		length = len(sensor)
 		if length > maxWidth:
 			maxWidth = length
-	for sensor in sensorGroups[node]:
+	for sensor in sensorGroups[group]:
 		sensorLabel = tk.Label(frame, text=sensor, width=maxWidth, anchor='w')
 		sensorLabel.grid(row=i, column=0, padx=5, pady=5)
-		valueLabel = tk.Label(frame, text='--', width=5, bg='light blue')
+		labelVar = tk.StringVar()
+		labelVar.set('--')
+		valueLabel = tk.Label(frame, textvariable=labelVar, width=5, bg='light blue')
 		valueLabel.grid(row=i, column=1, padx=5, pady=5)
-		labelValueDict[sensor] = valueLabel
+		labelValueDict[sensor] = labelVar
 		i = i + 1
-	sensorLabels[node] = labelValueDict
+	sensorValues[group] = labelValueDict
 
 driveFSMFrame = tk.LabelFrame(root, text='Drive State FSM', relief=tk.RIDGE, borderwidth=3)
 driveFSMFrame.pack(padx=2, pady=2, fill=tk.BOTH, expand=False)
