@@ -9,24 +9,32 @@ with open("config.yaml", 'r') as stream:
 	except yaml.YAMLError as exc:
 		print(exc)
 
-# for group in config['sensors']:
-# 	print(group)
-# 	for sensor in config['sensors'][group]:
-# 		print(sensor)
-
 root = tk.Tk()
-root.geometry('1280x720')
+# root.geometry('1280x720')
 root.title('pySCADA GUI')
 
+sensorLabels = {}
 sensorInfoFrame = tk.LabelFrame(root, text='Sensors', relief=tk.RIDGE, borderwidth=3)
-sensorInfoFrame.pack(padx=2, pady=2, fill=tk.BOTH, expand=True)
+sensorInfoFrame.pack(padx=2, pady=2, fill=tk.Y, expand=True)
 sensorGroups = config['sensors']
 for node in sensorGroups:
 	frame = tk.LabelFrame(sensorInfoFrame, text=node, relief=tk.RIDGE, borderwidth=2)
-	frame.pack(side='left', padx=10, pady=10, fill=tk.BOTH, expand=True)
+	frame.pack(side='left', padx=5, pady=10, fill=tk.BOTH, expand=True)
+	i = 0
+	maxWidth = 0
+	labelValueDict = {}
 	for sensor in sensorGroups[node]:
-		label = tk.Label(frame, text=sensor)
-		label.pack(padx=5, pady=5)
+		length = len(sensor)
+		if length > maxWidth:
+			maxWidth = length
+	for sensor in sensorGroups[node]:
+		sensorLabel = tk.Label(frame, text=sensor, width=maxWidth, anchor='w')
+		sensorLabel.grid(row=i, column=0, padx=5, pady=5)
+		valueLabel = tk.Label(frame, text='--', width=5, bg='light blue')
+		valueLabel.grid(row=i, column=1, padx=5, pady=5)
+		labelValueDict[sensor] = valueLabel
+		i = i + 1
+	sensorLabels[node] = labelValueDict
 
 driveFSMFrame = tk.LabelFrame(root, text='Drive State FSM', relief=tk.RIDGE, borderwidth=3)
 driveFSMFrame.pack(padx=2, pady=2, fill=tk.BOTH, expand=False)
