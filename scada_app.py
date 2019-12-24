@@ -2,6 +2,8 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.scrolledtext as tk_ScrolledText
 
+from time import strftime
+
 # Load the YAML config file
 # Should probably be handled by another module eventually
 import yaml
@@ -13,9 +15,9 @@ with open("config.yaml", 'r') as stream:
 		print(exc)
 
 
-# Define a class to implement the GUI
+# Define a class to implement the SCADA App and GUI
 # Inherits from a Tkinter Frame
-class SCADA_GUI(tk.Frame):
+class SCADA_APP(tk.Frame):
 	
 	# Init and store the parent Frame
 	def __init__(self, master=None):
@@ -31,49 +33,48 @@ class SCADA_GUI(tk.Frame):
 		self.master.resizable(0, 0)
 
 		# Configure tabs
-		self.tabs_parent = ttk.Notebook(self.master)
-		self.sensor_data_tab = ttk.Frame(self.tabs_parent)
-		self.chart_tab = ttk.Frame(self.tabs_parent)
-		self.system_config_tab = ttk.Frame(self.tabs_parent)
-		self.candump_tab = ttk.Frame(self.tabs_parent)
-		self.scada_log_tab = ttk.Frame(self.tabs_parent)
-		self.scada_config_tab = ttk.Frame(self.tabs_parent)
-		self.tabs_parent.add(self.sensor_data_tab, text='Sensor Data')
-		self.tabs_parent.add(self.chart_tab, text='Live Charts')
-		self.tabs_parent.add(self.system_config_tab, text='Config System')
-		self.tabs_parent.add(self.candump_tab, text='CAN Dump')
-		self.tabs_parent.add(self.scada_log_tab, text='SCADA Log')
-		self.tabs_parent.add(self.scada_config_tab, text='SCADA Config File')
-		self.tabs_parent.pack(fill=tk.BOTH, expand=True)
+		self.tabsParent = ttk.Notebook(self.master)
+		self.sensorDataTab = ttk.Frame(self.tabsParent)
+		self.liveChartTab = ttk.Frame(self.tabsParent)
+		self.systemConfigTab = ttk.Frame(self.tabsParent)
+		self.canDumpTab = ttk.Frame(self.tabsParent)
+		self.scadaLogTab = ttk.Frame(self.tabsParent)
+		self.scadaConfigTab = ttk.Frame(self.tabsParent)
+		self.tabsParent.add(self.sensorDataTab, text='Sensor Data')
+		self.tabsParent.add(self.liveChartTab, text='Live Charts')
+		self.tabsParent.add(self.systemConfigTab, text='Config System')
+		self.tabsParent.add(self.canDumpTab, text='CAN Dump')
+		self.tabsParent.add(self.scadaLogTab, text='SCADA Log')
+		self.tabsParent.add(self.scadaConfigTab, text='SCADA Config File')
+		self.tabsParent.pack(side='top', fill=tk.BOTH, expand=True)
 
-		# Create the Sensor Data tab
-		self.init_tab_sensorData()
-		
-		# Create the Live Charts tab
-		self.init_tab_liveCharts()
-		
-		# Create the Config System tab
-		self.init_tab_configSystem()
-		
-		# Create the CAN Dump tab
-		self.init_tab_canDump()
-		
-		# Create the SCADA Log tab
-		self.init_tab_scadaLog()
-		
-		# Create the SCADA Config File tab
-		self.init_tab_scadaConfigFile()
+		# Construct the tabs
+		self.init_tab_sensorData()			# Create the Sensor Data tab
+		self.init_tab_liveCharts()			# Create the Live Charts tab
+		self.init_tab_configSystem()		# Create the Config System tab
+		self.init_tab_canDump()				# Create the CAN Dump tab
+		self.init_tab_scadaLog()			# Create the SCADA Log tab
+		self.init_tab_scadaConfigFile()		# Create the SCADA Config File tab
+
+		# Create status bar
+		self.statusBar = tk.Frame(self.master, relief=tk.SUNKEN, borderwidth=1)
+		self.statusBar.pack(side='bottom', padx=2, pady=2, fill=tk.X, expand=False)
+		self.exitButton = tk.Button(self.statusBar, text='Quit', command=quit, width=10)
+		self.exitButton.pack(side='right', padx=2, pady=2)
+		self.timeValue = tk.StringVar()
+		self.timeValue.set('00:00:00 AM')
+		self.timeLabel = tk.Label(self.statusBar, textvariable=self.timeValue)
+		self.timeLabel.pack(side='left', padx=2, pady=2)
 
 
 	# Construct the Sensor Data tab
 	def init_tab_sensorData(self):
-		# Sensor Data tab setup
 		sensorValues = {}
-		sensorInfoFrame = tk.LabelFrame(self.sensor_data_tab, text='Sensors', relief=tk.RIDGE, borderwidth=3)
+		sensorInfoFrame = tk.LabelFrame(self.sensorDataTab, text='Sensors')
 		sensorInfoFrame.pack(padx=2, pady=2, fill=tk.Y, expand=True)
 		sensorGroups = config['sensors']
 		for group in sensorGroups:
-			frame = tk.LabelFrame(sensorInfoFrame, text=group, relief=tk.RIDGE, borderwidth=2)
+			frame = tk.LabelFrame(sensorInfoFrame, text=group)
 			frame.pack(side='left', padx=5, pady=10, fill=tk.Y, expand=True)
 			i = 0
 			maxWidth = 0
@@ -94,7 +95,7 @@ class SCADA_GUI(tk.Frame):
 			sensorValues[group] = labelValueDict
 
 		driveFSMLabels = {}
-		driveFSMFrame = tk.LabelFrame(self.sensor_data_tab, text='Drive State FSM', relief=tk.RIDGE, borderwidth=3)
+		driveFSMFrame = tk.LabelFrame(self.sensorDataTab, text='Drive State FSM')
 		driveFSMFrame.pack(padx=2, pady=2, fill=tk.BOTH, expand=False)
 		driveFSMNodes = config['drive_states']
 		for node in driveFSMNodes:
@@ -102,7 +103,7 @@ class SCADA_GUI(tk.Frame):
 			label.pack(side='left', padx=5, pady=10, fill=tk.BOTH, expand=True)
 			driveFSMLabels[node] = label
 
-		sloopFrame = tk.LabelFrame(self.sensor_data_tab, text='Safety Loop', relief=tk.RIDGE, borderwidth=3)
+		sloopFrame = tk.LabelFrame(self.sensorDataTab, text='Safety Loop')
 		sloopFrame.pack(padx=2, pady=2, fill=tk.BOTH, expand=False)
 		sloopSystemLabels = {}
 		sloopSystemFrame = tk.LabelFrame(sloopFrame, text='Systems')
@@ -145,13 +146,28 @@ class SCADA_GUI(tk.Frame):
 
 	# Construct the SCADA Config File tab
 	def init_tab_scadaConfigFile(self):
-		self.configScrolledText = tk_ScrolledText.ScrolledText(self.scada_config_tab)
+		self.configScrolledText = tk_ScrolledText.ScrolledText(self.scadaConfigTab)
 		self.configScrolledText.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
 		self.configScrolledText.insert(tk.INSERT, yaml.dump(config))
 		self.configScrolledText.config(state=tk.DISABLED)
 		print('Init SCADA Config tab complete')
 
+
+	# Function to update the state of the program outside of the GUI's mainloop
+	def update_program(self):
+		self.timeValue.set(strftime('%D  %I:%M:%S %p'))
+		
+		self.master.update_idletasks()
+		self.master.after_idle(self.update_program)
+
+
+	# Quits SCADA
+	def quit(self):
+		self.master.destroy()
+
+
 # \/ For testing the class only \/
 root = tk.Tk()
-app = SCADA_GUI(root)
+app = SCADA_APP(root)
+app.update_program()
 app.mainloop()
