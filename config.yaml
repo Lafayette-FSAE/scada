@@ -80,3 +80,52 @@ gui:
 web_server:
   enable: no
 
+sensors:
+  GLV:
+    - Voltage
+    - Current
+    - Power
+    - Temp
+  TSI:
+    - High Voltage
+    - HV Current
+  Cooling:
+    - Temp1
+    - Temp2
+    - Flow Rate
+    - Pump
+    - Fan
+  Motor Controller:
+    - Voltage
+    - Motor Temp
+    - RPM
+    - Velocity
+  Pack 1:
+    - Voltage
+    - Current
+    - Ambient Temp
+    - Charge Current
+  Pack 2:
+    - Voltage
+    - Current
+    - Ambient Temp
+    - Charge Current
+
+drive_states:
+  - GLV Off
+  - GLV On
+  - Precharge
+  - TS Energized
+  - Ready to Drive
+  - AMS Fault
+  - IMD Fault
+  - Brake Overtravel
+
+sloop_nodes:
+  - TSI, S1
+  - TSI, S2
+  - Pack 1, S1
+  - Pack 1, S2
+  - Pack 2, S1
+  - Pack 2, S2
+  - SCADA
