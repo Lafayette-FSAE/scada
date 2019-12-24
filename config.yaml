@@ -9,22 +9,24 @@ emulate_cockpit: no
 emulate_motorcontroller: no
 
 # CAN node ids
-can_ids:
-  tsi: 3
-  pack1: 2
-  pack2: 1
+can_nodes:
+  3: tsi
+  1: pack1
+  2: pack2
 
 
 # structure of data in PDOs
+
+# NOTE: PDO length cannot exceed 8 bytes, if a 
+#       list has less than 8 elements, the remaining
+#       bytes will be ignored
+
 tsi_pdo:
   - coolingtemp1
   - coolingtemp2
   - flowrate
   - state
   - throttle
-  - unused
-  - unused
-  - unused
 
 ams_pdo:
   - Cell1Temp
@@ -32,19 +34,15 @@ ams_pdo:
   - state_of_charge1
   - state_of_charge2
   - voltage
-  - unused
-  - unused
-  - unused
+
+
+# NOTE: make sure that there is a calibration function
+#       defined for every item listed here
 
 data_processor_pdo:
-  - TSVoltage         # TS current averaged over 10 seconds
-  - net_state_of_charge     # Sum of State of Charge of both packs
-  - estimated_car_velocity  # Motor Velocity * Gear Ratio * Wheel Circumference
-  - PackTemp_Farenheit      # What country are we in?
-  - unused
-  - unused  # etc.
-  - unused
-  - unused
+  - TSVoltage           # Sum of each pack voltage
+  - PackTemp_Farenheit  # pack1 temperature in farenheit
+  - tsi - flowrate
 
 
 # Other data to keep track of
@@ -71,6 +69,10 @@ logger:
 
 data_processor:
   enable: yes
+
+calibration:
+  - tsi-cal.py    # all of the tsi sensors need client-side calibration
+  - user-cal.py   # for custom properties
 
 gui:
   enable: no

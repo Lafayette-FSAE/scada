@@ -48,11 +48,11 @@ def process(target, bus_data):
 	return (None, result)
 
 
-def process_all(data):
+def process_all(targets, data):
 
 	output = {}
 
-	for target in calibration_functions:
+	for target in targets:
 		err, result = process(target, data)
 		
 		if err:

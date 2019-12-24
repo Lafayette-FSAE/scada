@@ -4,6 +4,8 @@ import yaml
 
 import can_messages
 
+import can_utils
+
 config = {}
 
 # read config from config.yaml file
@@ -16,8 +18,6 @@ with open("config.yaml", 'r') as stream:
 
 bus = can.interface.Bus(bustype='socketcan', channel='vcan0', bitrate='125000')
 notifier = can.Notifier(bus, [])
-
-# bus = can.interface.Bus(bustype='socketcan', channel='vcan0', bitrate='125000')
 
 if(config['emulate_nodes']):
 
@@ -50,29 +50,19 @@ if(config['emulate_nodes']):
 
 # modules
 sys.path.append('modules')
-
-import calibration_functions
+sys.path.append('calibration')
 
 import data_processor
 processor = data_processor.Listener(node_id=4)
 
 notifier.add_listener(processor)
 
-print(bus.filters)
-
 sync = can.Message(arbitration_id=0x80, data=0x00)
 sync.is_extended_id = False
 
-pack_read = can_messages.sdo_read(2, [0x20, 0x12], [0x00])
+# pack_read = can_messages.sdo_read(2, [0x20, 0x12], [0x00])
 
-data = [0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10]
-message = can_messages.transmit_pdo(3, data)
-
-# bus.send_periodic(message, 0.1)
 bus.send_periodic(sync, .1)
-
-# for node in nodes:
-	# print(node.bus == bus2)
 
 for msg in bus:
 	pass

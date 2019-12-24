@@ -1,6 +1,8 @@
-import can
-import can_messages
 import yaml
+
+import can
+import can_utils
+import can_messages
 
 import calibration_utils
 
@@ -23,12 +25,36 @@ with open("config.yaml", 'r') as stream:
 	except yaml.YAMLError as exc:
 		print(exc)
 
+import user_cal
+import tsi_cal
 
 bus_data = {}
 processed_data = {}
 
-ams_pdo = config['ams_pdo']
 pdo_structure = config['data_processor_pdo']
+
+def update():
+	"""
+	Runs periodically,
+
+	currently called whenever a sync packet is received,
+	but this behavior could be changed
+
+	"""
+
+	processed_data = calibration_utils.process_all(targets=pdo_structure, data=bus_data)
+
+	data = []
+
+	for key in pdo_structure:
+		try:
+			data.append(int(processed_data[key]))
+		except:
+			data.append(0x00)
+
+	message = can_messages.transmit_pdo(4, data)
+	bus.send(message)
+
 
 
 class Listener(can.Listener):
@@ -37,41 +63,31 @@ class Listener(can.Listener):
 
 	def on_message_received(self, msg):
 
-		function, node_id = can_messages.separate_cob_id(msg.arbitration_id)
+		function, node_id = can_utils.separate_cob_id(msg.arbitration_id)
 
 		if function == 0x80:
-			processed_data = calibration_utils.process_all(bus_data)
-
-			data = []
-
-			for key in pdo_structure:
-				try:
-					data.append(int(processed_data[key]))
-				except:
-					data.append(0x00)
-
-			message = can_messages.transmit_pdo(self.node_id, data)
-			bus.send(message)
+			update()
 
 
 		# Deal with TPDOs
 		if function == 0x180:
 
-			if node_id == 2: # pack1
+			try:
+				node = config['can_nodes'][node_id]
+			except:
+				return
 
-				node = 'pack1'
+			if node == 'pack1' or node == 'pack2':
+				pdo_structure = config['ams_pdo']
+			else:
+				pdo_structure = config['{}_pdo'.format(node)]
 
-				for index, byte in enumerate(msg.data, start=0):
-					key = '{} - {}'.format(node, ams_pdo[index])
+			for index, byte in enumerate(msg.data, start=0):
+				try:
+					key = '{} - {}'.format(node, pdo_structure[index])
 					bus_data[key] = byte
-
-			if node_id == 1: # pack2
-
-				node = 'pack2'
-
-				for index, byte in enumerate(msg.data, start=0):
-					key = '{} - {}'.format(node, ams_pdo[index])
-					bus_data[key] = byte
+				except:
+					pass
 
 
 
