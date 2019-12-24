@@ -80,6 +80,7 @@ gui:
 web_server:
   enable: no
 
+# All sensors that will report to SCADA, divided into top-level groups
 sensors:
   GLV:
     - Voltage
@@ -111,6 +112,7 @@ sensors:
     - Ambient Temp
     - Charge Current
 
+# List of car drive states that are in the state FSM
 drive_states:
   - GLV Off
   - GLV On
@@ -121,6 +123,7 @@ drive_states:
   - IMD Fault
   - Brake Overtravel
 
+# All nodes on the safety loop that are measurable and reportable to SCADA
 sloop_nodes:
   - TSI, S1
   - TSI, S2
@@ -128,4 +131,10 @@ sloop_nodes:
   - Pack 1, S2
   - Pack 2, S1
   - Pack 2, S2
+
+# All digital systems that can open the safety loop
+sloop_systems:
+  - TSI
+  - Pack 1
+  - Pack 2
   - SCADA
