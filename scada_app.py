@@ -19,7 +19,7 @@ with open("config.yaml", 'r') as stream:
 # Inherits from a Tkinter Frame
 class SCADA_APP(tk.Frame):
 	
-	# Init and store the parent Frame
+	# Init and store the parent Frame and init the application
 	def __init__(self, master=None):
 		tk.Frame.__init__(self, master)
 		self.master = master
