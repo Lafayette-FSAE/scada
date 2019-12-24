@@ -14,7 +14,7 @@ with open("config.yaml", 'r') as stream:
 # Create base window
 root = tk.Tk()
 root.geometry('1280x720')
-# root.resizable(0, 0)
+root.resizable(0, 0)
 root.title('pySCADA GUI')
 
 # Configure tabs
@@ -23,11 +23,13 @@ default_tab = ttk.Frame(tabs_parent)
 chart_tab = ttk.Frame(tabs_parent)
 system_config_tab = ttk.Frame(tabs_parent)
 candump_tab = ttk.Frame(tabs_parent)
+scada_log_tab = ttk.Frame(tabs_parent)
 scada_config_tab = ttk.Frame(tabs_parent)
 tabs_parent.add(default_tab, text='Sensor Data')
 tabs_parent.add(chart_tab, text='Live Charts')
 tabs_parent.add(system_config_tab, text='Config System')
 tabs_parent.add(candump_tab, text='CAN Dump')
+tabs_parent.add(scada_log_tab, text='SCADA Log')
 tabs_parent.add(scada_config_tab, text='SCADA Config File')
 tabs_parent.pack(fill=tk.BOTH, expand=True)
 
