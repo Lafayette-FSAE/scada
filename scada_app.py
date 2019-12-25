@@ -1,9 +1,8 @@
 from tkinter import *
 from tkinter.ttk import *
 import tkinter.scrolledtext as tk_ScrolledText
-from config import Config
 from time import strftime
-
+from config import Config
 
 # Define a class to implement the SCADA App and GUI
 # Inherits from a Tkinter Frame
@@ -133,11 +132,17 @@ class SCADA_APP(Frame):
 
 	# Construct the CAN Dump tab
 	def init_tab_canDump(self):
+		self.canDumpScrolledText = tk_ScrolledText.ScrolledText(self.canDumpTab)
+		self.canDumpScrolledText.pack(padx=10, pady=10, fill=BOTH, expand=True)
+		self.canDumpScrolledText.config(state=DISABLED)
 		print('Init CAN Dump tab complete')
 
 
 	# Construct the SCADA Log tab
 	def init_tab_scadaLog(self):
+		self.scadaLogScrolledText = tk_ScrolledText.ScrolledText(self.scadaLogTab)
+		self.scadaLogScrolledText.pack(padx=10, pady=10, fill=BOTH, expand=True)
+		self.scadaLogScrolledText.config(state=DISABLED)
 		print('Init SCADA Log tab complete')
 
 
