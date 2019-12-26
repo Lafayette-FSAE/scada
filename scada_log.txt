@@ -1,0 +1,10 @@
+12/26/2019 04:34:27 PM - INFO - Logging initialized
+12/26/2019 04:34:27 PM - INFO - Successfully loaded config file
+12/26/2019 04:34:27 PM - INFO - Init Sensor Data tab complete
+12/26/2019 04:34:27 PM - INFO - Init Live Charts tab complete
+12/26/2019 04:34:27 PM - INFO - Init Config System tab complete
+12/26/2019 04:34:27 PM - INFO - Init CAN Dump tab complete
+12/26/2019 04:34:27 PM - INFO - Init SCADA Log tab complete
+12/26/2019 04:34:27 PM - INFO - Init SCADA Config tab complete
+12/26/2019 04:34:27 PM - INFO - Set GLV Voltage to 24 V
+12/26/2019 04:34:29 PM - INFO - Shutting down... Goodbye

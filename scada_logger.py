@@ -7,7 +7,7 @@ import queue
 
 class SCADALogger():
 	def __init__(self):
-		logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%I:%M:%S %p')
+		logging.basicConfig(filename='scada_log.txt', filemode='w', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 		self.formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%I:%M:%S %p')
 		self.logQueue = queue.Queue()
 		self.handler = SCADALoggingHandler(None, self.logQueue)

@@ -1,4 +1,5 @@
 import yaml
+import logging
 
 # Define class which stores and handles interaction with the SCADA config file
 # Everything is static so that no instance have to be passed back and forth
@@ -16,7 +17,7 @@ class Config():
 			try:
 				Config.config = yaml.safe_load(stream)
 				Config.loaded = True
-				print('Loaded config')
+				logging.info('Successfully loaded config file')
 			except yaml.YAMLError as exc:
 				print(exc)
 
