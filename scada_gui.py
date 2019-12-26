@@ -4,14 +4,16 @@ import tkinter.scrolledtext as tk_ScrolledText
 from time import strftime
 from config import Config
 
-# Define a class to implement the SCADA App and GUI
+from gui_sensor_data_tab import SensorDataTab
+
+# Define a class to implement the SCADA GUI
 # Inherits from a Tkinter Frame
-class SCADA_APP(Frame):
+class SCADA_GUI(Frame):
 	
-	# Init and store the parent Frame and init the application
-	def __init__(self, master=None):
-		Frame.__init__(self, master)
-		self.master = master
+	# Init Tkinter, parent Frame object, and application
+	def __init__(self):
+		self.master = Tk()
+		Frame.__init__(self, self.master)
 		self.init_window()
 		self.running = True
 
@@ -45,7 +47,17 @@ class SCADA_APP(Frame):
 		self.tabsParent.pack(side='top', fill=BOTH, expand=True)
 
 		# Construct the tabs
-		self.init_tab_sensorData()			# Create the Sensor Data tab
+		# self.init_tab_sensorData()			# Create the Sensor Data tab
+		self.sensorValues = {}
+		self.driveFSMLabels = {}
+		self.sloopSystemLabels = {}
+		self.sloopNodeLabels = {}
+		self.frameSensors = SensorDataTab(self.sensorDataTab,
+										  self.sensorValues,
+										  self.driveFSMLabels,
+										  self.sloopSystemLabels,
+										  self.sloopNodeLabels)
+
 		self.init_tab_liveCharts()			# Create the Live Charts tab
 		self.init_tab_configSystem()		# Create the Config System tab
 		self.init_tab_canDump()				# Create the CAN Dump tab
@@ -63,61 +75,61 @@ class SCADA_APP(Frame):
 		self.timeLabel.pack(side='left', padx=2, pady=2)
 
 
-	# Construct the Sensor Data tab
-	def init_tab_sensorData(self):
-		self.sensorValues = {}
-		self.sensorInfoFrame = LabelFrame(self.sensorDataTab, text='Sensors')
-		self.sensorInfoFrame.pack(padx=2, pady=2, fill=Y, expand=True)
-		self.sensorGroups = Config.get('sensors')
-		for group in self.sensorGroups:
-			frame = LabelFrame(self.sensorInfoFrame, text=group)
-			frame.pack(side='left', padx=5, pady=10, fill=Y, expand=True)
-			i = 0
-			maxWidth = 0
-			labelValueDict = {}
-			for sensor in self.sensorGroups[group]:
-				length = len(sensor)
-				if length > maxWidth:
-					maxWidth = length
-			for sensor in self.sensorGroups[group]:
-				sensorLabel = Label(frame, text=sensor, width=maxWidth+2, anchor='w')
-				sensorLabel.grid(row=i, column=0, padx=5, pady=5)
-				labelVar = StringVar()
-				labelVar.set('--')
-				valueLabel = Label(frame, textvariable=labelVar, width=6, anchor='center', background='light blue')
-				valueLabel.grid(row=i, column=1, padx=5, pady=5)
-				labelValueDict[sensor] = labelVar
-				i = i + 1
-			self.sensorValues[group] = labelValueDict
+	# # Construct the Sensor Data tab
+	# def init_tab_sensorData(self):
+	# 	self.sensorValues = {}
+	# 	self.sensorInfoFrame = LabelFrame(self.sensorDataTab, text='Sensors')
+	# 	self.sensorInfoFrame.pack(padx=2, pady=2, fill=Y, expand=True)
+	# 	self.sensorGroups = Config.get('sensors')
+	# 	for group in self.sensorGroups:
+	# 		frame = LabelFrame(self.sensorInfoFrame, text=group)
+	# 		frame.pack(side='left', padx=5, pady=10, fill=Y, expand=True)
+	# 		i = 0
+	# 		maxWidth = 0
+	# 		labelValueDict = {}
+	# 		for sensor in self.sensorGroups[group]:
+	# 			length = len(sensor)
+	# 			if length > maxWidth:
+	# 				maxWidth = length
+	# 		for sensor in self.sensorGroups[group]:
+	# 			sensorLabel = Label(frame, text=sensor, width=maxWidth+2, anchor='w')
+	# 			sensorLabel.grid(row=i, column=0, padx=5, pady=5)
+	# 			labelVar = StringVar()
+	# 			labelVar.set('--')
+	# 			valueLabel = Label(frame, textvariable=labelVar, width=6, anchor='center', background='light blue')
+	# 			valueLabel.grid(row=i, column=1, padx=5, pady=5)
+	# 			labelValueDict[sensor] = labelVar
+	# 			i = i + 1
+	# 		self.sensorValues[group] = labelValueDict
 
-		self.driveFSMLabels = {}
-		driveFSMFrame = LabelFrame(self.sensorDataTab, text='Drive State FSM')
-		driveFSMFrame.pack(padx=2, pady=2, fill=BOTH, expand=False)
-		driveFSMNodes = Config.get('drive_states')
-		for node in driveFSMNodes:
-			label = Label(driveFSMFrame, text=node, anchor='center', relief=GROOVE, background='dodger blue')
-			label.pack(side='left', padx=15, pady=10, fill=BOTH, expand=True)
-			self.driveFSMLabels[node] = label
+	# 	self.driveFSMLabels = {}
+	# 	driveFSMFrame = LabelFrame(self.sensorDataTab, text='Drive State FSM')
+	# 	driveFSMFrame.pack(padx=2, pady=2, fill=BOTH, expand=False)
+	# 	driveFSMNodes = Config.get('drive_states')
+	# 	for node in driveFSMNodes:
+	# 		label = Label(driveFSMFrame, text=node, anchor='center', relief=GROOVE, background='dodger blue')
+	# 		label.pack(side='left', padx=15, pady=10, fill=BOTH, expand=True)
+	# 		self.driveFSMLabels[node] = label
 
-		self.sloopFrame = LabelFrame(self.sensorDataTab, text='Safety Loop')
-		self.sloopFrame.pack(padx=2, pady=2, fill=BOTH, expand=False)
-		self.sloopSystemLabels = {}
-		self.sloopSystemFrame = LabelFrame(self.sloopFrame, text='Systems')
-		self.sloopSystemFrame.pack(side='top', padx=2, pady=2, fill=BOTH, expand=True)
-		self.sloopSystems = Config.get('sloop_systems')
-		for system in self.sloopSystems:
-			label = Label(self.sloopSystemFrame, text=system, anchor='center', relief=GROOVE, background='salmon')
-			label.pack(side='left', padx=15, pady=10, fill=BOTH, expand=True)
-			self.sloopSystemLabels[system] = label
-		self.sloopNodeLabels = {}
-		self.sloopNodeFrame = LabelFrame(self.sloopFrame, text='Nodes')
-		self.sloopNodeFrame.pack(side='bottom', padx=2, pady=2, fill=BOTH, expand=True)
-		self.sloopNodes = Config.get('sloop_nodes')
-		for node in self.sloopNodes:
-			label = Label(self.sloopNodeFrame, text=node, anchor='center', relief=GROOVE, background='green2')
-			label.pack(side='left', padx=15, pady=10, fill=BOTH, expand=True)
-			self.sloopNodeLabels[node] = label
-		print('Init Sensor Data tab complete')
+	# 	self.sloopFrame = LabelFrame(self.sensorDataTab, text='Safety Loop')
+	# 	self.sloopFrame.pack(padx=2, pady=2, fill=BOTH, expand=False)
+	# 	self.sloopSystemLabels = {}
+	# 	self.sloopSystemFrame = LabelFrame(self.sloopFrame, text='Systems')
+	# 	self.sloopSystemFrame.pack(side='top', padx=2, pady=2, fill=BOTH, expand=True)
+	# 	self.sloopSystems = Config.get('sloop_systems')
+	# 	for system in self.sloopSystems:
+	# 		label = Label(self.sloopSystemFrame, text=system, anchor='center', relief=GROOVE, background='salmon')
+	# 		label.pack(side='left', padx=15, pady=10, fill=BOTH, expand=True)
+	# 		self.sloopSystemLabels[system] = label
+	# 	self.sloopNodeLabels = {}
+	# 	self.sloopNodeFrame = LabelFrame(self.sloopFrame, text='Nodes')
+	# 	self.sloopNodeFrame.pack(side='bottom', padx=2, pady=2, fill=BOTH, expand=True)
+	# 	self.sloopNodes = Config.get('sloop_nodes')
+	# 	for node in self.sloopNodes:
+	# 		label = Label(self.sloopNodeFrame, text=node, anchor='center', relief=GROOVE, background='green2')
+	# 		label.pack(side='left', padx=15, pady=10, fill=BOTH, expand=True)
+	# 		self.sloopNodeLabels[node] = label
+	# 	print('Init Sensor Data tab complete')
 
 
 	# Construct the Live Charts tab
@@ -160,10 +172,16 @@ class SCADA_APP(Frame):
 		self.timeValue.set(strftime('%D  %I:%M:%S %p'))
 
 
+
+
+
+# \/  Eventually housed in a separate file  \/
+
+
+
 # SCADA's main method
 def main():
-	root = Tk()
-	app = SCADA_APP(root)
+	app = SCADA_GUI()
 	app.sensorValues.get('GLV').get('Voltage').set('24 V') # Test changing a value
 	while app.running:
 		app.update_GUI_program()
