@@ -6,12 +6,12 @@ from config import Config
 
 # Define a class to implement the SCADA App and GUI
 # Inherits from a Tkinter Frame
-class SCADA_APP(Frame):
+class SCADA_GUI(Frame):
 	
 	# Init and store the parent Frame and init the application
-	def __init__(self, master=None):
-		Frame.__init__(self, master)
-		self.master = master
+	def __init__(self):
+		self.master = Tk()
+		Frame.__init__(self, self.master)
 		self.init_window()
 		self.running = True
 
@@ -155,18 +155,15 @@ class SCADA_APP(Frame):
 		print('Init SCADA Config tab complete')
 
 
-	# Function to update the state of the program outside of the GUI's mainloop
-	def update_GUI_program(self):
-		self.timeValue.set(strftime('%D  %I:%M:%S %p'))
 
+# \/ Eventually moved to the main.py file or something \/
 
 # SCADA's main method
 def main():
-	root = Tk()
-	app = SCADA_APP(root)
+	app = SCADA_GUI()
 	app.sensorValues.get('GLV').get('Voltage').set('24 V') # Test changing a value
 	while app.running:
-		app.update_GUI_program()
+		app.timeValue.set(strftime('%D  %I:%M:%S %p'))
 		app.update_idletasks()
 		app.update()
 	app.destroy()
