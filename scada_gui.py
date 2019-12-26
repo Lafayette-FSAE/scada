@@ -155,10 +155,6 @@ class SCADA_GUI(Frame):
 		print('Init SCADA Config tab complete')
 
 
-	# Function to update the state of the program outside of the GUI's mainloop
-	def update_GUI_program(self):
-		self.timeValue.set(strftime('%D  %I:%M:%S %p'))
-
 
 # \/ Eventually moved to the main.py file or something \/
 
@@ -167,7 +163,7 @@ def main():
 	app = SCADA_GUI()
 	app.sensorValues.get('GLV').get('Voltage').set('24 V') # Test changing a value
 	while app.running:
-		app.update_GUI_program()
+		app.timeValue.set(strftime('%D  %I:%M:%S %p'))
 		app.update_idletasks()
 		app.update()
 	app.destroy()
