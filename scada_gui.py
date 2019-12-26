@@ -3,6 +3,8 @@ from tkinter.ttk import *
 import tkinter.scrolledtext as tk_ScrolledText
 from time import strftime
 from config import Config
+import logging
+from scada_logger import *
 
 # Define a class to implement the SCADA App and GUI
 # Inherits from a Tkinter Frame
@@ -14,11 +16,6 @@ class SCADA_GUI(Frame):
 		Frame.__init__(self, self.master)
 		self.init_window()
 		self.running = True
-
-
-	# Quits SCADA
-	def quit_scada(self):
-		self.running = False
 
 
 	# Begin initializing the GUI
@@ -117,17 +114,17 @@ class SCADA_GUI(Frame):
 			label = Label(self.sloopNodeFrame, text=node, anchor='center', relief=GROOVE, background='green2')
 			label.pack(side='left', padx=15, pady=10, fill=BOTH, expand=True)
 			self.sloopNodeLabels[node] = label
-		print('Init Sensor Data tab complete')
+		logging.info('Init Sensor Data tab complete')
 
 
 	# Construct the Live Charts tab
 	def init_tab_liveCharts(self):
-		print('Init Live Charts tab complete')
+		logging.info('Init Live Charts tab complete')
 
 
 	# Construct the Config System tab
 	def init_tab_configSystem(self):
-		print('Init Config System tab complete')
+		logging.info('Init Config System tab complete')
 
 
 	# Construct the CAN Dump tab
@@ -135,7 +132,7 @@ class SCADA_GUI(Frame):
 		self.canDumpScrolledText = tk_ScrolledText.ScrolledText(self.canDumpTab)
 		self.canDumpScrolledText.pack(padx=10, pady=10, fill=BOTH, expand=True)
 		self.canDumpScrolledText.config(state=DISABLED)
-		print('Init CAN Dump tab complete')
+		logging.info('Init CAN Dump tab complete')
 
 
 	# Construct the SCADA Log tab
@@ -143,7 +140,7 @@ class SCADA_GUI(Frame):
 		self.scadaLogScrolledText = tk_ScrolledText.ScrolledText(self.scadaLogTab)
 		self.scadaLogScrolledText.pack(padx=10, pady=10, fill=BOTH, expand=True)
 		self.scadaLogScrolledText.config(state=DISABLED)
-		print('Init SCADA Log tab complete')
+		logging.info('Init SCADA Log tab complete')
 
 
 	# Construct the SCADA Config File tab
@@ -152,7 +149,12 @@ class SCADA_GUI(Frame):
 		self.configScrolledText.pack(padx=10, pady=10, fill=BOTH, expand=True)
 		self.configScrolledText.insert(INSERT, Config.string_dump())
 		self.configScrolledText.config(state=DISABLED)
-		print('Init SCADA Config tab complete')
+		logging.info('Init SCADA Config tab complete')
+
+
+	# Quits SCADA
+	def quit_scada(self):
+		self.running = False
 
 
 
@@ -160,8 +162,11 @@ class SCADA_GUI(Frame):
 
 # SCADA's main method
 def main():
+	scada_logging_init()
 	app = SCADA_GUI()
+	scada_logging_init_window(app.scadaLogScrolledText)
 	app.sensorValues.get('GLV').get('Voltage').set('24 V') # Test changing a value
+	logging.info('Set GLV Voltage to 24 V')
 	while app.running:
 		app.timeValue.set(strftime('%D  %I:%M:%S %p'))
 		app.update_idletasks()
