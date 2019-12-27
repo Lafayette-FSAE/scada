@@ -51,10 +51,10 @@ if(config['emulate_nodes']):
 sys.path.append('modules')
 sys.path.append('calibration')
 
-# import data_processor
-# processor = data_processor.Listener(node_id=4)
+import data_processor
+processor = data_processor.Listener(node_id=4)
 
-# notifier.add_listener(processor)
+notifier.add_listener(processor)
 
 sync = can.Message(arbitration_id=0x80, data=0x00)
 sync.is_extended_id = False
