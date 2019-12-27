@@ -2,7 +2,8 @@ import yaml
 
 import can
 import can_utils
-import can_messages
+
+from can_utils import messages
 
 import calibration_utils
 
@@ -46,7 +47,7 @@ def update():
 		except:
 			data.append(0x00)
 
-	message = can_messages.transmit_pdo(4, data)
+	message = messages.pdo(4, data)
 	bus.send(message)
 
 
@@ -57,14 +58,12 @@ class Listener(can.Listener):
 
 	def on_message_received(self, msg):
 
-		function, node_id = can_utils.separate_cob_id(msg.arbitration_id)
+		function, node_id = messages.get_info(msg)
 
-		if function == 0x80:
+		if function == 'SYNC':
 			update()
 
-
-		# Deal with TPDOs
-		if function == 0x180:
+		if function == 'PDO':
 
 			try:
 				node = config.get('can_nodes')[node_id]

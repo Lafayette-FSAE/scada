@@ -22,11 +22,12 @@ can_nodes:
 #       bytes will be ignored
 
 tsi_pdo:
-  - coolingtemp1
-  - coolingtemp2
-  - flowrate
-  - state
-  - throttle
+  - COOLING_TEMP_1
+  - COOLING_TEMP_2
+  - FLOWRATE
+  - STATE
+  - TS_CURRENT
+  - TS_VOLTAGE
 
 ams_pdo:
   - Cell1Temp
@@ -40,9 +41,9 @@ ams_pdo:
 #       defined for every item listed here
 
 data_processor_pdo:
-  - TSVoltage           # Sum of each pack voltage
-  - PackTemp_Farenheit  # pack1 temperature in farenheit
-  - tsi - flowrate
+  - TS_POWER           # Sum of each pack voltage
+  # - PackTemp_Farenheit  # pack1 temperature in farenheit
+  # - tsi - flowrate
 
 
 # Other data to keep track of
