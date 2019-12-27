@@ -55,14 +55,17 @@ class ObjectDictionary():
 
 
 			line = 'Name: {} \t Value: {} \t Index: {} \n'.format(
-				key, self.get_value(key), index_str)
+				key, self.get_value(key), (index, sub))
 			
 			output = output + line
 		
 		return output
 
-	def get_value(self, key):
-		index = self.od_map[key]
+	def get_value(self, key, index=None):
+
+		if index == None:
+			index = self.od_map[key]
+
 		return self.od[index]
 
 	def get_index(self, key):
@@ -84,6 +87,7 @@ class ObjectDictionary():
 
 	def set_pdo_map(self, property_list, pdo_number=1):
 		pdo_length = len(property_list)
+
 		self.set('TPDO1_LENGTH', pdo_length)
 
 		for i, property in enumerate(property_list, start=1):
@@ -98,4 +102,15 @@ class ObjectDictionary():
 			self.set(key, index)
 
 
+	def get_pdo_data(self, pdo_number=1):
+		pdo_length = self.get_value('TPDO1_LENGTH')
+		output = []
+
+		for i in range(1, pdo_length + 1):
+			index = self.get_value('TPDO1_0{}'.format(i))
+			index_real, sub = index
+
+			output.append(self.get_value('', index))
+
+		return output
 
