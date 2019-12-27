@@ -26,11 +26,12 @@ def get_function(code):
 def get_code(function):
 	inv_functions = {function: code for code, function in FUNCTIONS.items()}
 
-	return hex(inv_functions.get(function))
+	return inv_functions.get(function)
 
 def can_message(function, node_id, data):
 	
 	function_code = get_code(function)
+
 	cob_id = function_code + node_id
 
 	message = can.Message(arbitration_id = cob_id, data=data)
@@ -60,6 +61,8 @@ def sdo_write(node_id, index, subindex=0xFF, value=0):
 
 
 def get_info(message):
+	cob_id = message.arbitration_id
+
 	# get last (hex) digit of cob_id
 	node_id = cob_id % 16
 	function_id = cob_id - node_id

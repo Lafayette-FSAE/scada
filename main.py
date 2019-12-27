@@ -2,8 +2,6 @@ import sys
 import can
 import yaml
 
-import can_messages
-
 import can_utils
 
 config = {}
@@ -33,13 +31,14 @@ if(config['emulate_nodes']):
 
 
 	if(config['emulate_packs']):
-		import ams_emulator
+		pass
+		# import ams_emulator
 
-		pack1 = ams_emulator.Listener(node_id=2)
-		notifier.add_listener(pack1)
+		# pack1 = ams_emulator.Listener(node_id=2)
+		# notifier.add_listener(pack1)
 
-		pack2 = ams_emulator.Listener(node_id=1)
-		notifier.add_listener(pack2)
+		# pack2 = ams_emulator.Listener(node_id=1)
+		# notifier.add_listener(pack2)
 
 	if(config['emulate_cockpit']):
 		pass
@@ -52,15 +51,13 @@ if(config['emulate_nodes']):
 sys.path.append('modules')
 sys.path.append('calibration')
 
-import data_processor
-processor = data_processor.Listener(node_id=4)
+# import data_processor
+# processor = data_processor.Listener(node_id=4)
 
-notifier.add_listener(processor)
+# notifier.add_listener(processor)
 
 sync = can.Message(arbitration_id=0x80, data=0x00)
 sync.is_extended_id = False
-
-# pack_read = can_messages.sdo_read(2, [0x20, 0x12], [0x00])
 
 bus.send_periodic(sync, .1)
 
