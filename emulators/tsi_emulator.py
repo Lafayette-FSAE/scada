@@ -3,7 +3,7 @@ import can
 from can_utils import object_dictionary
 from can_utils import messages
 
-from config import Config as config
+import config
 
 od = object_dictionary.ObjectDictionary()
 

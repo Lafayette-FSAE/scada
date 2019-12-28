@@ -7,7 +7,8 @@ from can_utils import messages
 
 import calibration_utils
 
-from config import Config as config
+import config
+
 
 bus = can.interface.Bus(bustype='socketcan', channel='vcan0', bitrate='125000')
 
