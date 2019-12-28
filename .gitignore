@@ -1,3 +1,6 @@
+# scada_log text file
+scada_log.txt
+
 # used by sftp
 sftp-config.json
 
