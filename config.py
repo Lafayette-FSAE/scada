@@ -1,36 +1,35 @@
 import yaml
 import logging
 
-# Define class which stores and handles interaction with the SCADA config file
-# Everything is static so that no instance have to be passed back and forth
-# Use the 'get' method as the main function for accessing the config structure
-class Config():
-	config = {}
-	loaded = False
+__config = {}
+__loaded = False
 
-	# Loads the YAML config file in a config structure
-	@staticmethod
-	def load():
-		if Config.loaded:
-			return
-		with open("config.yaml", 'r') as stream:
-			try:
-				Config.config = yaml.safe_load(stream)
-				Config.loaded = True
-				logging.info('Successfully loaded config file')
-			except yaml.YAMLError as exc:
-				print(exc)
 
-	# Returns the value associated with the given key in the config structure
-	@staticmethod
-	def get(key):
-		if not Config.loaded:
-			Config.load()
-		return Config.config[key]
+# Loads the YAML config file in a config structure
+def load():
+	global __config, __loaded
+	if __loaded:
+		return
+	with open('config.yaml', 'r') as stream:
+		try:
+			__config = yaml.safe_load(stream)
+			__loaded = True
+			logging.info('Successfully loaded config file')
+		except yaml.YAMLError as exc:
+			print(exc)
 
-	# Returns a string dump of the entire config structure
-	@staticmethod
-	def string_dump():
-		if not Config.loaded:
-			Config.load()
-		return yaml.dump(Config.config)
+
+# Returns the value associated with the given key in the config structure
+def get(key):
+	global __config, __loaded
+	if not __loaded:
+		load()
+	return __config[key]
+
+
+# Returns a string dump of the entire config structure
+def string_dump():
+	global __config, __loaded
+	if not __loaded:
+		load()
+	return yaml.dump(__config)

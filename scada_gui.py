@@ -2,7 +2,8 @@ from tkinter import *
 from tkinter.ttk import *
 import tkinter.scrolledtext as tk_ScrolledText
 from time import strftime
-from config import Config
+# from config import Config
+import config
 import logging
 from scada_logger import SCADALogger
 
@@ -65,7 +66,7 @@ class SCADA_GUI(Frame):
 		self.sensorValues = {}
 		self.sensorInfoFrame = LabelFrame(self.sensorDataTab, text='Sensors')
 		self.sensorInfoFrame.pack(padx=2, pady=2, fill=Y, expand=True)
-		self.sensorGroups = Config.get('sensors')
+		self.sensorGroups = config.get('sensors')
 		for group in self.sensorGroups:
 			frame = LabelFrame(self.sensorInfoFrame, text=group)
 			frame.pack(side='left', padx=5, pady=10, fill=Y, expand=True)
@@ -90,7 +91,7 @@ class SCADA_GUI(Frame):
 		self.driveFSMLabels = {}
 		driveFSMFrame = LabelFrame(self.sensorDataTab, text='Drive State FSM')
 		driveFSMFrame.pack(padx=2, pady=2, fill=BOTH, expand=False)
-		driveFSMNodes = Config.get('drive_states')
+		driveFSMNodes = config.get('drive_states')
 		for node in driveFSMNodes:
 			label = Label(driveFSMFrame, text=node, anchor='center', relief=GROOVE, background='dodger blue')
 			label.pack(side='left', padx=15, pady=10, fill=BOTH, expand=True)
@@ -101,7 +102,7 @@ class SCADA_GUI(Frame):
 		self.sloopSystemLabels = {}
 		self.sloopSystemFrame = LabelFrame(self.sloopFrame, text='Systems')
 		self.sloopSystemFrame.pack(side='top', padx=2, pady=2, fill=BOTH, expand=True)
-		self.sloopSystems = Config.get('sloop_systems')
+		self.sloopSystems = config.get('sloop_systems')
 		for system in self.sloopSystems:
 			label = Label(self.sloopSystemFrame, text=system, anchor='center', relief=GROOVE, background='salmon')
 			label.pack(side='left', padx=15, pady=10, fill=BOTH, expand=True)
@@ -109,7 +110,7 @@ class SCADA_GUI(Frame):
 		self.sloopNodeLabels = {}
 		self.sloopNodeFrame = LabelFrame(self.sloopFrame, text='Nodes')
 		self.sloopNodeFrame.pack(side='bottom', padx=2, pady=2, fill=BOTH, expand=True)
-		self.sloopNodes = Config.get('sloop_nodes')
+		self.sloopNodes = config.get('sloop_nodes')
 		for node in self.sloopNodes:
 			label = Label(self.sloopNodeFrame, text=node, anchor='center', relief=GROOVE, background='green2')
 			label.pack(side='left', padx=15, pady=10, fill=BOTH, expand=True)
@@ -147,7 +148,7 @@ class SCADA_GUI(Frame):
 	def init_tab_scadaConfigFile(self):
 		self.configScrolledText = tk_ScrolledText.ScrolledText(self.scadaConfigTab)
 		self.configScrolledText.pack(padx=10, pady=10, fill=BOTH, expand=True)
-		self.configScrolledText.insert(INSERT, Config.string_dump())
+		self.configScrolledText.insert(INSERT, config.string_dump())
 		self.configScrolledText.config(state=DISABLED)
 		logging.info('Init SCADA Config tab complete')
 
