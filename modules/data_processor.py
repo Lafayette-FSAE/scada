@@ -9,7 +9,6 @@ import calibration_utils
 
 import config
 
-
 bus = can.interface.Bus(bustype='socketcan', channel='vcan0', bitrate='125000')
 
 """

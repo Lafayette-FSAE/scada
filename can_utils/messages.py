@@ -53,6 +53,12 @@ def sdo_read(node_id, index, subindex=0xFF):
 
 	return can_message('SDO-READ', node_id, data)
 
+def sdo_response(node_id, index, subindex, data):
+	command_byte = 0x00 
+	data = [command_byte] + index + [subindex] + [0x00, 0x00, 0x00, data]
+
+	return can_message('SDO-WRITE', node_id, data)
+
 def sdo_write(node_id, index, subindex=0xFF, value=0):
 	command_byte = 0x00
 	data = [command_byte] + index + [subindex] + [0x00, 0x00, 0x00, hex(value)]
