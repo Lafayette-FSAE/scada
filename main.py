@@ -1,9 +1,10 @@
 import sys
 import can
-import yaml
-
 import can_utils
 import config
+import logging
+import scada_logger
+
 
 
 bus = can_utils.bus(config.get('bus_info'))
@@ -55,6 +56,41 @@ read = can_utils.messages.sdo_read(node_id=2, index=[0x30, 0x01], subindex=0x02)
 master_bus = can_utils.bus(config.get('bus_info'))
 master_bus.send_periodic(sync, .1)
 
-for msg in bus:
-	# print(msg.arbitration_id)
-	pass
+
+# \/				   \/
+# \/  GUI Integration  \/
+# \/				   \/
+
+
+from scada_gui import SCADA_GUI
+from time import strftime
+
+app = SCADA_GUI()
+scada_logger.set_text_window(app.scadaLogScrolledText)
+
+app.sensorValues.get('GLV').get('Voltage').set('24 V') # Test changing a value
+logging.info('Set GLV Voltage to 24 V')
+
+test_value = 10
+
+class GUIListener(can.Listener):
+	def __init__(self, node_id):
+		self.node_id = node_id
+
+	def on_message_received(self, msg):
+		global test_value
+		function, node_id = can_utils.messages.get_info(msg)
+		if function == 'PDO' and node_id == 3:
+			print(int(msg.data[4]))
+			test_value = int(msg.data[4])
+
+guiListener = GUIListener(node_id=6)
+notifier.add_listener(guiListener)
+
+while app.running:
+	app.sensorValues.get('TSI').get('HV Current').set('{} A'.format(test_value))
+	app.timeValue.set(strftime('%D  %I:%M:%S %p'))
+	app.update_idletasks()
+	app.update()
+
+app.destroy()
