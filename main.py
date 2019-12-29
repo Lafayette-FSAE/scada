@@ -3,34 +3,26 @@ import can
 import yaml
 
 import can_utils
-
-config = {}
-
-# read config from config.yaml file
-with open("config.yaml", 'r') as stream:
-	try:
-		config = yaml.safe_load(stream)
-	except yaml.YAMLError as exc:
-		print(exc)
+import config
 
 
 bus = can.interface.Bus(bustype='socketcan', channel='vcan0', bitrate='125000')
 notifier = can.Notifier(bus, [])
 
-if(config['emulate_nodes']):
+if(config.get('emulate_nodes')):
 
 	# append emulators directory to include path
 	sys.path.append('emulators')
 
 	# check which emulators are enabled
-	if(config['emulate_tsi']):
+	if(config.get('emulate_tsi')):
 		import tsi_emulator
 
 		tsi = tsi_emulator.Listener(node_id=3)
 		notifier.add_listener(tsi)
 
 
-	if(config['emulate_packs']):
+	if(config.get('emulate_packs')):
 		import ams_emulator
 
 		pack1 = ams_emulator.Listener(node_id=2)
@@ -39,10 +31,10 @@ if(config['emulate_nodes']):
 		pack2 = ams_emulator.Listener(node_id=1)
 		notifier.add_listener(pack2)
 
-	if(config['emulate_cockpit']):
+	if(config.get('emulate_cockpit')):
 		pass
 
-	if(config['emulate_motorcontroller']):
+	if(config.get('emulate_motorcontroller')):
 		pass
 
 
