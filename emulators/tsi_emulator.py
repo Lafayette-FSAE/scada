@@ -1,5 +1,7 @@
 import can
 
+import can_utils
+
 from can_utils import object_dictionary
 from can_utils import messages
 
