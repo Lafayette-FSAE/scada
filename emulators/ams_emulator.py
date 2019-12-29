@@ -3,7 +3,10 @@ import can_utils
 
 import config
 
-bus = can.interface.Bus(bustype='socketcan', channel='vcan0', bitrate='125000')
+# bus = can.interface.Bus(bustype='socketcan', channel='vcan0', bitrate='125000')
+# bus = can.interface.Bus('main', bustype='virtual')
+
+bus = can_utils.bus(config.get('bus_info'))
 
 od = can_utils.ObjectDictionary()
 
@@ -57,17 +60,19 @@ od.set_pdo_map(['AMBIENT_TEMP', 'VOLTAGE', 'TS_CURRENT'])
 def update():
 	pass
 
-
 class Listener(can.Listener):
 	def __init__(self, node_id):
 		self.node_id = node_id
 
 	def on_message_received(self, msg):
 
+		print('msg received')
+
 		function, node = can_utils.messages.get_info(msg)
 
 		# sync
 		if function == 'SYNC':
+			print('test')
 			update()			
 
 		# sdo read

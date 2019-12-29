@@ -11,7 +11,7 @@ od = object_dictionary.ObjectDictionary()
 
 # TODO: needs cleaner import syntax
 
-bus = can.interface.Bus(bustype='socketcan', channel='vcan0', bitrate='125000')
+bus = can_utils.bus(config.get('bus_info'))
 
 
 pdo = config.get('tsi_pdo')

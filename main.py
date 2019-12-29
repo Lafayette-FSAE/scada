@@ -6,7 +6,7 @@ import can_utils
 
 import config
 
-bus = can_utils.get_bus(config.get('bus_info')['bustype'])
+bus = can_utils.bus(config.get('bus_info'))
 notifier = can.Notifier(bus, [])
 
 if(config.get('emulate_nodes')):
@@ -52,8 +52,9 @@ sync.is_extended_id = False
 
 read = can_utils.messages.sdo_read(node_id=2, index=[0x30, 0x01], subindex=0x02)
 
-bus.send_periodic(read, 1)
-bus.send_periodic(sync, .1)
+master_bus = can_utils.bus(config.get('bus_info'))
+master_bus.send_periodic(sync, .1)
 
 for msg in bus:
+	# print(msg.arbitration_id)
 	pass

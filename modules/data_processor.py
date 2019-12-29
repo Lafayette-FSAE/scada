@@ -9,7 +9,7 @@ import calibration_utils
 
 import config
 
-bus = can.interface.Bus(bustype='socketcan', channel='vcan0', bitrate='125000')
+bus = can_utils.bus(config.get('bus_info'))
 
 """
 Reads Data from the CAN bus and performs basic processing

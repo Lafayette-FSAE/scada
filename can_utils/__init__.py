@@ -6,17 +6,29 @@ ObjectDictionary = object_dictionary.ObjectDictionary
 
 import can
 
-def get_bus(bustype):
+def bus(bus_info):
+
+	try:
+		bustype = bus_info['bustype']
+	except:
+		return
+
 
 	if bustype == 'virtual':
-		return can.interface.Bus('main', bustype='virtual')
+		return can.interface.Bus('main', bustype=bustype)
 
-	elif bustype == 'vcan':
-		return can.interface.Bus(bustype='socketcan', channel='vcan0', bitrate=125000)
+	elif bustype == 'socketcan':
+		return can.interface.Bus(bustype='socketcan', channel=bus_info['channel'], bitrate=bus_info['bitrate'])
 
-	elif bustype == 'can':
-		return can.interface.Bus(bustype='socketcan', channel='can0', bitrate=125000)
+	# if bustype == 'virtual':
+	# 	return can.interface.Bus('main', bustype='virtual')
 
-	else:
-		print("bustype must be either 'virtual', 'vcan', or 'can'")
-		pass
+	# elif bustype == 'vcan':
+	# 	return can.interface.Bus(bustype='socketcan', channel='vcan0', bitrate=125000)
+
+	# elif bustype == 'can':
+	# 	return can.interface.Bus(bustype='socketcan', channel='can0', bitrate=125000)
+
+	# else:
+	# 	print("bustype must be either 'virtual', 'vcan', or 'can'")
+	# 	pass
