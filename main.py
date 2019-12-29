@@ -68,14 +68,14 @@ from time import strftime
 app = SCADA_GUI()
 scada_logger.set_text_window(app.scadaLogScrolledText)
 
-app.sensorValues.get('GLV').get('Voltage').set('24 V') # Test changing a value
-logging.info('Set GLV Voltage to 24 V')
+app.set_value('GLV', 'Voltage', '24 V') # Test changing a value
 
 test_value = 10
 
 class GUIListener(can.Listener):
-	def __init__(self, node_id):
+	def __init__(self, node_id, gui):
 		self.node_id = node_id
+		self.gui = gui
 
 	def on_message_received(self, msg):
 		global test_value
@@ -84,11 +84,11 @@ class GUIListener(can.Listener):
 			# print(int(msg.data[4]))
 			test_value = int(msg.data[4])
 
-guiListener = GUIListener(node_id=6)
+guiListener = GUIListener(node_id=6, gui=app)
 notifier.add_listener(guiListener)
 
 while app.running:
-	app.sensorValues.get('TSI').get('HV Current').set('{} A'.format(test_value))
+	app.set_value('TSI', 'HV Current', '{} A'.format(test_value))
 	app.timeValue.set(strftime('%D  %I:%M:%S %p'))
 	app.update_idletasks()
 	app.update()

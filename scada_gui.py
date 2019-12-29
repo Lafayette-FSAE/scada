@@ -21,17 +21,17 @@ class SCADA_GUI(Frame):
 		self.master.title('pySCADA')
 		# self.master.geometry('1280x720')
 		self.master.resizable(0, 0)
-		self.master.protocol('WM_DELETE_WINDOW', self.quit_scada)
+		self.master.protocol('WM_DELETE_WINDOW', self.quit_scada) # Calls the quit_scada function when the window is closed
 
 		# Configure tabs
 		tabsParent = Notebook(self.master)
-		self.sensorDataTab = Frame(tabsParent)
+		self.sensorDataTab = Frame(tabsParent)	# Create a frame for each tab
 		self.liveChartTab = Frame(tabsParent)
 		self.systemConfigTab = Frame(tabsParent)
 		self.canDumpTab = Frame(tabsParent)
 		self.scadaLogTab = Frame(tabsParent)
 		self.scadaConfigTab = Frame(tabsParent)
-		tabsParent.add(self.sensorDataTab, text='Sensor Data')
+		tabsParent.add(self.sensorDataTab, text='Sensor Data')	# Add each tab's frame to the notebook
 		tabsParent.add(self.liveChartTab, text='Live Charts')
 		tabsParent.add(self.systemConfigTab, text='Config System')
 		tabsParent.add(self.canDumpTab, text='CAN Dump')
@@ -40,7 +40,8 @@ class SCADA_GUI(Frame):
 		tabsParent.pack(side='top', fill=BOTH, expand=True)
 
 		# Dictionaries that will need to be altered over time
-		self.sensorValues = {}
+		self.sensorValueVars = {}
+		self.sensorValueLabels = {}
 		self.driveFSMLabels = {}
 		self.sloopSystemLabels = {}
 		self.sloopNodeLabels = {}
@@ -74,7 +75,8 @@ class SCADA_GUI(Frame):
 			frame.pack(side='left', padx=5, pady=10, fill=Y, expand=True)
 			i = 0
 			maxWidth = 0
-			labelValueDict = {}
+			valueVarDict = {}
+			valueLabelDict = {}
 			for sensor in sensorGroups[group]:
 				length = len(sensor)
 				if length > maxWidth:
@@ -86,9 +88,11 @@ class SCADA_GUI(Frame):
 				labelVar.set('--')
 				valueLabel = Label(frame, textvariable=labelVar, width=6, anchor='center', background='light blue')
 				valueLabel.grid(row=i, column=1, padx=5, pady=5)
-				labelValueDict[sensor] = labelVar
+				valueVarDict[sensor] = labelVar
+				valueLabelDict[sensor] = valueLabel
 				i = i + 1
-			self.sensorValues[group] = labelValueDict
+			self.sensorValueVars[group] = valueVarDict
+			self.sensorValueLabels[group] = valueLabelDict
 
 		driveFSMFrame = LabelFrame(self.sensorDataTab, text='Drive State FSM')
 		driveFSMFrame.pack(padx=2, pady=2, fill=BOTH, expand=False)
@@ -160,6 +164,11 @@ class SCADA_GUI(Frame):
 		self.configScrolledText.config(state=DISABLED)
 		logging.info('Init SCADA Config tab complete')
 
+
+	# Updates a sensor value
+	def set_value(self, group, sensor, value):
+		self.sensorValueVars.get(group).get(sensor).set(value)
+		logging.info('Sensor Update: {} - {}, {}'.format(group, sensor, value))
 
 	# Quits SCADA
 	def quit_scada(self):
