@@ -172,10 +172,12 @@ class SCADA_GUI(Frame):
 
 # \/ Eventually moved to the main.py file or something \/
 
+app = SCADA_GUI()
+
 # SCADA's main method
 def main():
 	logger = SCADALogger()
-	app = SCADA_GUI()
+	# global app = SCADA_GUI()
 	logger.setTextWindow(app.scadaLogScrolledText)
 	app.sensorValues.get('GLV').get('Voltage').set('24 V') # Test changing a value
 	logging.info('Set GLV Voltage to 24 V')
@@ -184,6 +186,26 @@ def main():
 		app.update_idletasks()
 		app.update()
 	app.destroy()
+
+
+import can
+class Listener(can.Listener):
+	def __init__(self, node_id):
+		# self.bus = bus
+		self.node_id = node_id
+
+	def on_message_received(self, msg):
+		print('test')
+		app.sensorValues.get('GLV').get('Voltage').set(msg.arbitration_id)
+
+		# if app.running:
+		# 	app.update_idletasks()
+		# 	app.update()
+
+		# else:
+		# 	app.destroy()
+
+		pass
 
 
 if __name__ == '__main__':
