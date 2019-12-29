@@ -70,7 +70,7 @@ class SCADA_GUI(Frame):
 	def init_tab_sensorData(self):
 		sensorInfoFrame = LabelFrame(self.sensorDataTab, text='Sensors')
 		sensorInfoFrame.pack(padx=2, pady=2, fill=Y, expand=True)
-		sensorGroups = config.get('sensors')
+		sensorGroups = config.get('GUI').get('Sensors')
 		for group in sensorGroups:
 			frame = LabelFrame(sensorInfoFrame, text=group)
 			frame.pack(side='left', padx=5, pady=10, fill=Y, expand=True)
@@ -94,7 +94,7 @@ class SCADA_GUI(Frame):
 
 		driveFSMFrame = LabelFrame(self.sensorDataTab, text='Drive State FSM')
 		driveFSMFrame.pack(padx=2, pady=2, fill=BOTH, expand=False)
-		driveFSMNodes = config.get('drive_states')
+		driveFSMNodes = config.get('GUI').get('Drive States')
 		for node in driveFSMNodes:
 			frame = Frame(driveFSMFrame, height=30, width=0)
 			frame.pack(side='left', padx=10, pady=10, fill=BOTH, expand=True)
@@ -107,7 +107,7 @@ class SCADA_GUI(Frame):
 		sloopFrame.pack(padx=2, pady=2, fill=BOTH, expand=False)
 		sloopSystemFrame = LabelFrame(sloopFrame, text='Systems')
 		sloopSystemFrame.pack(side='top', padx=2, pady=2, fill=BOTH, expand=True)
-		sloopSystems = config.get('sloop_systems')
+		sloopSystems = config.get('GUI').get('Safety Loop Systems')
 		for system in sloopSystems:
 			frame = Frame(sloopSystemFrame, height=30, width=0)
 			frame.pack(side='left', padx=10, pady=10, fill=BOTH, expand=True)
@@ -117,7 +117,7 @@ class SCADA_GUI(Frame):
 			self.sloopSystemLabels[system] = label
 		sloopNodeFrame = LabelFrame(sloopFrame, text='Nodes')
 		sloopNodeFrame.pack(side='bottom', padx=2, pady=2, fill=BOTH, expand=True)
-		sloopNodes = config.get('sloop_nodes')
+		sloopNodes = config.get('GUI').get('Safety Loop Nodes')
 		for node in sloopNodes:
 			frame = Frame(sloopNodeFrame, height=30, width=0)
 			frame.pack(side='left', padx=10, pady=10, fill=BOTH, expand=True)
