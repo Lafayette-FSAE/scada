@@ -1,10 +1,8 @@
 from tkinter import *
 from tkinter.ttk import *
 import tkinter.scrolledtext as tk_ScrolledText
-from time import strftime
 import config
 import logging
-import scada_logger
 
 # Define a class to implement the SCADA App and GUI
 # Inherits from a Tkinter Frame
@@ -170,11 +168,16 @@ class SCADA_GUI(Frame):
 
 
 
-# \/ Eventually moved to the main.py file or something \/
 
-# SCADA's main method
+# \/   		   \/
+# \/  Testing  \/
+# \/  		   \/
+
+
 def main():
-	
+	import scada_logger
+	from time import strftime
+
 	app = SCADA_GUI()
 	scada_logger.set_text_window(app.scadaLogScrolledText)
 	
