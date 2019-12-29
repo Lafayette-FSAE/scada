@@ -1,4 +1,7 @@
-bustype: virtual
+bus_info:
+  bustype: virtual
+  channel: vcan0
+  bitrate: 125000
 
 emulate_nodes: yes
 

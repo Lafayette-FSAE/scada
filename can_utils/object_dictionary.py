@@ -39,7 +39,7 @@ class ObjectDictionary():
 		self.add_key('TPDO1_05', 0x1A00, 0x05)
 		self.add_key('TPDO1_06', 0x1A00, 0x06)
 		self.add_key('TPDO1_07', 0x1A00, 0x07)
-		self.add_key('TPDO1_08', 0x1A00, 0x07)
+		self.add_key('TPDO1_08', 0x1A00, 0x08)
 
 	def __str__(self):
 		output = ''

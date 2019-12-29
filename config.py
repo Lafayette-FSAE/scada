@@ -1,7 +1,6 @@
 import yaml
 import logging
 
-
 __config = {}
 __loaded = False
 
