@@ -81,7 +81,7 @@ class GUIListener(can.Listener):
 		global test_value
 		function, node_id = can_utils.messages.get_info(msg)
 		if function == 'PDO' and node_id == 3:
-			print(int(msg.data[4]))
+			# print(int(msg.data[4]))
 			test_value = int(msg.data[4])
 
 guiListener = GUIListener(node_id=6)

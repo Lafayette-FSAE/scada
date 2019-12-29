@@ -66,13 +66,10 @@ class Listener(can.Listener):
 
 	def on_message_received(self, msg):
 
-		print('msg received')
-
 		function, node = can_utils.messages.get_info(msg)
 
 		# sync
 		if function == 'SYNC':
-			print('test')
 			update()			
 
 		# sdo read
