@@ -81,61 +81,60 @@ gui:
 web_server:
   enable: no
 
-# All sensors that will report to SCADA, divided into top-level groups
-sensors:
-  GLV:
-    - Voltage
-    - Current
-    - Power
-    - Temp
-  TSI:
-    - High Voltage
-    - HV Current
-  Cooling:
-    - Temp1
-    - Temp2
-    - Flow Rate
-    - Pump
-    - Fan
-  Motor Controller:
-    - Voltage
-    - Motor Temp
-    - RPM
-    - Velocity
-  Pack 1:
-    - Voltage
-    - Current
-    - Ambient Temp
-    - Charge Current
-  Pack 2:
-    - Voltage
-    - Current
-    - Ambient Temp
-    - Charge Current
 
-# List of car drive states that are in the state FSM
-drive_states:
-  - GLV Off
-  - GLV On
-  - Precharge
-  - TS Energized
-  - Ready to Drive
-  - AMS Fault
-  - IMD Fault
-  - Brake Overtravel
+# \/                             \/
+# \/  GUI Configuration Options  \/
+# \/                             \/
 
-# All nodes on the safety loop that are measurable and reportable to SCADA
-sloop_nodes:
-  - TSI, S1
-  - TSI, S2
-  - Pack 1, S1
-  - Pack 1, S2
-  - Pack 2, S1
-  - Pack 2, S2
-
-# All digital systems that can open the safety loop
-sloop_systems:
-  - TSI
-  - Pack 1
-  - Pack 2
-  - SCADA
+GUI:
+  Sensors: # All sensors that will report to SCADA, divided into top-level groups
+    GLV:
+      - Voltage
+      - Current
+      - Power
+      - Temp
+    TSI:
+      - High Voltage
+      - HV Current
+    Cooling:
+      - Temp1
+      - Temp2
+      - Flow Rate
+      - Pump
+      - Fan
+    Motor Controller:
+      - Voltage
+      - Motor Temp
+      - RPM
+      - Velocity
+    Pack 1:
+      - Voltage
+      - Current
+      - Ambient Temp
+      - Charge Current
+    Pack 2:
+      - Voltage
+      - Current
+      - Ambient Temp
+      - Charge Current
+  Drive States: # List of car drive states that are in the state FSM
+    - GLV Off
+    - GLV On
+    - Precharge
+    - TS Energized
+    - Ready to Drive
+    - AMS Fault
+    - IMD Fault
+    - Brake Overtravel
+  Safety Loop Systems: # All digital systems that can open the safety loop
+    - TSI
+    - Pack 1
+    - Pack 2
+    - SCADA
+  Safety Loop Nodes: # All nodes on the safety loop that are measurable and reportable to SCADA
+    - TSI, S1
+    - TSI, S2
+    - Pack 1, S1
+    - Pack 1, S2
+    - Pack 2, S1
+    - Pack 2, S2
