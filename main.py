@@ -3,8 +3,8 @@ import can
 import yaml
 
 import can_utils
-
 import config
+
 
 bus = can_utils.bus(config.get('bus_info'))
 notifier = can.Notifier(bus, [])

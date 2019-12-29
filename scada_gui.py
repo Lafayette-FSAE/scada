@@ -4,7 +4,7 @@ import tkinter.scrolledtext as tk_ScrolledText
 from time import strftime
 import config
 import logging
-from scada_logger import SCADALogger
+import scada_logger
 
 # Define a class to implement the SCADA App and GUI
 # Inherits from a Tkinter Frame
@@ -174,15 +174,18 @@ class SCADA_GUI(Frame):
 
 # SCADA's main method
 def main():
-	logger = SCADALogger()
+	
 	app = SCADA_GUI()
-	logger.setTextWindow(app.scadaLogScrolledText)
+	scada_logger.set_text_window(app.scadaLogScrolledText)
+	
 	app.sensorValues.get('GLV').get('Voltage').set('24 V') # Test changing a value
 	logging.info('Set GLV Voltage to 24 V')
+	
 	while app.running:
 		app.timeValue.set(strftime('%D  %I:%M:%S %p'))
 		app.update_idletasks()
 		app.update()
+	
 	app.destroy()
 
 

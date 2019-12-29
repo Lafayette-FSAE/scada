@@ -5,21 +5,6 @@ import tkinter.scrolledtext as tk_ScrolledText
 import queue
 
 
-class SCADALogger():
-	def __init__(self):
-		logging.basicConfig(filename='scada_log.txt', filemode='w', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
-		self.formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%I:%M:%S %p')
-		self.logQueue = queue.Queue()
-		self.handler = SCADALoggingHandler(None, self.logQueue)
-		self.handler.setFormatter(self.formatter)
-		self.logger = logging.getLogger()
-		self.logger.addHandler(self.handler)
-		logging.info('Logging initialized')
-
-	def setTextWindow(self, textWindow=None):
-		self.handler.setTextWindow(textWindow)
-
-
 class SCADALoggingHandler(logging.Handler):
 	def __init__(self, textWindow=None, msgQueue=None):
 		logging.Handler.__init__(self)
@@ -40,5 +25,22 @@ class SCADALoggingHandler(logging.Handler):
 			self.textWindow.configure(state='disabled')
 			self.textWindow.yview(END)
 
-	def setTextWindow(self, textWindow=None):
+	def set_window(self, textWindow=None):
 		self.textWindow = textWindow
+
+
+logging.basicConfig(filename='scada_log.txt', filemode='w', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+
+logQueue = queue.Queue()
+handler = SCADALoggingHandler(msgQueue=logQueue)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%I:%M:%S %p')
+handler.setFormatter(formatter)
+
+rootLogger = logging.getLogger()
+rootLogger.addHandler(handler)
+
+logging.info('Logging initialized')
+
+
+def set_text_window(textWindow=None):
+	handler.set_window(textWindow)
