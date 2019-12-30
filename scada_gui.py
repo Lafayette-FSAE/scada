@@ -174,38 +174,29 @@ class SCADA_GUI(Frame):
 
 app = SCADA_GUI()
 
+import can_utils
+
+data = {}
+
+data[('TSI', 'CURRENT')] = 3
 # SCADA's main method
 def main():
+	global data
+
 	logger = SCADALogger()
 	# global app = SCADA_GUI()
 	logger.setTextWindow(app.scadaLogScrolledText)
 	app.sensorValues.get('GLV').get('Voltage').set('24 V') # Test changing a value
 	logging.info('Set GLV Voltage to 24 V')
 	while app.running:
+
+		val = data[('TSI', 'CURRENT')]
+		app.sensorValues.get('TSI').get('HV Current').set('{} A'.format(val))
+
 		app.timeValue.set(strftime('%D  %I:%M:%S %p'))
 		app.update_idletasks()
 		app.update()
 	app.destroy()
-
-
-import can
-class Listener(can.Listener):
-	def __init__(self, node_id):
-		# self.bus = bus
-		self.node_id = node_id
-
-	def on_message_received(self, msg):
-		print('test')
-		app.sensorValues.get('GLV').get('Voltage').set(msg.arbitration_id)
-
-		# if app.running:
-		# 	app.update_idletasks()
-		# 	app.update()
-
-		# else:
-		# 	app.destroy()
-
-		pass
 
 
 if __name__ == '__main__':
