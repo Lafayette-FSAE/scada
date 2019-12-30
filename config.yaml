@@ -88,9 +88,9 @@ GUI:
       - RPM
       - Velocity
     Pack 1:
-      - SOC
-      - Voltage
-      - Current
+      - [ SOC, 'PACK1: SOC_1', '%' ]
+      - [ Voltage, 'PACK1: VOLTAGE', V ]
+      - [ Current, 'PACK1: TS_CURRENT', A ]
       - [ Ambient Temp, 'PACK1: AMBIENT_TEMP', C ]
       - Charge Current
     Pack 2:

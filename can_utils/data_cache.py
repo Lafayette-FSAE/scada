@@ -7,8 +7,10 @@ def get(node, key=None):
 	if key == None:
 		if type(node) == str:
 			node, key = node.split(': ', 1)
-			print(node)
-			print(key)
+			# print(node)
+			# print(key)
+			# print(__data[(node, key)])
+			# print('{}, {}, {}'.format(node, key, __data[(node, key)]))
 
 	try:
 		value, timestamp = __data[(node, key)]

@@ -81,10 +81,11 @@ def update_sensors():
 				
 				label, data_key, unit = sensor
 
-				print(data_key)
-
 				data = can_utils.data_cache.get(data_key)
-				app.set_value(sensor_group_key, label, '{} {}'.format(data, unit))
+				if data == None:
+					app.set_value(sensor_group_key, label, '--')
+				else:
+					app.set_value(sensor_group_key, label, '{} {}'.format(data, unit))
 
 	# app.set_value('TSI', 'TS Voltage', '{} V'.format(can_utils.data_cache.get('TSI', 'TS_VOLTAGE')))
 	# app.set_value('TSI', 'TS Current', '{} A'.format(can_utils.data_cache.get('TSI', 'TS_CURRENT')))
