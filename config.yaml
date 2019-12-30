@@ -24,41 +24,16 @@ can_nodes:
 #       list has less than 8 elements, the remaining
 #       bytes will be ignored
 
-TSI_pdo:
-  - COOLING_TEMP_1
-  - COOLING_TEMP_2
-  - FLOWRATE
-  - STATE
-  - TS_CURRENT
-  - TS_VOLTAGE
-
-PACK1_pdo:
-  - VOLTAGE
-  - SOC_1
-  - SOC_2
-  - AMBIENT_TEMP
-  - CELL_01_TEMP
-
-PACK2_pdo:
-  - VOLTAGE
-  - SOC_1
-  - SOC_2
-  - AMBIENT_TEMP
-  - CELL_01_TEMP
-
-
-# NOTE: make sure that there is a calibration function
-#       defined for every item listed here
-
-data_processor_pdo:
-  - TS_POWER           # Sum of each pack voltage
-  # - PackTemp_Farenheit  # pack1 temperature in farenheit
-  # - tsi - flowrate
+process_data:
+  TSI:    [ COOLING_TEMP_1, COOLING_TEMP_2, FLOWRATE, STATE, TS_CURRENT, TS_VOLTAGE ]
+  PACK1:  [ VOLTAGE, SOC_1, SOC_2, AMBIENT_TEMP, CELL_01_TEMP ]
+  PACK2:  [ VOLTAGE, SOC_1, SOC_2, AMBIENT_TEMP, CELL_01_TEMP ]
+  SCADA:  [ TS_POWER ]
 
 
 # Other data to keep track of
 # need to poll this data manually
-sdo_data:
+service_data:
 
   Cell1Temp:
     node_id: 2
@@ -81,20 +56,14 @@ logger:
 data_processor:
   enable: yes
 
-calibration:
-  - tsi-cal.py    # all of the tsi sensors need client-side calibration
-  - user-cal.py   # for custom properties
-
-gui:
-  enable: no
-
-web_server:
-  enable: no
-
 
 # \/                             \/
 # \/  GUI Configuration Options  \/
 # \/                             \/
+
+# NOTE: if sensor is string, it is ignored during update loop
+#       if sensor is a list treat first value as the label,
+#       second value as the data key, and third value as the unit
 
 GUI:
   Sensors: # All sensors that will report to SCADA, divided into top-level groups
@@ -104,9 +73,9 @@ GUI:
       - Power
       - Temp
     TSI:
-      - TS Voltage
-      - TS Current
-      - TS Power
+      - [ TS Voltage, 'TSI: TS_VOLTAGE', V ]
+      - [ TS Current, 'TSI: TS_CURRENT', A ]
+      - [ TS Power, 'SCADA: TS_POWER', kW ]
     Cooling:
       - Temp1
       - Temp2
@@ -122,7 +91,7 @@ GUI:
       - SOC
       - Voltage
       - Current
-      - Ambient Temp
+      - [ Ambient Temp, 'PACK1: AMBIENT_TEMP', C ]
       - Charge Current
     Pack 2:
       - SOC

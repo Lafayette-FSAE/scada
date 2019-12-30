@@ -6,7 +6,7 @@ __calibration_functions = {}
 # Decorator that adds a function to the list of calibration functions
 # with the given target and arguments
 def cal_function(target, requires):
-	
+
 	def inner(function):
 		__calibration_functions[target] = (function, requires)
 		return function
@@ -37,9 +37,11 @@ def process(target):
 
 	for key in requires:
 
-		# print(key)
+		if type(key) == str:
+			node, name = key.split(': ', 1)
 
-		node, name = key
+		else:
+			node, name = key
 
 		try:
 			argument = data.get(node, name)

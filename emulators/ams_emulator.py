@@ -57,8 +57,7 @@ od.add_key('CELL_14_VOLTAGE', index=0x3004, subindex=0x05)
 od.add_key('CELL_15_VOLTAGE', index=0x3004, subindex=0x06)
 od.add_key('CELL_16_VOLTAGE', index=0x3004, subindex=0x07)
 
-# od.set_pdo_map(['AMBIENT_TEMP', 'VOLTAGE', 'TS_CURRENT', 'STATE_OF_CHARGE'])
-od.set_pdo_map(config.get('PACK1_pdo'))
+od.set_pdo_map(config.get('process_data')['PACK1'])
 
 time = 0
 maxval = 85

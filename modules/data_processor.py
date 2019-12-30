@@ -1,13 +1,11 @@
-import yaml
+import config
 
 import can
 import can_utils
-
 from can_utils import messages
 
 import calibration_utils
-
-import config
+import user_cal
 
 bus = can_utils.bus(config.get('bus_info'))
 
@@ -19,14 +17,7 @@ Writes processed data back to CAN bus as a PDO
 
 """
 
-import user_cal
-import tsi_cal
-
-# input_data = {}
-output_data = {}
-errors = {}
-
-pdo_structure = config.get('data_processor_pdo')
+pdo_structure = config.get('process_data')['SCADA']
 
 def update():
 	"""
@@ -37,32 +28,26 @@ def update():
 
 	"""
 
-	# output_data = calibration_utils.process_all(targets=pdo_structure)
-
-
 	for target in calibration_utils.targets():
 		err, result = calibration_utils.process(target)
-		print(result, target)
 		if err:
 			print("Error: {}".format(err))
 			break
 
 		can_utils.data_cache.set('SCADA', target, result)
 
-
-
-	data = []
+def generate_pdo():
+	output = []
 
 	for key in pdo_structure:
 		try:
-			data.append(int(output_data[key]))
+			value = can_utils.data_cache.get('SCADA', key)
+			ouptut.append(value)
 		except:
-			data.append(0x00)
+			output.append(0x00)
 
-	message = messages.pdo(4, data)
-	bus.send(message)
-
-
+	message = messages.pdo(4, output)
+	return message
 
 class Listener(can.Listener):
 	def __init__(self, node_id):
@@ -74,7 +59,9 @@ class Listener(can.Listener):
 
 		if function == 'SYNC':
 			update()
-			pass
+			pdo = generate_pdo()
+
+			bus.send(pdo)
 
 		if function == 'PDO':
 
@@ -83,7 +70,7 @@ class Listener(can.Listener):
 			except:
 				return
 
-			pdo_structure = config.get('{}_pdo'.format(node))
+			pdo_structure = config.get('process_data')[node]
 
 			for index, byte in enumerate(msg.data, start=0):
 				try:

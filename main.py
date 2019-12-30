@@ -70,15 +70,31 @@ scada_logger.set_text_window(app.scadaLogScrolledText)
 app.set_value('GLV', 'Voltage', '24 V') # Test changing a value
 
 def update_sensors():
-	app.set_value('TSI', 'TS Voltage', '{} V'.format(can_utils.data_cache.get('TSI', 'TS_VOLTAGE')))
-	app.set_value('TSI', 'TS Current', '{} A'.format(can_utils.data_cache.get('TSI', 'TS_CURRENT')))
-	app.set_value('TSI', 'TS Power', '{} kW'.format(can_utils.data_cache.get('SCADA', 'TS_POWER')))
-	app.set_value('Pack 1', 'Voltage', '{} V'.format(can_utils.data_cache.get('PACK1', 'VOLTAGE')))
-	app.set_value('Pack 2', 'Voltage', '{} V'.format(can_utils.data_cache.get('PACK2', 'VOLTAGE')))
-	app.set_value('Pack 1', 'Ambient Temp', '{} C'.format(can_utils.data_cache.get('PACK1', 'AMBIENT_TEMP')))
-	app.set_value('Pack 2', 'Ambient Temp', '{} C'.format(can_utils.data_cache.get('PACK2', 'AMBIENT_TEMP')))
-	app.set_value('Pack 1', 'SOC', '{}%'.format(can_utils.data_cache.get('PACK1', 'SOC_1')))
-	app.set_value('Pack 2', 'SOC', '{}%'.format(can_utils.data_cache.get('PACK2', 'SOC_2')))
+
+	for sensor_group_key in config.get('GUI').get('Sensors'):
+		sensor_group = config.get('GUI').get('Sensors').get(sensor_group_key)
+
+		for sensor in sensor_group:
+			
+			# print(sensor)
+			if isinstance(sensor, list):
+				
+				label, data_key, unit = sensor
+
+				print(data_key)
+
+				data = can_utils.data_cache.get(data_key)
+				app.set_value(sensor_group_key, label, '{} {}'.format(data, unit))
+
+	# app.set_value('TSI', 'TS Voltage', '{} V'.format(can_utils.data_cache.get('TSI', 'TS_VOLTAGE')))
+	# app.set_value('TSI', 'TS Current', '{} A'.format(can_utils.data_cache.get('TSI', 'TS_CURRENT')))
+	# app.set_value('TSI', 'TS Power', '{} kW'.format(can_utils.data_cache.get('SCADA', 'TS_POWER')))
+	# app.set_value('Pack 1', 'Voltage', '{} V'.format(can_utils.data_cache.get('PACK1', 'VOLTAGE')))
+	# app.set_value('Pack 2', 'Voltage', '{} V'.format(can_utils.data_cache.get('PACK2', 'VOLTAGE')))
+	# app.set_value('Pack 1', 'Ambient Temp', '{} C'.format(can_utils.data_cache.get('PACK1', 'AMBIENT_TEMP')))
+	# app.set_value('Pack 2', 'Ambient Temp', '{} C'.format(can_utils.data_cache.get('PACK2', 'AMBIENT_TEMP')))
+	# app.set_value('Pack 1', 'SOC', '{}%'.format(can_utils.data_cache.get('PACK1', 'SOC_1')))
+	# app.set_value('Pack 2', 'SOC', '{}%'.format(can_utils.data_cache.get('PACK2', 'SOC_2')))
 
 class GUIListener(can.Listener):
 	def __init__(self, node_id):

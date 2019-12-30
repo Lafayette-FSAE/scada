@@ -85,6 +85,11 @@ class ObjectDictionary():
 
 		self.set(key, value)
 
+	def add_keys(self, keys):
+
+		for key in keys:
+			self.add_key(key)
+
 	def set_pdo_map(self, property_list, pdo_number=1):
 		pdo_length = len(property_list)
 

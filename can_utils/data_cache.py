@@ -2,12 +2,14 @@ import time
 
 __data = {}
 
-nodes = {
-	'TSI': 3,
-}
+def get(node, key=None):
 
+	if key == None:
+		if type(node) == str:
+			node, key = node.split(': ', 1)
+			print(node)
+			print(key)
 
-def get(node, key):
 	try:
 		value, timestamp = __data[(node, key)]
 		return value

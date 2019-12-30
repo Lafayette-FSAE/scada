@@ -77,11 +77,19 @@ class SCADA_GUI(Frame):
 			maxWidth = 0
 			valueVarDict = {}
 			valueLabelDict = {}
+
 			for sensor in sensorGroups[group]:
+				if isinstance(sensor, list):
+					sensor = sensor[0]
+
 				length = len(sensor)
 				if length > maxWidth:
 					maxWidth = length
+
 			for sensor in sensorGroups[group]:
+				if isinstance(sensor, list):
+					sensor = sensor[0]
+
 				sensorLabel = Label(frame, text=sensor, width=maxWidth+2, anchor='w')
 				sensorLabel.grid(row=i, column=0, padx=5, pady=5)
 				labelVar = StringVar()

@@ -7,35 +7,20 @@ from can_utils import messages
 
 import config
 
-od = object_dictionary.ObjectDictionary()
-
-# TODO: needs cleaner import syntax
-
 bus = can_utils.bus(config.get('bus_info'))
 
+# Create Object Dictionary
+pdo_structure = config.get('process_data')['TSI']
 
-pdo = config.get('TSI_pdo')
-
-for key in pdo:
-	od.add_key(key)
-
-od.set_pdo_map(pdo)
-
-# od.add_key('TS_VOLTAGE')
-# od.add_key('TS_CURRENT')
-# od.add_key('TEMP1')
-# od.add_key('TEMP2')
-# od.add_key('FLOW_RATE')
-
-# od.set_pdo_map(['TS_VOLTAGE', 'TS_CURRENT', 'TEMP1', 'TEMP2', 'FLOW_RATE'])
+od = object_dictionary.ObjectDictionary()
+od.add_keys(pdo_structure)
+od.set_pdo_map(pdo_structure)
 
 maxval = 100
 def ramp(t):
 	return t % maxval
 
 time = 0
-print(time)
-
 def update():
 	global time
 
@@ -55,6 +40,8 @@ class Listener(can.Listener):
 		if function == 'SYNC':
 
 			update()
+
+			# Send Process Data
 			data = od.get_pdo_data()
 			message = messages.pdo(self.node_id, data)
 			bus.send(message)

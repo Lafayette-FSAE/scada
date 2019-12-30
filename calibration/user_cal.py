@@ -6,7 +6,7 @@ Converts ambient temp of pack1 to farenheit because it is
 easy and a good test
 
 """
-# @cal_function(target='PackTemp_Farenheit', requires=['PACK1: AMBIENT_TEMP'])
+@cal_function(target='PackTemp_Farenheit', requires=['PACK1: AMBIENT_TEMP'])
 def packtemp_farenheit(args):
 	temp, *other = args
 
@@ -28,7 +28,7 @@ Calculates Total Tractive System Voltage by adding
 the voltage reported by each pack
 
 """
-# @cal_function(target='TSVoltage', requires=['PACK1: VOLTAGE', 'PACK2: VOLTAGE'])
+@cal_function(target='TS_VOLTAGE', requires=['PACK1: VOLTAGE', 'PACK2: VOLTAGE'])
 def ts_voltage(args):
 	pack1, pack2, *other = args
 
