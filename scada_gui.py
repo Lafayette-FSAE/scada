@@ -176,9 +176,9 @@ app = SCADA_GUI()
 
 import can_utils
 
-data = {}
+# data = {}
 
-data[('TSI', 'CURRENT')] = 3
+# data[('TSI', 'CURRENT')] = 3
 # SCADA's main method
 def main():
 	global data
@@ -190,8 +190,9 @@ def main():
 	logging.info('Set GLV Voltage to 24 V')
 	while app.running:
 
-		val = data[('TSI', 'CURRENT')]
-		app.sensorValues.get('TSI').get('HV Current').set('{} A'.format(val))
+		# val = [('TSI', 'CURRENT')]
+		app.sensorValues.get('TSI').get('HV Current').set('{} A'.format(can_utils.data_cache.get('TSI', 'CURRENT')))
+		app.sensorValues.get('TSI').get('High Voltage').set('{} hundred W'.format(can_utils.data_cache.get('SCADA', 'TS_POWER')))
 
 		app.timeValue.set(strftime('%D  %I:%M:%S %p'))
 		app.update_idletasks()

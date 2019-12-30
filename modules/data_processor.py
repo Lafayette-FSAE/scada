@@ -22,7 +22,7 @@ Writes processed data back to CAN bus as a PDO
 import user_cal
 import tsi_cal
 
-input_data = {}
+# input_data = {}
 output_data = {}
 errors = {}
 
@@ -37,7 +37,19 @@ def update():
 
 	"""
 
-	output_data = calibration_utils.process_all(targets=pdo_structure, data=input_data)
+	# output_data = calibration_utils.process_all(targets=pdo_structure)
+
+
+	for target in calibration_utils.targets():
+		err, result = calibration_utils.process(target)
+		
+		if err:
+			print("Error: {}".format(err))
+			break
+
+		can_utils.data_cache.set('SCADA', target, result)
+
+
 
 	data = []
 
@@ -62,6 +74,7 @@ class Listener(can.Listener):
 
 		if function == 'SYNC':
 			update()
+			pass
 
 		if function == 'PDO':
 
@@ -70,16 +83,14 @@ class Listener(can.Listener):
 			except:
 				return
 
-			if node == 'pack1' or node == 'pack2':
-				pdo_structure = config.get('ams_pdo')
-			else:
-				pdo_structure = config.get('{}_pdo'.format(node))
+			pdo_structure = config.get('{}_pdo'.format(node))
 
 			for index, byte in enumerate(msg.data, start=0):
 				try:
-					key = '{} - {}'.format(node, pdo_structure[index])
-					input_data[key] = byte
+					can_utils.data_cache.set(node, pdo_structure[index], byte)
+
 				except:
+					print('data procecessor: error writing to cache')
 					pass
 
 

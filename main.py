@@ -73,8 +73,9 @@ class Listener(can.Listener):
 		function, node_id = can_utils.messages.get_info(msg)
 
 		if function == 'PDO' and node_id == 3:
-			print(int(msg.data[4]))
-			scada_gui.data[('TSI', 'CURRENT')] = int(msg.data[4])
+			pass
+			# print(int(msg.data[4]))
+			# scada_gui.data[('TSI', 'CURRENT')] = int(msg.data[4])
 
 
 gui = Listener(node_id=6)

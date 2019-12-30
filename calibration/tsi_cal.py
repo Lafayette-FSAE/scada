@@ -5,7 +5,7 @@ Calibrates flowrate from raw value reported by tsi
 into Liters per minute
 
 """
-@cal_function(target='tsi - flowrate', requires=['tsi - flowrate_raw'])
+# @cal_function(target='FLOWRATE', requires=['TSI: FLOWRATE_RAW'])
 def packtemp_farenheit(args):
 	flowrate_raw, *other = args
 
