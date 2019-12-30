@@ -182,9 +182,6 @@ class SCADA_GUI(Frame):
 # \/  Testing  \/
 # \/  		   \/
 
-
-import can_utils
-
 def main():
 	import scada_logger
 	from time import strftime
@@ -195,10 +192,6 @@ def main():
 	app.set_value('GLV', 'Voltage', '24 V')
 	
 	while app.running:
-
-		# val = [('TSI', 'CURRENT')]
-		app.sensorValues.get('TSI').get('HV Current').set('{} A'.format(can_utils.data_cache.get('TSI', 'CURRENT')))
-		app.sensorValues.get('TSI').get('High Voltage').set('{} hundred W'.format(can_utils.data_cache.get('SCADA', 'TS_POWER')))
 
 		app.timeValue.set(strftime('%D  %I:%M:%S %p'))
 		app.update_idletasks()

@@ -81,14 +81,16 @@ class GUIListener(can.Listener):
 		global test_value
 		function, node_id = can_utils.messages.get_info(msg)
 		if function == 'PDO' and node_id == 3:
-			# print(int(msg.data[4]))
-			test_value = int(msg.data[4])
+			# test_value = int(msg.data[4])
+			pass
 
 guiListener = GUIListener(node_id=6, gui=app)
 notifier.add_listener(guiListener)
 
 while app.running:
-	app.set_value('TSI', 'HV Current', '{} A'.format(test_value))
+
+	app.set_value('TSI', 'HV Current', '{} A'.format(can_utils.data_cache.get('TSI', 'CURRENT')))
+	app.set_value('TSI', 'High Voltage', '{} hundred W'.format(can_utils.data_cache.get('SCADA', 'TS_POWER')))
 	app.timeValue.set(strftime('%D  %I:%M:%S %p'))
 	app.update_idletasks()
 	app.update()
