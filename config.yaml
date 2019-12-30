@@ -29,22 +29,22 @@ TSI_pdo:
   - COOLING_TEMP_2
   - FLOWRATE
   - STATE
-  - CURRENT
+  - TS_CURRENT
   - TS_VOLTAGE
 
 PACK1_pdo:
-  - Cell1Temp
-  - ambient_temp
-  - state_of_charge1
-  - state_of_charge2
   - VOLTAGE
+  - SOC_1
+  - SOC_2
+  - AMBIENT_TEMP
+  - CELL_01_TEMP
 
 PACK2_pdo:
-  - Cell1Temp
-  - ambient_temp
-  - state_of_charge1
-  - state_of_charge2
   - VOLTAGE
+  - SOC_1
+  - SOC_2
+  - AMBIENT_TEMP
+  - CELL_01_TEMP
 
 
 # NOTE: make sure that there is a calibration function
@@ -104,8 +104,9 @@ GUI:
       - Power
       - Temp
     TSI:
-      - High Voltage
-      - HV Current
+      - TS Voltage
+      - TS Current
+      - TS Power
     Cooling:
       - Temp1
       - Temp2
@@ -118,11 +119,13 @@ GUI:
       - RPM
       - Velocity
     Pack 1:
+      - SOC
       - Voltage
       - Current
       - Ambient Temp
       - Charge Current
     Pack 2:
+      - SOC
       - Voltage
       - Current
       - Ambient Temp

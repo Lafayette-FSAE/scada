@@ -11,9 +11,11 @@ bus = can_utils.bus(config.get('bus_info'))
 od = can_utils.ObjectDictionary()
 
 od.add_key('AMBIENT_TEMP')
-od.add_key('VOLTAGE')
+od.add_key('VOLTAGE', value=60)
 od.add_key('TS_CURRENT')
 od.add_key('CHARGING_CURRENT')
+od.add_key('SOC_1')
+od.add_key('SOC_2')
 
 od.add_key('SEGMENT_01_TEMPS', index=0x3001)
 od.add_key('CELL_01_TEMP', index=0x3001, subindex=0x00)
@@ -55,10 +57,35 @@ od.add_key('CELL_14_VOLTAGE', index=0x3004, subindex=0x05)
 od.add_key('CELL_15_VOLTAGE', index=0x3004, subindex=0x06)
 od.add_key('CELL_16_VOLTAGE', index=0x3004, subindex=0x07)
 
-od.set_pdo_map(['AMBIENT_TEMP', 'VOLTAGE', 'TS_CURRENT'])
+# od.set_pdo_map(['AMBIENT_TEMP', 'VOLTAGE', 'TS_CURRENT', 'STATE_OF_CHARGE'])
+od.set_pdo_map(config.get('PACK1_pdo'))
 
+time = 0
+maxval = 85
+def ramp(t):
+	return t % maxval
+
+x = 37
+y = 23
+soc1 = 67
+soc2 = 74
 def update():
-	pass
+	global time, x, y, soc1, soc2
+	
+	od.set('AMBIENT_TEMP', ramp(time))
+	time = time + 1
+	
+	if x == 0:
+		soc1 = soc1 - 1
+		od.set('SOC_1', soc1)
+		x = 37
+	x = x - 1
+
+	if y == 0:
+		soc2 = soc2 - 1
+		od.set('SOC_2', soc2)
+		y = 23
+	y = y - 1
 
 class Listener(can.Listener):
 	def __init__(self, node_id):
@@ -70,7 +97,10 @@ class Listener(can.Listener):
 
 		# sync
 		if function == 'SYNC':
-			update()			
+			update()
+			data = od.get_pdo_data()
+			msg = can_utils.messages.pdo(self.node_id, data)
+			bus.send(msg)
 
 		# sdo read
 		if function == 'SDO-READ' and node == self.node_id:

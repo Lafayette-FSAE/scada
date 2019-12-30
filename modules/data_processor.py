@@ -42,7 +42,7 @@ def update():
 
 	for target in calibration_utils.targets():
 		err, result = calibration_utils.process(target)
-		
+		print(result, target)
 		if err:
 			print("Error: {}".format(err))
 			break

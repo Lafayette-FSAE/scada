@@ -39,7 +39,7 @@ print(time)
 def update():
 	global time
 
-	od.set('CURRENT', ramp(time))
+	od.set('TS_CURRENT', ramp(time))
 	time = time + 1
 
 	od.set('TS_VOLTAGE', 100)

@@ -14,8 +14,8 @@ def packtemp_farenheit(args):
 
 	return temp_faranheit
 
-
-@cal_function(target='TS_POWER', requires=[('TSI', 'CURRENT'), ('TSI', 'CURRENT')])
+# Calculates the current TS power draw in kW
+@cal_function(target='TS_POWER', requires=[('TSI', 'TS_VOLTAGE'), ('TSI', 'TS_CURRENT')])
 def ts_power(args):
 	voltage, current, *other = args
 

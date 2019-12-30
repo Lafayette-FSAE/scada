@@ -26,10 +26,10 @@ if(config.get('emulate_nodes')):
 	if(config.get('emulate_packs')):
 		import ams_emulator
 
-		pack1 = ams_emulator.Listener(node_id=2)
+		pack1 = ams_emulator.Listener(node_id=1)
 		notifier.add_listener(pack1)
 
-		pack2 = ams_emulator.Listener(node_id=1)
+		pack2 = ams_emulator.Listener(node_id=2)
 		notifier.add_listener(pack2)
 
 	if(config.get('emulate_cockpit')):
@@ -70,8 +70,15 @@ scada_logger.set_text_window(app.scadaLogScrolledText)
 app.set_value('GLV', 'Voltage', '24 V') # Test changing a value
 
 def update_sensors():
-	app.set_value('TSI', 'HV Current', '{} A'.format(can_utils.data_cache.get('TSI', 'CURRENT')))
-	app.set_value('TSI', 'High Voltage', '{} hundred W'.format(can_utils.data_cache.get('SCADA', 'TS_POWER')))
+	app.set_value('TSI', 'TS Voltage', '{} V'.format(can_utils.data_cache.get('TSI', 'TS_VOLTAGE')))
+	app.set_value('TSI', 'TS Current', '{} A'.format(can_utils.data_cache.get('TSI', 'TS_CURRENT')))
+	app.set_value('TSI', 'TS Power', '{} kW'.format(can_utils.data_cache.get('SCADA', 'TS_POWER')))
+	app.set_value('Pack 1', 'Voltage', '{} V'.format(can_utils.data_cache.get('PACK1', 'VOLTAGE')))
+	app.set_value('Pack 2', 'Voltage', '{} V'.format(can_utils.data_cache.get('PACK2', 'VOLTAGE')))
+	app.set_value('Pack 1', 'Ambient Temp', '{} C'.format(can_utils.data_cache.get('PACK1', 'AMBIENT_TEMP')))
+	app.set_value('Pack 2', 'Ambient Temp', '{} C'.format(can_utils.data_cache.get('PACK2', 'AMBIENT_TEMP')))
+	app.set_value('Pack 1', 'SOC', '{}%'.format(can_utils.data_cache.get('PACK1', 'SOC_1')))
+	app.set_value('Pack 2', 'SOC', '{}%'.format(can_utils.data_cache.get('PACK2', 'SOC_2')))
 
 class GUIListener(can.Listener):
 	def __init__(self, node_id):

@@ -86,7 +86,7 @@ class SCADA_GUI(Frame):
 				sensorLabel.grid(row=i, column=0, padx=5, pady=5)
 				labelVar = StringVar()
 				labelVar.set('--')
-				valueLabel = Label(frame, textvariable=labelVar, width=6, anchor='center', background='light blue')
+				valueLabel = Label(frame, textvariable=labelVar, width=8, anchor='center', background='light blue')
 				valueLabel.grid(row=i, column=1, padx=5, pady=5)
 				valueVarDict[sensor] = labelVar
 				valueLabelDict[sensor] = valueLabel
