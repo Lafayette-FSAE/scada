@@ -1,7 +1,8 @@
 import can
 import can_utils
-
 import config
+
+import random
 
 # bus = can.interface.Bus(bustype='socketcan', channel='vcan0', bitrate='125000')
 # bus = can.interface.Bus('main', bustype='virtual')
@@ -10,12 +11,14 @@ bus = can_utils.bus(config.get('bus_info'))
 
 od = can_utils.ObjectDictionary()
 
-od.add_key('AMBIENT_TEMP')
-od.add_key('VOLTAGE', value=60)
-od.add_key('TS_CURRENT')
-od.add_key('CHARGING_CURRENT')
+od.add_key('VOLTAGE')
+od.add_key('CURRENT')
 od.add_key('SOC_1')
 od.add_key('SOC_2')
+od.add_key('AMBIENT_TEMP')
+od.add_key('MIN_CELL_TEMP')
+od.add_key('AVG_CELL_TEMP')
+od.add_key('MAX_CELL_TEMP')
 
 od.add_key('SEGMENT_01_TEMPS', index=0x3001)
 od.add_key('CELL_01_TEMP', index=0x3001, subindex=0x00)
@@ -85,6 +88,10 @@ def update():
 		od.set('SOC_2', soc2)
 		y = 23
 	y = y - 1
+
+	od.set('VOLTAGE', 60 + random.randint(-5, 5))
+
+	od.set('CURRENT', 6)
 
 class Listener(can.Listener):
 	def __init__(self, node_id):

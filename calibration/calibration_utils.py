@@ -55,7 +55,7 @@ def process(target):
 	try:
 		result = function(arguments)
 	except:
-		return (Exception('bad function call'), None)
+		return (Exception('bad function call, {}'.format(target)), None)
 
 	return (None, result)
 

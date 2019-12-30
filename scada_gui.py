@@ -178,6 +178,12 @@ class SCADA_GUI(Frame):
 		self.sensorValueVars.get(group).get(sensor).set(value)
 		logging.info('Sensor Update: {} - {}, {}'.format(group, sensor, value))
 
+
+	# Updates a sensor value's text color
+	def set_value_color(self, group, sensor, color):
+		self.sensorValueLabels.get(group).get(sensor).configure(foreground=color)
+
+
 	# Quits SCADA
 	def quit_scada(self):
 		logging.info('Shutting down... Goodbye')
