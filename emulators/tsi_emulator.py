@@ -14,7 +14,7 @@ od = object_dictionary.ObjectDictionary()
 bus = can_utils.bus(config.get('bus_info'))
 
 
-pdo = config.get('tsi_pdo')
+pdo = config.get('TSI_pdo')
 
 for key in pdo:
 	od.add_key(key)
@@ -39,7 +39,7 @@ print(time)
 def update():
 	global time
 
-	od.set('TS_CURRENT', ramp(time))
+	od.set('CURRENT', ramp(time))
 	time = time + 1
 
 	od.set('TS_VOLTAGE', 100)

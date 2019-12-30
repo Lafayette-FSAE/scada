@@ -1,5 +1,7 @@
 import can_utils.messages
 import can_utils.object_dictionary
+import can_utils.data_cache
+
 
 ObjectDictionary = object_dictionary.ObjectDictionary
 

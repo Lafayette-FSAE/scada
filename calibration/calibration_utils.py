@@ -1,5 +1,6 @@
+from can_utils import data_cache as data
 
-calibration_functions = {}
+__calibration_functions = {}
 
 
 # Decorator that adds a function to the list of calibration functions
@@ -7,13 +8,15 @@ calibration_functions = {}
 def cal_function(target, requires):
 	
 	def inner(function):
-		calibration_functions[target] = (function, requires)
+		__calibration_functions[target] = (function, requires)
 		return function
 
 	return inner
 
+def targets():
+	return list(__calibration_functions.keys())
 
-def process(target, bus_data):
+def process(target):
 	"""
 	Takes a target, looks up the necessary arguments from 
 	the bus_data dictionary, and excecutes the associated
@@ -24,7 +27,7 @@ def process(target, bus_data):
 	"""
 
 	try:
-		function, requires = calibration_functions[target]
+		function, requires = __calibration_functions[target]
 	except:
 		message = "no calibration function defined for target: {}".format(target)
 		err = Exception(message)
@@ -34,31 +37,38 @@ def process(target, bus_data):
 
 	for key in requires:
 
+		# print(key)
+
+		node, name = key
+
 		try:
-			argument = bus_data[key]
+			argument = data.get(node, name)
 			arguments.append(argument)
 		except:
 			message = "could not find key '{}' required for target '{}'".format(key, target)
-			# print(message)
+			print(message)
 			err = Exception(message)
 			return (err, None)
 
-	result = function(arguments)
+	try:
+		result = function(arguments)
+	except:
+		return (Exception('bad function call'), None)
 
 	return (None, result)
 
 
-def process_all(targets, data):
+# def process_all(targets):
 
-	output = {}
+# 	output = {}
 
-	for target in targets:
-		err, result = process(target, data)
+# 	for target in targets:
+# 		err, result = process(target)
 		
-		if err:
-			print("Error: {}".format(err))
-			break
+# 		if err:
+# 			print("Error: {}".format(err))
+# 			break
 
-		output[target] = result
+# 		output[target] = result
 
-	return output
+# 	return output
