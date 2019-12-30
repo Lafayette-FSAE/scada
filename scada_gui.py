@@ -189,9 +189,8 @@ def main():
 
 	app = SCADA_GUI()
 	scada_logger.set_text_window(app.scadaLogScrolledText)
-	
-	app.sensorValues.get('GLV').get('Voltage').set('24 V') # Test changing a value
-	logging.info('Set GLV Voltage to 24 V')
+
+	app.set_value('GLV', 'Voltage', '24 V')
 	
 	while app.running:
 		app.timeValue.set(strftime('%D  %I:%M:%S %p'))
