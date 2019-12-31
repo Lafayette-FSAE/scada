@@ -42,6 +42,8 @@ def can_message(function, node_id, data):
 def pdo(node_id, data, pdo_number = 1):
 	#http://www.byteme.org.uk/canopenparent/canopen/pdo-process-data-objects-canopen/
 
+	data = map(lambda byte: byte % 255, data)
+
 	return can_message('PDO', node_id, data)
 
 def sdo_read(node_id, index, subindex=0xFF):
