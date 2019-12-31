@@ -41,8 +41,8 @@ def generate_pdo():
 
 	for key in pdo_structure:
 		try:
-			value = can_utils.data_cache.get('SCADA', key)
-			ouptut.append(value)
+			value = can_utils.data_cache.get_avg('SCADA', key)
+			output.append(value)
 		except:
 			output.append(0x00)
 
