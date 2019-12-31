@@ -77,18 +77,17 @@ class SCADA_GUI(Frame):
 			maxWidth = 0
 			valueVarDict = {}
 			valueLabelDict = {}
-
 			for sensor in sensorGroups[group]:
-				if isinstance(sensor, list):
-					sensor = sensor[0]
+				# if isinstance(sensor, list):
+				# 	sensor = sensor[0]
 
 				length = len(sensor)
 				if length > maxWidth:
 					maxWidth = length
 
 			for sensor in sensorGroups[group]:
-				if isinstance(sensor, list):
-					sensor = sensor[0]
+				# if isinstance(sensor, list):
+				# 	sensor = sensor[0]
 
 				sensorLabel = Label(frame, text=sensor, width=maxWidth+2, anchor='w')
 				sensorLabel.grid(row=i, column=0, padx=5, pady=5)
@@ -183,6 +182,20 @@ class SCADA_GUI(Frame):
 	def set_value_color(self, group, sensor, color):
 		self.sensorValueLabels.get(group).get(sensor).configure(foreground=color)
 
+
+	# Updates a sensor's displayed value and color
+	def update_value(self, group, sensor, value, unit, oprange):
+		self.sensorValueVars.get(group).get(sensor).set('{} {}'.format(value, unit))
+		if oprange[0] and value < oprange[0]:
+			self.sensorValueLabels.get(group).get(sensor).configure(foreground='red')
+		elif oprange[1] and value < oprange[1]:
+			self.sensorValueLabels.get(group).get(sensor).configure(foreground='yellow')
+		elif oprange[3] and value > oprange[3]:
+			self.sensorValueLabels.get(group).get(sensor).configure(foreground='red')
+		elif oprange[2] and value > oprange[2]:
+			self.sensorValueLabels.get(group).get(sensor).configure(foreground='yellow')
+		else:
+			self.sensorValueLabels.get(group).get(sensor).configure(foreground='blue')
 
 	# Quits SCADA
 	def quit_scada(self):

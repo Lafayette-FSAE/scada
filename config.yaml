@@ -64,39 +64,108 @@ data_processor:
 # NOTE: if sensor is string, it is ignored during update loop
 #       if sensor is a list treat first value as the label,
 #       second value as the data key, and third value as the unit
+#
+#       Format for oprange (sensor operating range):
+#           [lower_error, lower_warning, upper_warning, upper_error]
 
 GUI:
   Sensors: # All sensors that will report to SCADA, divided into top-level groups
     GLV:
-      - Voltage
-      - Current
-      - Power
-      - Temp
+      Voltage:
+          data_target: Null
+          unit: 'V'
+          oprange: [10, 15, 65, 70]
+          open_sloop_out_of_range: no
+      Current:
+          data_target: Null
+          unit: 'A'
+          oprange: [10, 15, 65, 70]
+          open_sloop_out_of_range: no
+      Power:
+          data_target: Null
+          unit: 'kW'
+          oprange: Null
+          open_sloop_out_of_range: no
+      Temp:
+          data_target: Null
+          unit: 'C'
+          oprange: [10, 15, 65, 70]
+          open_sloop_out_of_range: no
+    
     TSI:
-      - [ TS Voltage, 'TSI: TS_VOLTAGE', V ]
-      - [ TS Current, 'TSI: TS_CURRENT', A ]
-      - [ TS Power, 'SCADA: TS_POWER', kW ]
-    Cooling:
-      - Temp1
-      - Temp2
-      - Flow Rate
-      - Pump
-      - Fan
-    Motor Controller:
-      - Voltage
-      - Motor Temp
-      - RPM
-      - Velocity
+      TS Voltage:
+          data_target: 'TSI: TS_VOLTAGE'
+          unit: 'V'
+          oprange: [80, 90, 120, 150]
+          open_sloop_out_of_range: no
+      TS Current:
+          data_target: 'TSI: TS_CURRENT'
+          unit: 'A'
+          oprange: [Null, Null, 250, 300]
+          open_sloop_out_of_range: yes
+      TS Power:
+          data_target: 'SCADA: TS_POWER'
+          unit: 'kW'
+          oprange: [10, 15, 65, 70]
+          open_sloop_out_of_range: no
+    
+    # Cooling:
+    #   - Temp1
+    #   - Temp2
+    #   - Flow Rate
+    #   - Pump
+    #   - Fan
+    
+    # Motor Controller:
+    #   - Voltage
+    #   - Motor Temp
+    #   - RPM
+    #   - Velocity
+    
     Pack 1:
-      - [ SOC, 'PACK1: SOC_1', '%' ]
-      - [ Voltage, 'PACK1: VOLTAGE', V ]
-      - [ Current, 'PACK1: CURRENT', A ]
-      - [ Ambient Temp, 'PACK1: AMBIENT_TEMP', C ]
+      SOC:
+        data_target: 'PACK1: SOC_1'
+        unit: '%'
+        oprange: [10, 20, 100, 105]
+        open_sloop_out_of_range: no
+      Voltage:
+        data_target: 'PACK1: VOLTAGE'
+        unit: 'V'
+        oprange: [Null, Null, 250, 300]
+        open_sloop_out_of_range: no
+      Current:
+        data_target: 'PACK1: CURRENT'
+        unit: 'A'
+        oprange: [Null, Null, 250, 300]
+        open_sloop_out_of_range: no
+      Ambient Temp:
+        data_target: 'PACK1: AMBIENT_TEMP'
+        unit: 'C'
+        oprange: [Null, Null, 250, 300]
+        open_sloop_out_of_range: no
+    
     Pack 2:
-      - [ SOC, 'PACK2: SOC_1', '%' ]
-      - [ Voltage, 'PACK2: VOLTAGE', V ]
-      - [ Current, 'PACK2: CURRENT', A ]
-      - [ Ambient Temp, 'PACK2: AMBIENT_TEMP', C ]
+      SOC:
+        data_target: 'PACK2: SOC_1'
+        unit: '%'
+        oprange: [10, 20, 100, 105]
+        open_sloop_out_of_range: no
+      Voltage:
+        data_target: 'PACK2: VOLTAGE'
+        unit: 'V'
+        oprange: [Null, Null, 250, 300]
+        open_sloop_out_of_range: no
+      Current:
+        data_target: 'PACK2: CURRENT'
+        unit: 'A'
+        oprange: [Null, Null, 250, 300]
+        open_sloop_out_of_range: no
+      Ambient Temp:
+        data_target: 'PACK2: AMBIENT_TEMP'
+        unit: 'C'
+        oprange: [Null, Null, 250, 300]
+        open_sloop_out_of_range: no
+  
   Drive States: # List of car drive states that are in the state FSM
     - GLV Off
     - GLV On
