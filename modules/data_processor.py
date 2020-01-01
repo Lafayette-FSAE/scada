@@ -7,6 +7,13 @@ from can_utils import messages
 import calibration_utils
 import user_cal
 
+import database_utils as db_utils
+
+db_utils.add_node('tsi', config.get('process_data').get('TSI'))
+db_utils.add_node('pack1', config.get('process_data').get('PACK1'))
+db_utils.add_node('pack2', config.get('process_data').get('PACK2'))
+db_utils.add_node('scada', config.get('process_data').get('SCADA'))
+
 bus = can_utils.bus(config.get('bus_info'))
 
 """
@@ -17,7 +24,7 @@ Writes processed data back to CAN bus as a PDO
 
 """
 
-pdo_structure = config.get('process_data')['SCADA']
+pdo_structure = config.get('process_data').get('SCADA')
 
 def update():
 	"""
@@ -72,6 +79,8 @@ class Listener(can.Listener):
 
 			pdo_structure = config.get('process_data')[node]
 
+			db_utils.log_pdo(node, msg.data)
+
 			for index, byte in enumerate(msg.data, start=0):
 				try:
 					can_utils.data_cache.set(node, pdo_structure[index], byte)
@@ -79,6 +88,5 @@ class Listener(can.Listener):
 				except:
 					print('data procecessor: error writing to cache')
 					pass
-
 
 
