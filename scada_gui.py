@@ -4,6 +4,22 @@ import tkinter.scrolledtext as tk_ScrolledText
 import config
 import logging
 
+import numpy as np
+
+import matplotlib
+matplotlib.use('TkAgg')
+
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import matplotlib.pyplot as plt
+
+from can_utils import data_cache
+
+# fig = plt.figure(1)
+# plt.ion()
+# t = np.arange(0.0, 3.0, 0.01)
+# s = np.sin(np.pi*t)
+# plt.plot(t,s)
+
 # Define a class to implement the SCADA App and GUI
 # Inherits from a Tkinter Frame
 class SCADA_GUI(Frame):
@@ -15,6 +31,10 @@ class SCADA_GUI(Frame):
 		self.init_window()
 		self.running = True
 
+
+		# TODO: delete, replace with something cleaner
+		self.t = 0
+		self.current_values = []
 
 	# Begin initializing the GUI
 	def init_window(self):
@@ -139,6 +159,22 @@ class SCADA_GUI(Frame):
 
 	# Construct the Live Charts tab
 	def init_tab_liveCharts(self):
+
+		self.fig = plt.figure(1)
+		# plt.ion()
+		# t = np.arange(0.0, 3.0, 0.01)
+		# s = np.sin(np.pi*t)
+		# plt.plot(t,s)
+
+		canvas = FigureCanvasTkAgg(self.fig, master=self.liveChartTab)
+		plot_widget = canvas.get_tk_widget()
+
+		# s = np.cos(np.pi*t)
+		# plt.plot(t,s)
+		# self.fig.canvas.draw()
+
+		plot_widget.grid(row=0, column=0)
+
 		logging.info('Init Live Charts tab complete')
 
 
@@ -196,6 +232,24 @@ class SCADA_GUI(Frame):
 			self.sensorValueLabels.get(group).get(sensor).configure(foreground='yellow')
 		else:
 			self.sensorValueLabels.get(group).get(sensor).configure(foreground='blue')
+
+
+	def update_plot(self):
+		self.t += 1
+
+		time_axis = np.arange(0.0, self.t, 1)
+
+		print(time_axis)
+
+		self.current_values.append(data_cache.get('TSI', 'TS_CURRENT'))
+
+		print(self.current_values)
+
+		plt.plot(time_axis, self.current_values)
+
+		self.fig.canvas.draw()
+
+
 
 	# Quits SCADA
 	def quit_scada(self):

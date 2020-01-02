@@ -95,9 +95,6 @@ def pdo_map_changed(node, current_map):
 	else:
 		result = result[0]
 
-		for elem in zip_longest(result, current_map):
-			print(elem)
-
 		for last, current in zip_longest(result, current_map):
 			if last != current:
 				return True

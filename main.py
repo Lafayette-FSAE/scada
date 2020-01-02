@@ -62,7 +62,6 @@ master_bus.send_periodic(sync, .1)
 # \/				   \/
 
 from scada_gui import SCADA_GUI
-from time import strftime
 
 app = SCADA_GUI()
 scada_logger.set_text_window(app.scadaLogScrolledText)
@@ -98,8 +97,9 @@ needSensorUpdate = False;
 while app.running:
 	if needSensorUpdate:
 		update_sensors()
+		app.update_plot()
 		needSensorUpdate = False;
-	app.timeValue.set(strftime('%D  %I:%M:%S %p'))
+	# app.timeValue.set(strftime('%D  %I:%M:%S %p'))
 	app.update_idletasks()
 	app.update()
 
