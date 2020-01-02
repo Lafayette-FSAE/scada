@@ -1,6 +1,11 @@
 # scada_log text file
 scada_log.txt
 
+# database files
+example.db
+modules/example.db
+*.db
+
 # used by sftp
 sftp-config.json
 
