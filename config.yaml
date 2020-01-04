@@ -72,55 +72,91 @@ GUI:
   Sensors: # All sensors that will report to SCADA, divided into top-level groups
     GLV:
       Voltage:
-          data_target: Null
-          unit: 'V'
-          oprange: [10, 15, 65, 70]
-          open_sloop_out_of_range: no
+        data_target: Null
+        unit: 'V'
+        oprange: [10, 15, 65, 70]
+        open_sloop_out_of_range: no
       Current:
-          data_target: Null
-          unit: 'A'
-          oprange: [10, 15, 65, 70]
-          open_sloop_out_of_range: no
+        data_target: Null
+        unit: 'A'
+        oprange: [10, 15, 65, 70]
+        open_sloop_out_of_range: no
       Power:
-          data_target: Null
-          unit: 'kW'
-          oprange: Null
-          open_sloop_out_of_range: no
+        data_target: Null
+        unit: 'kW'
+        oprange: Null
+        open_sloop_out_of_range: no
       Temp:
-          data_target: Null
-          unit: 'C'
-          oprange: [10, 15, 65, 70]
-          open_sloop_out_of_range: no
+        data_target: Null
+        unit: 'C'
+        oprange: [10, 15, 65, 70]
+        open_sloop_out_of_range: no
     
     TSI:
       TS Voltage:
-          data_target: 'TSI: TS_VOLTAGE'
-          unit: 'V'
-          oprange: [80, 90, 120, 150]
-          open_sloop_out_of_range: no
+        data_target: 'TSI: TS_VOLTAGE'
+        unit: 'V'
+        oprange: [80, 90, 120, 150]
+        open_sloop_out_of_range: no
       TS Current:
-          data_target: 'TSI: TS_CURRENT'
-          unit: 'A'
-          oprange: [Null, Null, 250, 300]
-          open_sloop_out_of_range: yes
+        data_target: 'TSI: TS_CURRENT'
+        unit: 'A'
+        oprange: [Null, Null, 250, 300]
+        open_sloop_out_of_range: yes
       TS Power:
-          data_target: 'SCADA: TS_POWER'
-          unit: 'kW'
-          oprange: [10, 15, 65, 70]
-          open_sloop_out_of_range: no
+        data_target: 'SCADA: TS_POWER'
+        unit: 'kW'
+        oprange: [10, 15, 65, 70]
+        open_sloop_out_of_range: no
     
-    # Cooling:
-    #   - Temp1
-    #   - Temp2
-    #   - Flow Rate
-    #   - Pump
-    #   - Fan
+    Cooling:
+      Temp1:
+        data_target: Null
+        unit: ''
+        oprange: []
+        open_sloop_out_of_range: no
+      Temp2:
+        data_target: Null
+        unit: ''
+        oprange: []
+        open_sloop_out_of_range: no
+      Flow Rate:
+        data_target: Null
+        unit: ''
+        oprange: []
+        open_sloop_out_of_range: no
+      Pump:
+        data_target: Null
+        unit: ''
+        oprange: []
+        open_sloop_out_of_range: no
+      Fan:
+        data_target: Null
+        unit: ''
+        oprange: []
+        open_sloop_out_of_range: no
     
-    # Motor Controller:
-    #   - Voltage
-    #   - Motor Temp
-    #   - RPM
-    #   - Velocity
+    Motor Controller:
+      Voltage:
+        data_target: Null
+        unit: ''
+        oprange: []
+        open_sloop_out_of_range: no
+      Motor Temp:
+        data_target: Null
+        unit: ''
+        oprange: []
+        open_sloop_out_of_range: no
+      RPM:
+        data_target: Null
+        unit: ''
+        oprange: []
+        open_sloop_out_of_range: no
+      Velocity:
+        data_target: Null
+        unit: ''
+        oprange: []
+        open_sloop_out_of_range: no
     
     Pack 1:
       SOC:
