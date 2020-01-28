@@ -1,13 +1,13 @@
 bus_info:
-  bustype: virtual
-  channel: vcan0
+  bustype: socketcan
+  channel: can0
   bitrate: 125000
 
 emulate_nodes: yes
 
 # enable specific node emulation
-emulate_tsi: yes
-emulate_packs: yes
+emulate_tsi: no
+emulate_packs: no
 emulate_cockpit: no
 emulate_motorcontroller: no
 
@@ -25,7 +25,7 @@ can_nodes:
 #       bytes will be ignored
 
 process_data:
-  TSI:    [ COOLING_TEMP_1, COOLING_TEMP_2, FLOWRATE, STATE, TS_CURRENT, TS_VOLTAGE ]
+  TSI:    [ CONDITIONS, MOTOR_CONTROLLER_VOLTAGE, TS_VOLTAGE, COOLING_TEMP_1, FLOW_RATE, COOLING_TEMP_2, STATE, CURRENT ]
   PACK1:  [ VOLTAGE, CURRENT, SOC_1, SOC_2, AMBIENT_TEMP, 'MIN_CELL_TEMP', AVG_CELL_TEMP, MAX_CELL_TEMP ]
   PACK2:  [ VOLTAGE, CURRENT, SOC_1, SOC_2, AMBIENT_TEMP, MIN_CELL_TEMP, AVG_CELL_TEMP, MAX_CELL_TEMP ]
   SCADA:  [ TS_POWER ]
@@ -33,18 +33,18 @@ process_data:
 
 # Other data to keep track of
 # need to poll this data manually
-service_data:
+# service_data:
 
-  Cell1Temp:
-    node_id: 2
-    index: 2011
-    poll_rate: 10
+#   Cell1Temp:
+#     node_id: 2
+#     index: 2011
+#     poll_rate: 10
 
-  MotorTemp:
-    node_id: 1
-    index: 2010
-    subindex: 0
-    poll_rate: 0.5
+#   MotorTemp:
+#     node_id: 1
+#     index: 2010
+#     subindex: 0
+#     poll_rate: 0.5
 
 
 # modules

@@ -62,12 +62,18 @@ class Listener(can.Listener):
 
 	def on_message_received(self, msg):
 
-		function, node_id = messages.get_info(msg)
+		if msg.arbitration_id == 0x555:
+			function, node_id = ('PDO', 3)
+		else:
+			function, node_id = messages.get_info(msg)
 
 		if function == 'SYNC':
 			update()
-			pdo = generate_pdo()
+			
+			val = can_utils.data_cache.get('SCADA', 'STATE')
+			print(val)
 
+			pdo = generate_pdo()
 			bus.send(pdo)
 
 		if function == 'PDO':
@@ -77,16 +83,14 @@ class Listener(can.Listener):
 			except:
 				return
 
-			pdo_structure = config.get('process_data')[node]
-
+			pdo_structure = config.get('process_data').get(node)
 			db_utils.log_pdo(node, msg.data)
-
 			for index, byte in enumerate(msg.data, start=0):
-				try:
-					can_utils.data_cache.set(node, pdo_structure[index], byte)
+				# try:
+				can_utils.data_cache.set(node, pdo_structure[index], byte)
 
-				except:
-					print('data procecessor: error writing to cache')
-					pass
+				# except:
+					# print('data procecessor: error writing to cache')
+					# pass
 
 

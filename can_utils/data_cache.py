@@ -29,6 +29,12 @@ def get(node, key=None):
 # 	return result
 
 def set(node, key, value):
+	# print()
+	# print(node)
+	# print(key)
+	# print(value)
+	# print()
+
 	# if not (node, key) in __data:
 	# 	__data[(node, key)] = collections.deque(maxlen=10)
 	# __data[(node, key)].append(value)
