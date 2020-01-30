@@ -16,6 +16,8 @@ od = object_dictionary.ObjectDictionary()
 od.add_keys(pdo_structure)
 od.set_pdo_map(pdo_structure)
 
+od.set('STATE', 1)
+
 maxval = 100
 def ramp(t):
 	return t % maxval

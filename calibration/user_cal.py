@@ -2,8 +2,7 @@ from calibration_utils import cal_function
 
 
 """
-Converts ambient temp of pack1 to farenheit because it is 
-easy and a good test
+Converts TSI state integer to human readable string
 
 """
 
@@ -17,6 +16,33 @@ def state(args):
 		return 'AIRS-CLOSED'
 	elif state_number == 3:
 		return 'DRIVE SETUP'
+
+
+@cal_function(target='MC_VOLTAGE', requires=['TSI: MOTOR_CONTROLLER_VOLTAGE'])
+def mc_voltage(args):
+	mc_voltage_raw, *other = args
+
+	return (mc_voltage_raw * 3.14) - 176.39
+
+
+@cal_function(target='TS_VOLTAGE', requires=['TSI: TS_VOLTAGE'])
+def mc_voltage(args):
+	voltage_raw, *other = args
+
+	return (voltage_raw * 3.14) - 176.39
+
+
+@cal_function(target='FLOW_RATE', requires=['TSI: FLOW_RATE'])
+def flow_rate(args):
+	flow_rate, *other = args
+
+	return flow_rate * 757
+
+"""
+Converts ambient temp of pack1 to farenheit because it is 
+easy and a good test
+
+"""
 
 # @cal_function(target='PackTemp_Farenheit', requires=['PACK1: AMBIENT_TEMP'])
 # def packtemp_farenheit(args):

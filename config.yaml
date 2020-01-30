@@ -1,12 +1,12 @@
 bus_info:
-  bustype: socketcan
+  bustype: virtual
   channel: can0
   bitrate: 125000
 
 emulate_nodes: yes
 
 # enable specific node emulation
-emulate_tsi: no
+emulate_tsi: yes
 emulate_packs: no
 emulate_cockpit: no
 emulate_motorcontroller: no
@@ -25,10 +25,10 @@ can_nodes:
 #       bytes will be ignored
 
 process_data:
-  TSI:    [ CONDITIONS, MOTOR_CONTROLLER_VOLTAGE, TS_VOLTAGE, COOLING_TEMP_1, FLOW_RATE, COOLING_TEMP_2, STATE, CURRENT ]
+  TSI:    [ CONDITIONS, MOTOR_CONTROLLER_VOLTAGE, TS_VOLTAGE, COOLING_TEMP_1, FLOW_RATE, COOLING_TEMP_2, STATE, TS_CURRENT ]
   PACK1:  [ VOLTAGE, CURRENT, SOC_1, SOC_2, AMBIENT_TEMP, 'MIN_CELL_TEMP', AVG_CELL_TEMP, MAX_CELL_TEMP ]
   PACK2:  [ VOLTAGE, CURRENT, SOC_1, SOC_2, AMBIENT_TEMP, MIN_CELL_TEMP, AVG_CELL_TEMP, MAX_CELL_TEMP ]
-  SCADA:  [ TS_POWER ]
+  SCADA:  [ STATE ]
 
 
 # Other data to keep track of

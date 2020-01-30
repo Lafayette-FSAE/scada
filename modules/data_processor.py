@@ -5,6 +5,7 @@ import can_utils
 from can_utils import messages
 
 import calibration_utils
+
 import user_cal
 
 import database_utils as db_utils
@@ -70,9 +71,6 @@ class Listener(can.Listener):
 		if function == 'SYNC':
 			update()
 			
-			val = can_utils.data_cache.get('SCADA', 'STATE')
-			print(val)
-
 			pdo = generate_pdo()
 			bus.send(pdo)
 

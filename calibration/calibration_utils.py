@@ -2,7 +2,6 @@ from can_utils import data_cache as data
 
 __calibration_functions = {}
 
-
 # Decorator that adds a function to the list of calibration functions
 # with the given target and arguments
 def cal_function(target, requires):

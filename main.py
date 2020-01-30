@@ -5,6 +5,8 @@ import config
 import logging
 import scada_logger
 
+from can_utils import data_cache
+
 bus = can_utils.bus(config.get('bus_info'))
 notifier = can.Notifier(bus, [])
 
@@ -40,6 +42,7 @@ if(config.get('emulate_nodes')):
 # modules
 sys.path.append('modules')
 sys.path.append('calibration')
+sys.path.append('interfaces')
 
 import data_processor
 processor = data_processor.Listener(node_id=4)
@@ -54,8 +57,25 @@ read = can_utils.messages.sdo_read(node_id=2, index=[0x30, 0x01], subindex=0x02)
 master_bus = can_utils.bus(config.get('bus_info'))
 master_bus.send_periodic(sync, .1)
 
-for message in bus:
-	pass
+import tui
+
+term = tui.term
+
+with term.fullscreen():
+	for message in bus:
+
+		tui.data = [
+			('State', 				data_cache.get('SCADA: STATE')),
+			('MC Voltage', 			data_cache.get('SCADA: MC_VOLTAGE')),
+			('TS Voltage', 			data_cache.get('SCADA: TS_VOLTAGE')),
+			('Cooling Temp 1', 		data_cache.get('TSI: COOLING_TEMP_1')),
+			('Cooling Temp 2', 		data_cache.get('TSI: COOLING_TEMP_1')),
+			('Flow Rate', 			data_cache.get('SCADA: FLOW_RATE')),
+			('Current', 			data_cache.get('TSI: TS_CURRENT')),	
+		]
+		
+
+		tui.print_column(tui.data, label="TSI")
 
 
 # \/				   \/
