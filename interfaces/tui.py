@@ -9,6 +9,8 @@ data = [
 ]
 
 def print_column(data, label, x=0, y=0):
+	print(term.clear())
+
 	print(term.move_y((term.height // 2) - len(data) // 2 ))
 
 	col = ''

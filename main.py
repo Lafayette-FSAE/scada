@@ -57,9 +57,14 @@ read = can_utils.messages.sdo_read(node_id=2, index=[0x30, 0x01], subindex=0x02)
 master_bus = can_utils.bus(config.get('bus_info'))
 master_bus.send_periodic(sync, .1)
 
+# for message in bus:
+# 	pass
+
 import tui
 
 term = tui.term
+
+
 
 with term.fullscreen():
 	for message in bus:
@@ -71,12 +76,11 @@ with term.fullscreen():
 			('Cooling Temp 1', 		data_cache.get('TSI: COOLING_TEMP_1')),
 			('Cooling Temp 2', 		data_cache.get('TSI: COOLING_TEMP_1')),
 			('Flow Rate', 			data_cache.get('SCADA: FLOW_RATE')),
-			('Current', 			data_cache.get('TSI: TS_CURRENT')),	
+			('Throttle', 			data_cache.get('MOTOR3: THROTTLE')),	
 		]
 		
 
 		tui.print_column(tui.data, label="TSI")
-
 
 # \/				   \/
 # \/  GUI Integration  \/

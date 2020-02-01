@@ -14,6 +14,8 @@ db_utils.add_node('tsi', config.get('process_data').get('TSI'))
 db_utils.add_node('pack1', config.get('process_data').get('PACK1'))
 db_utils.add_node('pack2', config.get('process_data').get('PACK2'))
 db_utils.add_node('scada', config.get('process_data').get('SCADA'))
+db_utils.add_node('motor', config.get('process_data').get('MOTOR'))
+db_utils.add_node('motor3', config.get('process_data').get('MOTOR3'))
 
 bus = can_utils.bus(config.get('bus_info'))
 
@@ -39,7 +41,7 @@ def update():
 	for target in calibration_utils.targets():
 		err, result = calibration_utils.process(target)
 		if err:
-			print("Error: {}".format(err))
+			# print("Error: {}".format(err))
 			break
 
 		can_utils.data_cache.set('SCADA', target, result)
@@ -65,6 +67,8 @@ class Listener(can.Listener):
 
 		if msg.arbitration_id == 0x555:
 			function, node_id = ('PDO', 3)
+		elif msg.arbitration_id == 0x381:
+			function, node_id = ('PDO', 2)
 		else:
 			function, node_id = messages.get_info(msg)
 

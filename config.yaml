@@ -1,21 +1,23 @@
 bus_info:
-  bustype: virtual
+  bustype: socketcan
   channel: can0
   bitrate: 125000
 
 emulate_nodes: yes
 
 # enable specific node emulation
-emulate_tsi: yes
+emulate_tsi: no
 emulate_packs: no
 emulate_cockpit: no
 emulate_motorcontroller: no
 
 # CAN node ids
 can_nodes:
+  1: MOTOR
+  2: MOTOR3
   3: TSI
-  1: PACK1
-  2: PACK2
+  4: PACK1
+  5: PACK2
 
 
 # structure of data in PDOs
@@ -25,6 +27,8 @@ can_nodes:
 #       bytes will be ignored
 
 process_data:
+  MOTOR:  [ DUMMY1, DUMMY2, DUMMY3, DUMMY4, DUMMY5, DUMMY6, DUMMY7, DUMMY9 ]
+  MOTOR3: [ THROTTLE, DUMMY1, DUMMY2, DUMMY3, DUMMY4, DUMMY5, DUMMY6, DUMMY7 ]
   TSI:    [ CONDITIONS, MOTOR_CONTROLLER_VOLTAGE, TS_VOLTAGE, COOLING_TEMP_1, FLOW_RATE, COOLING_TEMP_2, STATE, TS_CURRENT ]
   PACK1:  [ VOLTAGE, CURRENT, SOC_1, SOC_2, AMBIENT_TEMP, 'MIN_CELL_TEMP', AVG_CELL_TEMP, MAX_CELL_TEMP ]
   PACK2:  [ VOLTAGE, CURRENT, SOC_1, SOC_2, AMBIENT_TEMP, MIN_CELL_TEMP, AVG_CELL_TEMP, MAX_CELL_TEMP ]

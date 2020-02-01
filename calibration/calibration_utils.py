@@ -47,13 +47,13 @@ def process(target):
 			arguments.append(argument)
 		except:
 			message = "could not find key '{}' required for target '{}'".format(key, target)
-			print(message)
 			err = Exception(message)
 			return (err, None)
 
 	try:
 		result = function(arguments)
 	except:
+		# pass
 		return (Exception('bad function call, {}'.format(target)), None)
 
 	return (None, result)
