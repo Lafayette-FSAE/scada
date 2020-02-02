@@ -86,10 +86,12 @@ class Listener(can.Listener):
 
 			# append pdo number to node name to distinguish different
 			# pdo mappings
-			if pdo_number != '1':
-				node = '{}-{}'.format(node, pdo_number)
+			if pdo_number == '1':
+				pdo_structure = config.get('process_data').get(node)
+			else:
+				pdo_structure = config.get('process_data').get('{}-{}'.format(node, pdo_number))
+			
 
-			pdo_structure = config.get('process_data').get(node)
 			db_utils.log_pdo(node, msg.data)
 			for index, byte in enumerate(msg.data, start=0):
 				# try:

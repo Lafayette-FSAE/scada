@@ -2,8 +2,8 @@ from calibration_utils import cal_function
 
 
 @cal_function(target='THROTTLE', requires=[
-	'MOTOR-3: THROTTLE-byte0',
-	'MOTOR-3: THROTTLE-byte1'
+	'MOTOR: THROTTLE-byte0',
+	'MOTOR: THROTTLE-byte1'
 ])
 def throttle(args):
 	lsb, msb, *other = args
@@ -61,14 +61,14 @@ easy and a good test
 
 # 	return temp_faranheit
 
-# # Calculates the current TS power draw in kW
-# @cal_function(target='TS_POWER', requires=[('TSI', 'TS_VOLTAGE'), ('TSI', 'TS_CURRENT')])
-# def ts_power(args):
-# 	voltage, current, *other = args
+# Calculates the current TS power draw in kW
+@cal_function(target='TS_POWER', requires=[('TSI', 'TS_VOLTAGE'), ('TSI', 'TS_CURRENT')])
+def ts_power(args):
+	voltage, current, *other = args
 
-# 	power = (voltage * current) / 100
+	power = (voltage * current) / 100
 
-# 	return power
+	return power
 
 # """
 # Calculates Total Tractive System Voltage by adding

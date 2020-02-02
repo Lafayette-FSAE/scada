@@ -99,6 +99,8 @@ GUI:
         open_sloop_out_of_range: no
     
     TSI:
+      Drive State:
+        data_target: 'SCADA: STATE'
       TS Voltage:
         data_target: 'TSI: TS_VOLTAGE'
         unit: 'V'
@@ -142,25 +144,30 @@ GUI:
         oprange: []
         open_sloop_out_of_range: no
     
-    Motor Controller:
+    Motor:
       Voltage:
-        data_target: Null
+        data_target: 'MOTOR: DC_LINK_VOLTAGE'
         unit: ''
         oprange: []
         open_sloop_out_of_range: no
       Motor Temp:
-        data_target: Null
+        data_target: 'MOTOR: MOTOR_TEMP'
         unit: ''
         oprange: []
         open_sloop_out_of_range: no
       RPM:
-        data_target: Null
+        data_target: 'MOTOR: VELOCITY'
         unit: ''
         oprange: []
         open_sloop_out_of_range: no
-      Velocity:
-        data_target: Null
+      Controller Temp:
+        data_target: 'MOTOR: CONTROLLER_TEMP'
         unit: ''
+        oprange: []
+        open_sloop_out_of_range: no
+      Throttle:
+        data_target: 'SCADA: THROTTLE'
+        unit: 'mV'
         oprange: []
         open_sloop_out_of_range: no
     
