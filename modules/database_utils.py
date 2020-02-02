@@ -18,14 +18,18 @@ def log_pdo(node, pdo_data):
 	while len(pdo_data) < 8:
 		pdo_data.append(None)
 
-	cursor.execute('''
-		INSERT INTO node_{nodename}
-		(Session, Byte1, Byte2, Byte3, Byte4, Byte5, Byte6, Byte7, Byte8)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-	'''.format(nodename = node), [session] + pdo_data)
+	try:
+		cursor.execute('''
+			INSERT INTO node_{nodename}
+			(Session, Byte1, Byte2, Byte3, Byte4, Byte5, Byte6, Byte7, Byte8)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+		'''.format(nodename = node), [session] + pdo_data)
 
-	conn.commit()
-	conn.close()
+		conn.commit()
+		conn.close()
+	except:
+		pass
+		# print('Error: table node_{nodename} does not exist'.format(nodename = node))
 
 # def fetch_process_data(keys, session):
 

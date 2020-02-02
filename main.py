@@ -60,6 +60,12 @@ master_bus.send_periodic(sync, .1)
 # for message in bus:
 # 	pass
 
+# 	print(data_cache.get('MOTOR-3: THROTTLE-byte0'))
+# 	print(data_cache.get('MOTOR-3: THROTTLE-byte1'))
+# 	print(data_cache.get('SCADA: THROTTLE'))
+
+
+
 import tui
 
 term = tui.term
@@ -68,19 +74,20 @@ term = tui.term
 
 with term.fullscreen():
 	for message in bus:
+		if message.arbitration_id == 0x80:
 
-		tui.data = [
-			('State', 				data_cache.get('SCADA: STATE')),
-			('MC Voltage', 			data_cache.get('SCADA: MC_VOLTAGE')),
-			('TS Voltage', 			data_cache.get('SCADA: TS_VOLTAGE')),
-			('Cooling Temp 1', 		data_cache.get('TSI: COOLING_TEMP_1')),
-			('Cooling Temp 2', 		data_cache.get('TSI: COOLING_TEMP_1')),
-			('Flow Rate', 			data_cache.get('SCADA: FLOW_RATE')),
-			('Throttle', 			data_cache.get('MOTOR3: THROTTLE')),	
-		]
-		
+			tui.data = [
+				('State', 				data_cache.get('SCADA: STATE')),
+				('MC Voltage', 			data_cache.get('SCADA: MC_VOLTAGE')),
+				('TS Voltage', 			data_cache.get('SCADA: TS_VOLTAGE')),
+				('Cooling Temp 1', 		data_cache.get('TSI: COOLING_TEMP_1')),
+				('Throttle byte1', 		data_cache.get('MOTOR-3: THROTTLE-byte1')),
+				('Throttle byte0', 			data_cache.get('MOTOR-3: THROTTLE-byte0')),
+				('Throttle', 			data_cache.get('SCADA: THROTTLE')),	
+			]
+			
 
-		tui.print_column(tui.data, label="TSI")
+			tui.print_column(tui.data, label="TSI")
 
 # \/				   \/
 # \/  GUI Integration  \/

@@ -1,6 +1,15 @@
 from calibration_utils import cal_function
 
 
+@cal_function(target='THROTTLE', requires=[
+	'MOTOR-3: THROTTLE-byte0',
+	'MOTOR-3: THROTTLE-byte1'
+])
+def throttle(args):
+	lsb, msb, *other = args
+
+	return msb * 256 + lsb
+
 """
 Converts TSI state integer to human readable string
 

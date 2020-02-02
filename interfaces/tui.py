@@ -25,8 +25,6 @@ def print_column(data, label, x=0, y=0):
 		col += term.move_x(30)
 		col += '{}'.format(value)
 
-
-		 #{value}'.format(name=name, value=value)
 		col += term.move_down(1)
 
 

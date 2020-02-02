@@ -8,10 +8,10 @@ FUNCTIONS = {
 	0x080: "SYNC",
 
 	# PDOs 1-4
-	0x180: 'PDO',
-	0x280: 'PDO2',
-	0x380: 'PDO3',
-	0x480: 'PDO4',
+	0x180: 'PDO-1',
+	0x280: 'PDO-2',
+	0x380: 'PDO-3',
+	0x480: 'PDO-4',
 
 	# SDO Write
 	0x580: 'SDO-WRITE',
@@ -44,7 +44,7 @@ def pdo(node_id, data, pdo_number = 1):
 
 	data = map(lambda byte: byte % 255, data)
 
-	return can_message('PDO', node_id, data)
+	return can_message('PDO-{}'.format(pdo_number), node_id, data)
 
 def sdo_read(node_id, index, subindex=0xFF):
 	#http://www.byteme.org.uk/canopenparent/canopen/sdo-service-data-objects-canopen/

@@ -15,7 +15,6 @@ db_utils.add_node('pack1', config.get('process_data').get('PACK1'))
 db_utils.add_node('pack2', config.get('process_data').get('PACK2'))
 db_utils.add_node('scada', config.get('process_data').get('SCADA'))
 db_utils.add_node('motor', config.get('process_data').get('MOTOR'))
-db_utils.add_node('motor3', config.get('process_data').get('MOTOR3'))
 
 bus = can_utils.bus(config.get('bus_info'))
 
@@ -66,9 +65,7 @@ class Listener(can.Listener):
 	def on_message_received(self, msg):
 
 		if msg.arbitration_id == 0x555:
-			function, node_id = ('PDO', 3)
-		elif msg.arbitration_id == 0x381:
-			function, node_id = ('PDO', 2)
+			function, node_id = ('PDO-1', 3)
 		else:
 			function, node_id = messages.get_info(msg)
 
@@ -78,12 +75,19 @@ class Listener(can.Listener):
 			pdo = generate_pdo()
 			bus.send(pdo)
 
-		if function == 'PDO':
+		if function in ['PDO-1', 'PDO-2', 'PDO-3', 'PDO-4']:
+
+			_, pdo_number = function.split('-')
 
 			try:
-				node = config.get('can_nodes')[node_id]
+				node = config.get('can_nodes').get(node_id)
 			except:
 				return
+
+			# append pdo number to node name to distinguish different
+			# pdo mappings
+			if pdo_number != '1':
+				node = '{}-{}'.format(node, pdo_number)
 
 			pdo_structure = config.get('process_data').get(node)
 			db_utils.log_pdo(node, msg.data)
