@@ -61,11 +61,6 @@ process_data:
   SCADA:  [ TS_POWER ]
 ```
 
-TODO: it should be possible to define pieces of data that are more than 1 byte long
-
-TODO: need a good way to describe nodes with more than one PDO
-
-
 Because not all data needs to be read at a high frequency, the CANopen standard defines a way to
 read and write data at arbitrary times, called the Service Data Object.
 
