@@ -40,10 +40,10 @@ def update():
 	for target in calibration_utils.targets():
 		err, result = calibration_utils.process(target)
 		if err:
+			pass
 			# print("Error: {}".format(err))
-			break
-
-		can_utils.data_cache.set('SCADA', target, result)
+		else:		
+			can_utils.data_cache.set('SCADA', target, result)
 
 def generate_pdo():
 	output = []

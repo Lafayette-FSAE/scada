@@ -25,20 +25,26 @@ def state(args):
 		return 'AIRS-CLOSED'
 	elif state_number == 3:
 		return 'DRIVE SETUP'
+	elif state_number == 4:
+		return 'READY TO DRIVE SOUND'
+	elif state_number == 5:
+		return 'DRIVE'
+	else:
+		return 'STATE UNDEFINED'
 
 
-@cal_function(target='MC_VOLTAGE', requires=['TSI: MOTOR_CONTROLLER_VOLTAGE'])
+@cal_function(target='MC_VOLTAGE', requires=['TSI: MC_VOLTAGE'])
 def mc_voltage(args):
 	mc_voltage_raw, *other = args
 
-	return (mc_voltage_raw * 3.14) - 176.39
+	return (mc_voltage_raw * (1/61) + 1) * (256 / 5)
 
 
 @cal_function(target='TS_VOLTAGE', requires=['TSI: TS_VOLTAGE'])
 def mc_voltage(args):
 	voltage_raw, *other = args
 
-	return (voltage_raw * 3.14) - 176.39
+	return (voltage_raw * (1/61) + 1) * (256 / 5)
 
 
 @cal_function(target='FLOW_RATE', requires=['TSI: FLOW_RATE'])

@@ -45,16 +45,17 @@ def process(target):
 		try:
 			argument = data.get(node, name)
 			arguments.append(argument)
-		except:
+		except err:
 			message = "could not find key '{}' required for target '{}'".format(key, target)
 			err = Exception(message)
 			return (err, None)
 
 	try:
 		result = function(arguments)
-	except:
+	except Exception as error:
+		return (error, None)
 		# pass
-		return (Exception('bad function call, {}'.format(target)), None)
+		# return (Exception('Error in cal_function: {} \n {}'.format(target, err)), None)
 
 	return (None, result)
 
