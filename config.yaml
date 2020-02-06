@@ -107,7 +107,7 @@ GUI:
       MC Voltage:
         data_target: 'SCADA: MC_VOLTAGE'
       TS Voltage:
-        data_target: 'TSI: TS_VOLTAGE'
+        data_target: 'SCADA: TS_VOLTAGE'
         unit: 'V'
         oprange: [80, 90, 120, 150]
         open_sloop_out_of_range: no
@@ -119,9 +119,9 @@ GUI:
       Flow Rate:
         data_target: 'TSI: FLOW_RATE'
       Temp 1:
-        data_target: 'TSI: COOLING_TEMP_1'
+        data_target: 'SCADA: COOLING_TEMP'
       Temp 2:
-        data_target: 'TSI: COOLING_TEMP_2'
+        data_target: 'TSI: COOLING_TEMP_1'
     
     Cooling:
       Temp1:

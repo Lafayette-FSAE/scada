@@ -33,18 +33,24 @@ def state(args):
 		return 'STATE UNDEFINED'
 
 
+@cal_function(target='COOLING_TEMP', requires=['TSI: COOLING_TEMP_1'])
+def temp(args):
+	val, *rest = args
+
+	voltage = (val / 255) * 3.3
+	return 20.439 * voltage * voltage - 109.78 * voltage + 153.61
+
 @cal_function(target='MC_VOLTAGE', requires=['TSI: MC_VOLTAGE'])
 def mc_voltage(args):
 	mc_voltage_raw, *other = args
-
-	return (mc_voltage_raw * (1/61) + 1) * (256 / 5)
+	return (((mc_voltage_raw / 255) * 5) - 1.28) * 61
 
 
 @cal_function(target='TS_VOLTAGE', requires=['TSI: TS_VOLTAGE'])
-def mc_voltage(args):
+def ts_voltage(args):
 	voltage_raw, *other = args
 
-	return (voltage_raw * (1/61) + 1) * (256 / 5)
+	return (((voltage_raw / 255) * 5) - 1.28) * 61
 
 
 @cal_function(target='FLOW_RATE', requires=['TSI: FLOW_RATE'])
