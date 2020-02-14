@@ -38,7 +38,7 @@ def temp(args):
 	val, *rest = args
 
 	voltage = (val / 255) * 3.3
-	return 20.439 * voltage * voltage - 109.78 * voltage + 153.61
+	return (20.439 * voltage * voltage) - (109.78 * voltage) + 153.61
 
 @cal_function(target='MC_VOLTAGE', requires=['TSI: MC_VOLTAGE'])
 def mc_voltage(args):
@@ -53,11 +53,21 @@ def ts_voltage(args):
 	return (((voltage_raw / 255) * 5) - 1.28) * 61
 
 
+@cal_function(target='THROTTLE-TSI', requires=['TSI: THROTTLE'])
+def throttle(args):
+	throttle_raw, *other = args
+	
+	voltage = (throttle_raw / 255) * 3.3
+	return voltage * 33 / 18
+
 @cal_function(target='FLOW_RATE', requires=['TSI: FLOW_RATE'])
 def flow_rate(args):
 	flow_rate, *other = args
 
-	return flow_rate * 757
+	if flow_rate == 0:
+		return 0
+	else:
+		return 0.0535 + 757.5 * (1/flow_rate)
 
 """
 Converts ambient temp of pack1 to farenheit because it is 

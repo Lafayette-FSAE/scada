@@ -31,7 +31,7 @@ process_data:
   MOTOR-3: [ THROTTLE-byte0, THROTTLE-byte1,  AUX, BRAKE, PHASEB_CURRENT, DUMMY5, DUMMY6, DUMMY7 ]
   MOTOR-4: [ TORQUE_REGULATOR, FLUX_REGULATOR, VELOCITY ]
 
-  TSI:    [ CONDITIONS, MC_VOLTAGE, TS_VOLTAGE, COOLING_TEMP_1, COOLING_TEMP_2, FLOW_RATE, STATE, TS_CURRENT ]
+  TSI:    [ CONDITIONS, MC_VOLTAGE, TS_VOLTAGE, COOLING_TEMP_1, THROTTLE, FLOW_RATE, STATE, TS_CURRENT ]
   PACK1:  [ VOLTAGE, CURRENT, SOC_1, SOC_2, AMBIENT_TEMP, 'MIN_CELL_TEMP', AVG_CELL_TEMP, MAX_CELL_TEMP ]
   PACK2:  [ VOLTAGE, CURRENT, SOC_1, SOC_2, AMBIENT_TEMP, MIN_CELL_TEMP, AVG_CELL_TEMP, MAX_CELL_TEMP ]
   SCADA:  []
@@ -117,11 +117,11 @@ GUI:
         oprange: [Null, Null, 250, 300]
         open_sloop_out_of_range: yes
       Flow Rate:
-        data_target: 'TSI: FLOW_RATE'
+        data_target: 'SCADA: FLOW_RATE'
       Temp 1:
         data_target: 'SCADA: COOLING_TEMP'
-      Temp 2:
-        data_target: 'TSI: COOLING_TEMP_1'
+      Throttle:
+        data_target: 'SCADA: THROTTLE-TSI'
     
     Cooling:
       Temp1:
