@@ -41,7 +41,6 @@ def update():
 		err, result = calibration_utils.process(target)
 		if err:
 			pass
-			# print("Error: {}".format(err))
 		else:		
 			can_utils.data_cache.set('SCADA', target, result)
 
