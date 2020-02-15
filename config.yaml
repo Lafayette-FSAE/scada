@@ -119,7 +119,7 @@ GUI:
       Flow Rate:
         data_target: 'SCADA: FLOW_RATE'
       Temp 1:
-        data_target: 'SCADA: COOLING_TEMP'
+        data_target: 'TSI: COOLING_TEMP_1'
       Throttle:
         data_target: 'SCADA: THROTTLE-TSI'
     

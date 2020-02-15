@@ -1,4 +1,4 @@
-#!/usr/bin python
+#!/usr/bin/python3
 
 import config
 import redis
@@ -38,10 +38,14 @@ class Listener(can.Listener):
 			# separate can message into bytes and write each one
 			# to the redis server with its name as defined in the
 			# config file
+
+			pipe = data.pipeline()
+
 			for index, byte in enumerate(msg.data, start=0):
 				# try:
-				data.set(f"{node}: {pdo_structure[index]}", byte)
+				pipe.set(f"{node}: {pdo_structure[index]}", byte)
 
+			pipe.execute()
 
 if __name__ == "__main__":
 

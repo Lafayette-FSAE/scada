@@ -2,33 +2,15 @@ from blessed import Terminal
 term = Terminal()
 
 import config
-import can_utils
+import redis
+import time
+
+data = redis.Redis(host='localhost', port=6379, db=0)
 
 columns = config.get('GUI').get('Sensors')
 
 Motor = config.get('GUI').get('Sensors').get('Motor')
 TSI = config.get('GUI').get('Sensors').get('TSI')
-
-def update():
-	print(term.clear())
-
-	motor_data = []
-
-	for key in Motor:
-		target = Motor.get(key).get('data_target')
-		value = can_utils.data_cache.get(target)
-		motor_data.append((key, value))
-
-	print_column(motor_data, 'MOTOR:', 10, 0)
-
-	tsi_data = []
-
-	for key in TSI:
-		target = TSI.get(key).get('data_target')
-		value = can_utils.data_cache.get(target)
-		tsi_data.append((key, value))
-
-	print_column(tsi_data, 'TSI:', 50, 0)
 
 def print_column(data, label, x=0, y=0):
 	
@@ -51,13 +33,27 @@ def print_column(data, label, x=0, y=0):
 
 	print(col)
 
-import threading
+def update():
+	print(term.clear())
 
-def update_timer():
+	motor_data = []
 
+	for key in Motor:
+		target = Motor.get(key).get('data_target')
+		value = data.get(target)
+		motor_data.append((key, value))
+
+	print_column(motor_data, 'MOTOR:', 10, 0)
+
+	tsi_data = []
+
+	for key in TSI:
+		target = TSI.get(key).get('data_target')
+		value = data.get(target)
+		tsi_data.append((key, value))
+
+	print_column(tsi_data, 'TSI:', 50, 0)
+
+while True:
 	update()
-	threading.Timer(0.1, update_timer).start()
-
-def begin():
-	with term.fullscreen():
-		update_timer()
+	time.sleep(0.5)
