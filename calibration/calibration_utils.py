@@ -1,5 +1,8 @@
 from can_utils import data_cache as data
 
+import redis
+data_redis = redis.Redis(host='localhost', port=6379, db=0)
+
 __calibration_functions = {}
 
 # Decorator that adds a function to the list of calibration functions
@@ -43,9 +46,10 @@ def process(target):
 			node, name = key
 
 		try:
-			argument = data.get(node, name)
+			argument_raw = data_redis.get(f"{node}: {name}")
+			argument = int(argument_raw)
 			arguments.append(argument)
-		except err:
+		except:
 			message = "could not find key '{}' required for target '{}'".format(key, target)
 			err = Exception(message)
 			return (err, None)

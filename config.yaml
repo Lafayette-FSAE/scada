@@ -112,14 +112,14 @@ GUI:
         oprange: [80, 90, 120, 150]
         open_sloop_out_of_range: no
       TS Current:
-        data_target: 'TSI: TS_CURRENT'
+        data_target: 'SCADA: TS_CURRENT'
         unit: 'A'
         oprange: [Null, Null, 250, 300]
         open_sloop_out_of_range: yes
       Flow Rate:
         data_target: 'SCADA: FLOW_RATE'
       Temp 1:
-        data_target: 'TSI: COOLING_TEMP_1'
+        data_target: 'SCADA: COOLING_TEMP_1'
       Throttle:
         data_target: 'SCADA: THROTTLE-TSI'
     
