@@ -9,8 +9,6 @@ import can
 import utils
 from utils import messages
 
-from logger import syslog
-
 # open a connection to the redis server where we will
 # be writing data
 data = redis.Redis(host='localhost', port=6379, db=0)
@@ -52,8 +50,6 @@ class Listener(can.Listener):
 
 			pipe.execute()
 			data.publish('new_data', '')
-
-			syslog('info', 'new data')
 
 if __name__ == "__main__":
 	bus = utils.bus(config.get('bus_info'))
