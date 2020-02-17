@@ -1,9 +1,15 @@
+import os
+
 import yaml
 import logging
 
 __config = {}
 __loaded = False
 
+try:
+	config_path = os.environ['SCADA_CONFIG']
+except:
+	config_path = '/home/pi/scada-nogit/config.yaml'
 
 # Loads the YAML config file in a config structure
 def load():
@@ -12,7 +18,8 @@ def load():
 	if __loaded:
 		return
 	
-	with open('config.yaml', 'r') as stream:
+	with open(config_path, 'r') as stream:
+	# with open(os.eniron[])
 		try:
 			__config = yaml.safe_load(stream)
 			__loaded = True

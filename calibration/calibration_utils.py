@@ -62,19 +62,3 @@ def process(target):
 		# return (Exception('Error in cal_function: {} \n {}'.format(target, err)), None)
 
 	return (None, result)
-
-
-# def process_all(targets):
-
-# 	output = {}
-
-# 	for target in targets:
-# 		err, result = process(target)
-		
-# 		if err:
-# 			print("Error: {}".format(err))
-# 			break
-
-# 		output[target] = result
-
-# 	return output

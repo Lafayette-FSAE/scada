@@ -91,14 +91,3 @@ def ts_power(args):
 	power = (voltage * current) / 100
 
 	return power
-
-# """
-# Calculates Total Tractive System Voltage by adding
-# the voltage reported by each pack
-
-# """
-# @cal_function(target='TS_VOLTAGE', requires=['PACK1: VOLTAGE', 'PACK2: VOLTAGE'])
-# def ts_voltage(args):
-# 	pack1, pack2, *other = args
-
-# 	return pack1 + pack2

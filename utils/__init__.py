@@ -1,10 +1,7 @@
-import can_utils.messages
-import can_utils.object_dictionary
-import can_utils.data_cache
-
+import utils.messages
+import utils.object_dictionary
 
 ObjectDictionary = object_dictionary.ObjectDictionary
-
 
 import can
 

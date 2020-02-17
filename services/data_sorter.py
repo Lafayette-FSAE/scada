@@ -1,10 +1,15 @@
-#!/usr/bin/python3
+import sys, os
+
+scada_path = os.environ['SCADA_PATH']
+sys.path.append(scada_path)
 
 import config
 import redis
 import can
-import can_utils
-from can_utils import messages
+import utils
+from utils import messages
+
+from logger import syslog
 
 # open a connection to the redis server where we will
 # be writing data
@@ -43,13 +48,15 @@ class Listener(can.Listener):
 
 			for index, byte in enumerate(msg.data, start=0):
 				# try:
-				pipe.set(f"{node}: {pdo_structure[index]}", byte)
+				pipe.setex(f"{node}: {pdo_structure[index]}", 10, byte)
 
 			pipe.execute()
+			data.publish('new_data', '')
+
+			syslog('info', 'new data')
 
 if __name__ == "__main__":
-
-	bus = can_utils.bus(config.get('bus_info'))
+	bus = utils.bus(config.get('bus_info'))
 	notifier = can.Notifier(bus, [])
 	notifier.add_listener(Listener())
 
