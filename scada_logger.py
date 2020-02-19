@@ -3,7 +3,7 @@
 # from tkinter.ttk import *
 # import tkinter.scrolledtext as tk_ScrolledText
 # import queue
-
+		
 
 # class SCADALoggingHandler(logging.Handler):
 # 	def __init__(self, textWindow=None, msgQueue=None):

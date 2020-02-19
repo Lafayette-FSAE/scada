@@ -54,13 +54,8 @@ process_data:
 
 
 # modules
-logger:
-  enable: yes
-  database_path: /home/fsae/log.db
-  wipe_database_on_reset: yes
-
-data_processor:
-  enable: yes
+data_logger:
+  
 
 
 # \/                             \/
