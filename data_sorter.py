@@ -1,15 +1,13 @@
-#!/usr/bin/python3
-
 import sys, os
-
-# scada_path = os.environ['SCADA_PATH']
-sys.path.append('/home/pi/scada-nogit')
+sys.path.append('..')
 
 import config
 import redis
 import can
 import utils
 from utils import messages
+
+print(config.get('emulate_nodes'))
 
 # open a connection to the redis server where we will
 # be writing data
@@ -20,25 +18,6 @@ class Listener(can.Listener):
 
 		# infer the CANOpen protocol used and node id of sender
 		protocol, node_id = messages.get_info(msg)
-
-		if protocol == 'SDO-WRITE':
-			if len(msg.data) == 0:
-				return
-
-			# check the config file to find out name of node
-			try:
-				node = config.get('can_nodes').get(node_id)
-			except:
-				return
-
-			control_byte = msg.data[0]
-			index = msg.data[2] * 256 + msg.data[1]
-			subindex = msg.data[3]
-
-			if index == 0x3003:
-				temp = msg.data[5] * 256 + msg.data[4]
-				print(f"cell: {subindex} at temp: {temp}")
-				data.setex(f"pack1:temp:cell_{subindex}",60,temp)
 
 		# if the protocol used is one of the four types
 		# of PDOs (Process Data Objects), then log it
@@ -70,11 +49,11 @@ class Listener(can.Listener):
 				pipe.setex(f"{node}: {pdo_structure[index]}", 10, byte)
 
 			pipe.execute()
-			data.publish('new_data', '')
 
 if __name__ == "__main__":
 	bus = utils.bus(config.get('bus_info'))
-	notifier = can.Notifier(bus, [Listener()])
+	notifier = can.Notifier(bus, [])
+	notifier.add_listener(Listener())
 
 	for msg in bus:
 		pass

@@ -1,9 +1,3 @@
-import sys, os
-
-# scada_path = os.environ['SCADA_PATH']
-scada_path = '/home/pi/scada-nogit'
-sys.path.append(scada_path)
-
 from blessed import Terminal
 term = Terminal()
 
@@ -47,7 +41,6 @@ def update():
 	for key in Motor:
 		target = Motor.get(key).get('data_target')
 		value = data.get(target)
-		value = str(value)
 		motor_data.append((key, value))
 
 	print_column(motor_data, 'MOTOR:', 10, 0)
@@ -57,15 +50,7 @@ def update():
 	for key in TSI:
 		target = TSI.get(key).get('data_target')
 		value = data.get(target)
-
-		if value == None:
-			value = '--'
-
-		value = str(value)
-		value = value.replace("b'", "")
-		value = value.replace("'", "")
 		tsi_data.append((key, value))
-
 
 	print_column(tsi_data, 'TSI:', 50, 0)
 

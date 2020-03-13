@@ -1,0 +1,6 @@
+#!/bin/bash
+
+echo "installing python dependencies"
+
+pip3 install --user pyyaml
+pip3 install --user redis

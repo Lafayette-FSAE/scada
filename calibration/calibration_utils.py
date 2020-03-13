@@ -1,5 +1,3 @@
-from can_utils import data_cache as data
-
 import redis
 data_redis = redis.Redis(host='localhost', port=6379, db=0)
 
