@@ -8,8 +8,18 @@ modprobe vcan0
 ip link add dev vcan0 type vcan
 ip link set up vcan0
 
+# install python dependencies
 pip3 install python-can
 pip3 install redis
 
+# copy binary files to /usr/bin
+cp scada /usr/bin/scada
+cp sorter/sorter.py /usr/bin/scada_sorter.py
+cp calibrator/calibrator.py /usr/bin/scada_calibrator.py
+cp logger/logger.py /usr/bin/scada_logger.py
+
+
+# copy service files for systemd
 cp sorter/sorter.service /etc/systemd/system
 cp calibrator/calibrator.service /etc/systemd/system
+cp logger/logger.service /etc/systemd/system

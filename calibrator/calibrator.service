@@ -1,6 +1,6 @@
 [Service]
 WorkingDirectory=/home/fsae/test
-ExecStart=/home/fsae/test/calibrator/calibrator.py
+ExecStart=/usr/bin/scada_calibrator.py
 Restart=always
 StandardOutput=syslog
 StandardError=syslog
