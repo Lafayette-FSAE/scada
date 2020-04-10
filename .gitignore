@@ -1,3 +1,6 @@
+# vim sessions
+*.vim
+
 # scada_log text file
 scada_log.txt
 
