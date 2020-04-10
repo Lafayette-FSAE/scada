@@ -9,7 +9,8 @@ __loaded = False
 try:
 	config_path = os.environ['SCADA_CONFIG']
 except:
-	config_path = '/home/pi/scada-nogit/config.yaml'
+	#TODO: better way of making this generic
+	config_path = '/home/fsae/test/config.yaml'
 
 # Loads the YAML config file in a config structure
 def load():

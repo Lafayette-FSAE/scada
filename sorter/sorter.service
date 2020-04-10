@@ -1,0 +1,9 @@
+[Service]
+WorkingDirectory=/home/fsae/test
+ExecStart=/home/fsae/test/sorter/sorter.py
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=scada_sorter
+User=root
+Group=root

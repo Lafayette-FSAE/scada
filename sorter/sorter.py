@@ -3,7 +3,7 @@
 import sys, os
 
 # scada_path = os.environ['SCADA_PATH']
-sys.path.append('/home/pi/scada-nogit')
+sys.path.append('/home/fsae/test')
 
 import config
 import redis
@@ -21,24 +21,24 @@ class Listener(can.Listener):
 		# infer the CANOpen protocol used and node id of sender
 		protocol, node_id = messages.get_info(msg)
 
-		if protocol == 'SDO-WRITE':
-			if len(msg.data) == 0:
-				return
-
-			# check the config file to find out name of node
-			try:
-				node = config.get('can_nodes').get(node_id)
-			except:
-				return
-
-			control_byte = msg.data[0]
-			index = msg.data[2] * 256 + msg.data[1]
-			subindex = msg.data[3]
-
-			if index == 0x3003:
-				temp = msg.data[5] * 256 + msg.data[4]
-				print(f"cell: {subindex} at temp: {temp}")
-				data.setex(f"pack1:temp:cell_{subindex}",60,temp)
+#		if protocol == 'SDO-WRITE':
+#			if len(msg.data) == 0:
+#				return
+#
+#			# check the config file to find out name of node
+#			try:
+#				node = config.get('can_nodes').get(node_id)
+#			except:
+#				return
+#
+#			control_byte = msg.data[0]
+#			index = msg.data[2] * 256 + msg.data[1]
+#			subindex = msg.data[3]
+#
+#			if index == 0x3003:
+#				temp = msg.data[5] * 256 + msg.data[4]
+#				print(f"cell: {subindex} at temp: {temp}")
+#				data.setex(f"pack1:temp:cell_{subindex}",60,temp)
 
 		# if the protocol used is one of the four types
 		# of PDOs (Process Data Objects), then log it
@@ -49,6 +49,7 @@ class Listener(can.Listener):
 			# check the config file to find out name of node
 			try:
 				node = config.get('can_nodes').get(node_id)
+				print(node)
 			except:
 				return
 
@@ -66,11 +67,14 @@ class Listener(can.Listener):
 			pipe = data.pipeline()
 
 			for index, byte in enumerate(msg.data, start=0):
-				# try:
-				pipe.setex(f"{node}: {pdo_structure[index]}", 10, byte)
+				pipe.setex("{node}: {value}".format(
+					node=node,
+					value=pdo_structure[index]
+				), 10, byte)
+				#pipe.setex("{node}: {pdo_structure[index]}".format(node=node, ), 10, byte)
 
 			pipe.execute()
-			data.publish('new_data', '')
+			data.publish('bus_data', '')
 
 if __name__ == "__main__":
 	bus = utils.bus(config.get('bus_info'))

@@ -1,0 +1,9 @@
+[Service]
+WorkingDirectory=/home/fsae/test
+ExecStart=/home/fsae/test/logger/logger.py
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=scada_logger
+User=root
+Group=root

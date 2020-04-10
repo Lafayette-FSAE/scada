@@ -1,6 +1,6 @@
 bus_info:
   bustype: socketcan
-  channel: can0
+  channel: vcan0
   bitrate: 125000
 
 emulate_nodes: yes
@@ -51,11 +51,6 @@ process_data:
 #     index: 2010
 #     subindex: 0
 #     poll_rate: 0.5
-
-
-# modules
-data_logger:
-  
 
 
 # \/                             \/

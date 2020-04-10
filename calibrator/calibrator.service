@@ -1,0 +1,9 @@
+[Service]
+WorkingDirectory=/home/fsae/test
+ExecStart=/home/fsae/test/calibrator/calibrator.py
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=scada_calibrator
+User=root
+Group=root

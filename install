@@ -1,0 +1,15 @@
+#!/bin/bash
+
+apt-get install redis-server
+apt-get install can-utils
+
+# make sure virtual can bus is set up for testing
+modprobe vcan0
+ip link add dev vcan0 type vcan
+ip link set up vcan0
+
+pip3 install python-can
+pip3 install redis
+
+cp sorter/sorter.service /etc/systemd/system
+cp calibrator/calibrator.service /etc/systemd/system

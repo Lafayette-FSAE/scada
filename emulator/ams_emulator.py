@@ -1,3 +1,10 @@
+#!/usr/bin/python3
+
+import sys, os
+
+#TODO: need to make this path generic
+sys.path.append('/home/fsae/test')
+
 import can
 import can_utils
 import config
@@ -8,6 +15,7 @@ import random
 # bus = can.interface.Bus('main', bustype='virtual')
 
 bus = can_utils.bus(config.get('bus_info'))
+notifier = can.Notifier(bus, [])
 
 od = can_utils.ObjectDictionary()
 
@@ -103,7 +111,6 @@ class Listener(can.Listener):
 
 		# sync
 		if function == 'SYNC':
-			update()
 			data = od.get_pdo_data()
 			msg = can_utils.messages.pdo(self.node_id, data)
 			bus.send(msg)
@@ -120,5 +127,3 @@ class Listener(can.Listener):
 			new_index = [msg.data[1], msg.data[2]]
 			response = can_utils.messages.sdo_response(self.node_id, new_index, subindex, value)
 			bus.send(response)
-
-			

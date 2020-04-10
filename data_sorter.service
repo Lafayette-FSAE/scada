@@ -1,9 +1,0 @@
-[Service]
-WorkingDirectory=/home/pi/scada-nogit
-ExecStart=python3 /home/pi/scada-nogit/services/data_sorter.py
-Restart=always
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=scada_data_sorter
-User=root
-Group=root

@@ -44,7 +44,7 @@ def process(target):
 			node, name = key
 
 		try:
-			argument_raw = data_redis.get(f"{node}: {name}")
+			argument_raw = data_redis.get("{node}: {name}".format(node=node, name=name))
 			argument = int(argument_raw)
 			arguments.append(argument)
 		except:

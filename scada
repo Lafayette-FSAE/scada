@@ -1,0 +1,62 @@
+#!/usr/bin/python3
+import argparse
+import os
+
+parser = argparse.ArgumentParser(description='Supervisory Control And Data Aquistion')
+parser.add_argument('--config', metavar='-c')
+
+subparsers = parser.add_subparsers(help='sub-command help')
+
+# start command
+def start(args):
+    process = args.process
+    os.system('systemctl start {}'.format(process))
+   # print('systemctl start {}'.format(process))
+
+parser_start = subparsers.add_parser('start', help='start a SCADA process')
+parser_start.add_argument('process', help='the process to start')
+parser_start.set_defaults(func=start)
+
+
+# stop command
+def stop(args):
+    process = args.process
+    os.system('systemctl stop {}'.format(process))
+
+parser_stop = subparsers.add_parser('stop', help='stop a SCADA process')
+parser_stop.add_argument('process', help='the process to stop')
+parser_stop.set_defaults(func=stop)
+
+# restart command
+def restart(args):
+    process = args.process
+    os.system('systemctl restart {}'.format(process))
+
+parser_restart = subparsers.add_parser('restart', help='restart a SCADA process')
+parser_restart.add_argument('process', help='the process to restart')
+parser_restart.set_defaults(func=restart)
+
+
+# status command
+def status(args):
+	cmds = [
+		'systemctl status sorter',
+		'systemctl status calibrator',
+		'systemctl status logger']
+
+	for cmd in cmds:
+            result = os.system(cmd)
+            print(result)
+
+parser_status = subparsers.add_parser('status', help='print status of SCADA daemons')
+parser_status.set_defaults(func=status)
+
+# open text user interface
+def tui(args):
+	os.system('python3 interfaces/tui.py')
+
+parser_tui = subparsers.add_parser('tui', help='show the SDADA TUI')
+parser_tui.set_defaults(func=tui)
+
+args = parser.parse_args()
+args.func(args)
