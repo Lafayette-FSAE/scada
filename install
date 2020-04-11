@@ -12,6 +12,13 @@ ip link set up vcan0
 pip3 install python-can
 pip3 install redis
 
+# make binary files executable
+chmod +x install
+chmod +x scada
+chmod +x sorter/sorter.py
+chmod +x calibrator/calibrator.py
+chmod +x logger/logger.py
+
 # copy binary files to /usr/bin
 cp scada /usr/bin/scada
 cp sorter/sorter.py /usr/bin/scada_sorter.py
