@@ -2,26 +2,23 @@
 
 import sys, os
 
-#TODO: need to make this path generic
-sys.path.append('/home/fsae/test')
-
 import can
-import can_utils
 import config
 
 import random
 
-# bus = can.interface.Bus(bustype='socketcan', channel='vcan0', bitrate='125000')
-# bus = can.interface.Bus('main', bustype='virtual')
+import utils
+from utils import object_dictionary
+from utils import messages
 
-bus = can_utils.bus(config.get('bus_info'))
+bus = utils.bus(config.get('bus_info'))
 notifier = can.Notifier(bus, [])
 
-od = can_utils.ObjectDictionary()
+od = object_dictionary.ObjectDictionary()
 
-od.add_key('VOLTAGE')
-od.add_key('CURRENT')
-od.add_key('SOC_1')
+od.add_key('voltage')
+od.add_key('current')
+od.add_key('state_of_charge_01')
 od.add_key('SOC_2')
 od.add_key('AMBIENT_TEMP')
 od.add_key('MIN_CELL_TEMP')
@@ -107,12 +104,12 @@ class Listener(can.Listener):
 
 	def on_message_received(self, msg):
 
-		function, node = can_utils.messages.get_info(msg)
+		function, node = messages.get_info(msg)
 
 		# sync
 		if function == 'SYNC':
 			data = od.get_pdo_data()
-			msg = can_utils.messages.pdo(self.node_id, data)
+			msg = messages.pdo(self.node_id, data)
 			bus.send(msg)
 
 		# sdo read
@@ -125,5 +122,5 @@ class Listener(can.Listener):
 			value = od.get_value('', index=(index, subindex))
 
 			new_index = [msg.data[1], msg.data[2]]
-			response = can_utils.messages.sdo_response(self.node_id, new_index, subindex, value)
+			response = messages.sdo_response(self.node_id, new_index, subindex, value)
 			bus.send(response)

@@ -71,7 +71,7 @@ class Listener(can.Listener):
 			for index, byte in enumerate(msg.data, start=0):
 				key = '{}:{}'.format(node, pdo_structure[index])
 				key = key.lower()
-				pipe.setex(key, 10, byte)
+				pipe.setex(key, 10, int(byte))
 
 			pipe.execute()
 			data.publish('bus_data', '')

@@ -4,7 +4,6 @@ import sys, os
 import can
 
 import utils
-
 from utils import object_dictionary
 from utils import messages
 

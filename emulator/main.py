@@ -23,11 +23,11 @@ bus = utils.bus(config.get('bus_info'))
 notifier = can.Notifier(bus, [])
 
 import tsi_emulator
-import ams_emulator
+#import ams_emulator
 
 # Add emulators to the bus
 notifier.add_listener(tsi_emulator.Listener(node_id = 3))
-notifier.add_listener(ams_emulator.Listener(node_id = 4))
+#notifier.add_listener(ams_emulator.Listener(node_id = 4))
 
 #notifier.add_listener(ams_emulator.Listener(node_id = 5))
 # TODO: separate emulators of the same type should not 
@@ -43,6 +43,6 @@ bus.send_periodic(sync, 0.1)
 # Main update loop, just tell the emulators to update their states
 # and wait for a short amount of time
 while True:
-    ams_emulator.update()
+    #ams_emulator.update()
     tsi_emulator.update()
     time.sleep(0.5)

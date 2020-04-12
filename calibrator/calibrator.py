@@ -28,20 +28,25 @@ def execute(cal_function):
 	argument_keys = calibration.get_arguments(cal_function)
 	arguments = []
 	for key in argument_keys:
-		value = int(data_redis.get(key))
-		arguments.append(value_int)
+		value = data.get(key)
+		if hasattr(value, 'decode'):
+			value = value.decode()
+			value = int(value)
+			print(key + ' ' + str(value))
+		arguments.append(value)
 		
 	function = calibration.get_function(cal_function)
 	result = function(arguments)
 	return result
 		
 def update():
-
 	for cal_function in calibration.get_function_names():
 		try:
 			result = execute(cal_function)
 			data.setex(cal_function, 10, result)	
-		except: 
+		except Exception as e: 
+			print(e)
+			print()
 			pass
 			#print(f'failed to calibrate "{target}", cal_function failed with message: "{err}"')
 			# log.warning(f'failed to calibrate "{target}", cal_function failed with message: "{err}"')

@@ -2,8 +2,11 @@
 import sys, os
 
 # scada_path = os.environ['SCADA_PATH']
-scada_path = '/home/fsae/test'
+scada_path = '/usr/etc/scada'
+config_path = '/usr/etc/scada/config'
+
 sys.path.append(scada_path)
+sys.path.append(config_path)
 
 from blessed import Terminal
 term = Terminal()
@@ -34,10 +37,7 @@ def print_column(data, label, x=0, y=0):
 		col += '{}'.format(name)
 		col += term.move_x(x + 20)
 		col += '{}'.format(value)
-
 		col += term.move_down(1)
-
-
 	print(col)
 
 def update():
@@ -61,6 +61,13 @@ def update():
 
 		if value == None:
 			value = '--'
+
+		try:
+			value_float = float(value)
+			value_float = round(value_float, 2)
+			value = value_float
+		except:
+			pass
 
 		value = str(value)
 		value = value.replace("b'", "")
