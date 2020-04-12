@@ -2,8 +2,11 @@
 
 import sys, os
 
-# scada_path = os.environ['SCADA_PATH']
-sys.path.append('/home/fsae/test')
+lib_path = '/usr/etc/scada'
+config_path = '/usr/etc/scada/config'
+
+sys.path.append(lib_path)
+sys.path.append(config_path)
 
 import config
 import redis
@@ -67,11 +70,9 @@ class Listener(can.Listener):
 			pipe = data.pipeline()
 
 			for index, byte in enumerate(msg.data, start=0):
-				pipe.setex("{node}: {value}".format(
-					node=node,
-					value=pdo_structure[index]
-				), 10, byte)
-				#pipe.setex("{node}: {pdo_structure[index]}".format(node=node, ), 10, byte)
+				key = '{}:{}'.format(node, value)
+				key = key.lower()
+				pipe.setex(key, 10, byte)
 
 			pipe.execute()
 			data.publish('bus_data', '')

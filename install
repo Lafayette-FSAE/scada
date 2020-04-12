@@ -4,7 +4,7 @@ apt-get install redis-server
 apt-get install can-utils
 
 # make sure virtual can bus is set up for testing
-modprobe vcan0
+modprobe vcan
 ip link add dev vcan0 type vcan
 ip link set up vcan0
 
@@ -25,6 +25,13 @@ cp sorter/sorter.py /usr/bin/scada_sorter.py
 cp calibrator/calibrator.py /usr/bin/scada_calibrator.py
 cp logger/logger.py /usr/bin/scada_logger.py
 
+# create a workspace and copy important files into it
+mkdir -p /usr/etc/scada
+rm -rf /usr/etc/scada/utils
+cp -r utils /usr/etc/scada/utils
+rm -rf /usr/etc/scada/config
+cp -r config /usr/etc/scada/config
+cp ./install /usr/etc/scada
 
 # copy service files for systemd
 cp sorter/sorter.service /etc/systemd/system

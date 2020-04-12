@@ -1,16 +1,17 @@
 #!/usr/bin/python3
 import sys, os
 
-scada_path = '/home/fsae/scada'
+lib_path = '/usr/etc/scada'
+config_path = '/usr/etc/scada/config'
 
-sys.path.append(scada_path)
-sys.path.append('{path}/calibrator'.format(path = scada_path))
+sys.path.append(lib_path)
+sys.path.append(config_path)
 
 import config
 import redis
 
 import utils
-import calibration_utils
+from utils import calibration
 import user_cal
 
 import time
@@ -24,24 +25,25 @@ p = data.pubsub()
 p.subscribe('bus_data')
 
 def execute(cal_function):
-	argument_keys = calibration_utils.get_arguments(cal_function)
+	argument_keys = calibration.get_arguments(cal_function)
 	arguments = []
 	for key in argument_keys:
 		value = int(data_redis.get(key))
 		arguments.append(value_int)
 		
-	function = calibration_utils.get_function(cal_function)
+	function = calibration.get_function(cal_function)
 	result = function(arguments)
 	return result
 		
 def update():
 
-	for cal_function in calibration_utils.get_function_names():
+	for cal_function in calibration.get_function_names():
 		try:
 			result = execute(cal_function)
 			data.setex(cal_function, 10, result)	
 		except: 
-			print(f'failed to calibrate "{target}", cal_function failed with message: "{err}"')
+			pass
+			#print(f'failed to calibrate "{target}", cal_function failed with message: "{err}"')
 			# log.warning(f'failed to calibrate "{target}", cal_function failed with message: "{err}"')
 
 	# let the other processes know that there is new calculated data

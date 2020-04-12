@@ -28,14 +28,21 @@ parser_stop.add_argument('process', help='the process to stop')
 parser_stop.set_defaults(func=stop)
 
 # restart command
-def restart(args):
-    process = args.process
-    os.system('systemctl restart {}'.format(process))
+def restart(args): 
+	process = args.process
+
+	if process == 'all':
+		os.system('systemctl restart sorter')
+		os.system('systemctl restart calibrator')
+		os.system('systemctl restart logger') 
+	else:	
+		os.system('systemctl restart {}'.format(process))
+
+	os.system('systemctl daemon-reload')
 
 parser_restart = subparsers.add_parser('restart', help='restart a SCADA process')
 parser_restart.add_argument('process', help='the process to restart')
 parser_restart.set_defaults(func=restart)
-
 
 # status command
 def status(args):
@@ -45,8 +52,8 @@ def status(args):
 		'systemctl status logger']
 
 	for cmd in cmds:
-            result = os.system(cmd)
-            print(result)
+		result = os.system(cmd)
+		print(result)
 
 parser_status = subparsers.add_parser('status', help='print status of SCADA daemons')
 parser_status.set_defaults(func=status)
@@ -57,6 +64,19 @@ def tui(args):
 
 parser_tui = subparsers.add_parser('tui', help='show the SDADA TUI')
 parser_tui.set_defaults(func=tui)
+
+def reload(args):
+	os.system('bash /usr/etc/scada/install')
+	os.system('scada restart all')
+
+parser_reload = subparsers.add_parser('reload', help='Re-Installs SCADA')
+parser_reload.set_defaults(func=reload)
+
+def logs(args):
+	os.system('tail -n 100 /var/log/syslog | grep scada')
+
+parser_logs = subparsers.add_parser('logs', help='fetch the daemon logs from syslog')
+parser_logs.set_defaults(func=logs)
 
 args = parser.parse_args()
 args.func(args)

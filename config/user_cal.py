@@ -1,21 +1,15 @@
-from calibration_utils import cal_function
+from utils import calibration
+cal_function = calibration.cal_function
 
-
-@cal_function(target='THROTTLE', requires=[
-	'MOTOR: THROTTLE-byte0',
-	'MOTOR: THROTTLE-byte1'
+@cal_function(output='motor:throttle', arguments=[
+    'motor:throttle:byte0',
+    'motor:throttle:byte1'
 ])
 def throttle(args):
 	lsb, msb, *other = args
-
 	return msb * 256 + lsb
 
-"""
-Converts TSI state integer to human readable string
-
-"""
-
-@cal_function(target='STATE', requires=['TSI: STATE'])
+@cal_function(output='tsi:state', arguments=['tsi:state:int'])
 def state(args):
 	state_number, *other = args
 
@@ -32,62 +26,45 @@ def state(args):
 	else:
 		return 'STATE UNDEFINED'
 
-
-@cal_function(target='COOLING_TEMP', requires=['TSI: COOLING_TEMP_1'])
+@cal_function(output='tsi:cooling_temp', arguments=['tsi:cooling_temp:raw'])
 def temp(args):
 	val, *rest = args
-
 	voltage = (val / 255) * 3.3
 	return (20.439 * voltage * voltage) - (109.78 * voltage) + 153.61
 
-@cal_function(target='MC_VOLTAGE', requires=['TSI: MC_VOLTAGE'])
+@cal_function(output='tsi:mc_voltage', arguments=['tsi:mc_voltage:raw'])
 def mc_voltage(args):
 	mc_voltage_raw, *other = args
 	return (((mc_voltage_raw / 255) * 5) - 1.28) * 61
 
-
-@cal_function(target='TS_VOLTAGE', requires=['TSI: TS_VOLTAGE'])
+@cal_function(output='tsi:voltage', arguments=['tsi:voltage:raw'])
 def ts_voltage(args):
 	voltage_raw, *other = args
-
 	return (((voltage_raw / 255) * 5) - 1.28) * 61
 
-
-@cal_function(target='THROTTLE-TSI', requires=['TSI: THROTTLE'])
+@cal_function(output='tsi:throttle', arguments=['tsi:throttle:raw'])
 def throttle(args):
 	throttle_raw, *other = args
-	
 	voltage = (throttle_raw / 255) * 3.3
 	return voltage * 33 / 18
 
-@cal_function(target='FLOW_RATE', requires=['TSI: FLOW_RATE'])
+@cal_function(output='tsi:flow_rate', arguments=['tsi:flow_rate:raw'])
 def flow_rate(args):
 	flow_rate, *other = args
-
 	if flow_rate == 0:
 		return 0
 	else:
 		return 0.0535 + 757.5 * (1/flow_rate)
 
-"""
-Converts ambient temp of pack1 to farenheit because it is 
-easy and a good test
+@cal_function(output='pack1:temp:farenheit', arguments=['pack1:temp'])
+def packtemp_farenheit(args):
+	temp, *other = args
+	temp_faranheit = temp * (9/5) + 32
+	return temp_faranheit
 
-"""
-
-# @cal_function(target='PackTemp_Farenheit', requires=['PACK1: AMBIENT_TEMP'])
-# def packtemp_farenheit(args):
-# 	temp, *other = args
-
-# 	temp_faranheit = temp * (9/5) + 32
-
-# 	return temp_faranheit
-
-# Calculates the current TS power draw in kW
-@cal_function(target='TS_POWER', requires=[('TSI', 'TS_VOLTAGE'), ('TSI', 'TS_CURRENT')])
+# Calculates the TS power draw in kW
+@cal_function(output='tsi:power', arguments=['tsi:voltage', 'tsi:current'])
 def ts_power(args):
 	voltage, current, *other = args
-
 	power = (voltage * current) / 100
-
 	return power
