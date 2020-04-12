@@ -52,7 +52,6 @@ class Listener(can.Listener):
 			# check the config file to find out name of node
 			try:
 				node = config.get('can_nodes').get(node_id)
-				print(node)
 			except:
 				return
 
@@ -70,7 +69,7 @@ class Listener(can.Listener):
 			pipe = data.pipeline()
 
 			for index, byte in enumerate(msg.data, start=0):
-				key = '{}:{}'.format(node, value)
+				key = '{}:{}'.format(node, pdo_structure[index])
 				key = key.lower()
 				pipe.setex(key, 10, byte)
 

@@ -1,18 +1,16 @@
 #!/usr/bin/python3
 
 import sys, os
-
-sys.path.append('/home/fsae/test')
 import can
 
-import can_utils
+import utils
 
-from can_utils import object_dictionary
-from can_utils import messages
+from utils import object_dictionary
+from utils import messages
 
 import config
 
-bus = can_utils.bus(config.get('bus_info'))
+bus = utils.bus(config.get('bus_info'))
 notifier = can.Notifier(bus, [])
 
 # Create Object Dictionary
@@ -22,7 +20,7 @@ od = object_dictionary.ObjectDictionary()
 od.add_keys(pdo_structure)
 od.set_pdo_map(pdo_structure)
 
-od.set('STATE', 1)
+od.set('state:int', 1)
 
 maxval = 255
 def ramp(t):
@@ -44,13 +42,13 @@ time = 0
 def update():
 	global time
 
-	od.set('TS_CURRENT', ramp(time))
-	od.set('THROTTLE', ramp(time))
-	od.set('STATE', get_state(time))	
+	od.set('current:raw', ramp(time))
+	od.set('throttle:raw', ramp(time))
+	od.set('state:int', get_state(time))	
 
 	time = time + 1
 
-	od.set('TS_VOLTAGE', 100)
+	od.set('voltage:raw', 100)
 
 class Listener(can.Listener):
 	def __init__(self, node_id):

@@ -90,28 +90,29 @@ GUI:
     
     TSI:
       Drive State:
-        data_target: 'SCADA: STATE'
+        data_target: 'tsi:state'
         unit: ''
         oprange: [80, 90, 120, 150]
         open_sloop_out_of_range: no
       MC Voltage:
-        data_target: 'SCADA: MC_VOLTAGE'
+        data_target: 'tsi:mc_voltage'
+        unit: 'V'
       TS Voltage:
-        data_target: 'SCADA: TS_VOLTAGE'
+        data_target: 'tsi:voltage'
         unit: 'V'
         oprange: [80, 90, 120, 150]
         open_sloop_out_of_range: no
       TS Current:
-        data_target: 'SCADA: TS_CURRENT'
+        data_target: 'tsi:current'
         unit: 'A'
         oprange: [Null, Null, 250, 300]
         open_sloop_out_of_range: yes
       Flow Rate:
-        data_target: 'SCADA: FLOW_RATE'
+        data_target: 'tsi:flow_rate'
       Temp 1:
-        data_target: 'SCADA: COOLING_TEMP_1'
+        data_target: 'tsi:temp'
       Throttle:
-        data_target: 'SCADA: THROTTLE-TSI'
+        data_target: 'tsi:throttle'
     
     Cooling:
       Temp1:

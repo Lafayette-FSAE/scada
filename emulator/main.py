@@ -5,18 +5,21 @@
 import sys, os
 import time
 
-sys.path.append('/home/fsae/test')
-sys.path.append('/home/fsae/test/emulator')
+sys.path.append('/home/fsae/scada')
+sys.path.append('/home/fsae/scada/emulator')
+
+sys.path.append('/usr/etc/scada')
+sys.path.append('/usr/etc/scada/config')
 
 import can
-import can_utils
+import utils
 
-from can_utils import object_dictionary
-from can_utils import messages
+from utils import object_dictionary
+from utils import messages
 
 import config
 
-bus = can_utils.bus(config.get('bus_info'))
+bus = utils.bus(config.get('bus_info'))
 notifier = can.Notifier(bus, [])
 
 import tsi_emulator

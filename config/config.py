@@ -1,4 +1,4 @@
-import os
+import os, sys
 
 import yaml
 import logging
@@ -6,11 +6,11 @@ import logging
 __config = {}
 __loaded = False
 
-try:
-	config_path = os.environ['SCADA_CONFIG']
-except:
-	#TODO: better way of making this generic
-	config_path = '/home/fsae/test/config.yaml'
+lib_path = '/usr/etc/scada'
+config_path = '/usr/etc/scada/config'
+
+sys.path.append(lib_path)
+sys.path.append(config_path)
 
 # Loads the YAML config file in a config structure
 def load():
@@ -19,7 +19,7 @@ def load():
 	if __loaded:
 		return
 	
-	with open(config_path, 'r') as stream:
+	with open(config_path + '/config.yaml', 'r') as stream:
 	# with open(os.eniron[])
 		try:
 			__config = yaml.safe_load(stream)
