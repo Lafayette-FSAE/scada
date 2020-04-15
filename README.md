@@ -1,6 +1,10 @@
 # SCADA
 Project Kalman part 2, Supervisory Control And Data Acquisition written in python for the Lafayette FSAE Car
 
+## Block Diagram
+![](https://github.com/Lafayette-FSAE/scada/blob/refactor/block-diagram_plain.svg)
+
+
 ## Configuration
 ---
 
