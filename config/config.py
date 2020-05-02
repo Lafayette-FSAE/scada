@@ -30,13 +30,13 @@ def load():
 
 
 # Returns the value associated with the given key in the config structure
-def get(key):
+def get(key, default=None):
 	global __config, __loaded
 	
 	if not __loaded:
 		load()
 	
-	return __config[key]
+	return __config.get(key, default)
 
 
 # Returns a string dump of the entire config structure

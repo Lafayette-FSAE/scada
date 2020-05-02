@@ -20,7 +20,7 @@ import datetime
 # TODO: reintroduce verbose logging
 
 # Configure Redis interface
-data = redis.Redis(host='localhost', port=6379, db=0)
+data = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
 p = data.pubsub()
 p.subscribe('bus_data')
 
@@ -29,21 +29,29 @@ def execute(cal_function):
 	arguments = []
 	for key in argument_keys:
 		value = data.get(key)
-		if hasattr(value, 'decode'):
-			value = value.decode()
-			value = int(value)
-			print(key + ' ' + str(value))
+		value = float(value)
+#		if hasattr(value, 'decode'): 
+#			value = value.decode()
+#			value = int(value)
+#			print(key + ' ' + str(value))
 		arguments.append(value)
 		
 	function = calibration.get_function(cal_function)
 	result = function(arguments)
+	print()
+	print(cal_function)
+	print(arguments)
+	print(result)
+	print()
 	return result
 		
 def update():
 	for cal_function in calibration.get_function_names():
 		try:
+			print(cal_function)
 			result = execute(cal_function)
 			data.setex(cal_function, 10, result)	
+			data.publish('calculated_data', cal_function)
 		except Exception as e: 
 			print(e)
 			print()
@@ -51,11 +59,9 @@ def update():
 			#print(f'failed to calibrate "{target}", cal_function failed with message: "{err}"')
 			# log.warning(f'failed to calibrate "{target}", cal_function failed with message: "{err}"')
 
-	# let the other processes know that there is new calculated data
-	data.publish('calculated_data', '')
-
 while True:
-	while p.get_message():
+	message = p.get_message()
+	if message:
 		update()
-		
-	time.sleep(0.1)
+	else:
+		time.sleep(0.1)

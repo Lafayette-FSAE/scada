@@ -73,8 +73,8 @@ class Listener(can.Listener):
 				key = key.lower()
 				pipe.setex(key, 10, int(byte))
 
+			data.publish('bus_data', key)
 			pipe.execute()
-			data.publish('bus_data', '')
 
 if __name__ == "__main__":
 	bus = utils.bus(config.get('bus_info'))
