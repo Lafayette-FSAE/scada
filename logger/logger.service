@@ -1,5 +1,5 @@
 [Service]
-WorkingDirectory=/home/fsae/test
+WorkingDirectory=/usr/etc/scada
 ExecStart=/usr/bin/scada_logger.py
 Restart=always
 StandardOutput=syslog

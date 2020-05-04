@@ -2,7 +2,11 @@
 
 import sys, os
 
-sys.path.append('/home/connor/scada/config')
+lib_path = '/usr/etc/scada'
+config_path = '/usr/etc/scada/config'
+
+sys.path.append(lib_path)
+sys.path.append(config_path)
 
 import config
 import time
@@ -21,6 +25,7 @@ database = psycopg2.connect(
 p = car_state.pubsub()
 p.subscribe('bus_data')
 p.subscribe('calculated_data')
+p.subscribe('new-session')
 
 cursor = database.cursor()
 
@@ -48,9 +53,16 @@ cursor.execute("""
 	);		  
 """)
 
+
 database.commit()
 
 previous_values = {}
+
+def delimit_session():
+	cursor.execute("""
+		INSERT INTO data (sensor_id, value)		   
+		VALUES ('scada:session', 'NEW-SESSION');
+	""") 
 
 def update(message, key):
 	if car_state.get(key) == previous_values.get(key, None):
@@ -80,6 +92,9 @@ while True:
 	if message:
 		if message['channel'] in ['bus_data', 'calculated_data']:  
 			update(message['channel'], message['data'])
+		elif message['channel'] == 'new-session':
+			delimit_session()		 
+
 	else:
 		database.commit()
 		time.sleep(0.1)
