@@ -124,7 +124,99 @@ Other clients are in development as well, including a command line tool for basi
 
 ## Installation
 
-One of the drawbacks of the small and modular approach to system development is that 
+### Prerequisites
+
+SCADA assumes it is being run on a debian based linux distribution. This will almost always be raspbian, but it has also been tested on a pure debian server. This should also work on something like ubuntu, but this has not been tested. SCADA will not work on a Windows or Mac, and most likely never will. This is by design, as SCADA takes advantage of a large number of assumptions about its environment. 
+
+It is recommended to set up a dedicated development server for SCADA using a spare raspberry pi and ideally something resembling the GLV hardware. This could be expanded over time into include a mock CAN bus for integration testing with other subsystems.
+
+Because the Lafayette network can be difficult to navigate, it is recommended that this be bypassed using either a dedicated physical network or vpn. This could be set up in such a way as to prevent ip address changes and to enable offsite work.
+
+### Install Script
+
+One of the drawbacks of the small and modular approach to system development is that installation becomes a bit more tricky. To help mitigate this, an install script is included with SCADA which is meant to help automate the process.
+
+Ideally, a full installation of SCADA could be performed with the following shell commands:
+
+```bash
+$ git clone https://github.com/Lafayette-FSAE/scada
+$ cd scada
+$ sudo bash install
+```
+
+However, becasue SCADA is still relatively new software, the install script is likely to fail in some environments, requireing manual intervention. In addition, updates will need to be made to the install script periodically as new features are added to SCADA. To that end, an explanation of the install script and what it does is provided here.
+
+
+```bash
+apt-get install python3
+apt-get install python3-pip
+apt-get install redis-server
+apt-get install can-utils
+```
+
+This section uses apt-get to install 3rd party programs and dependencies. New dependencies can be added to SCADA by appending apt-get calls to this list.
+
+```bash
+# install python dependencies
+pip3 install python-can
+pip3 install redis
+pip3 install blessed
+pip3 install psycopg2-binary
+```
+
+Next, the python package manager is used to install python specific dependencies.
+
+```bash
+# make sure virtual can bus is set up for testing
+modprobe vcan
+ip link add dev vcan0 type vcan
+ip link set up vcan0
+```
+
+The Pi's CAN interface is created and turned on. This is currently configured to use a virtual CAN interface for development and testing, but can be switched to the real CAN bus by replacing all instances of vcan with can.
+
+```bash
+# make binary files executable
+chmod +x install
+chmod +x scada
+chmod +x sorter/sorter.py
+chmod +x calibrator/calibrator.py
+chmod +x logger/logger.py
+```
+
+Files which need to be executable are made so explicitly with the chmod command. This includes scripts which are run as services, the scada cli interface and this install script.
+
+```bash
+# copy binary files to /usr/bin
+cp scada /usr/bin/scada
+cp sorter/sorter.py /usr/bin/scada_sorter.py
+cp calibrator/calibrator.py /usr/bin/scada_calibrator.py
+cp logger/logger.py /usr/bin/scada_logger.py
+```
+
+Copy executable files into a known directory. The exact directory chosen is sort of arbitrary, so long as it matches the directory written in the .service file. /usr/bin is a good choice because it is the standard for user installed binary files and it is already in the PATH variable. 
+
+```bash
+# create a workspace and copy important files into it
+mkdir -p /usr/etc/scada
+rm -rf /usr/etc/scada/utils
+cp -r utils /usr/etc/scada/utils
+rm -rf /usr/etc/scada/config
+cp -r config /usr/etc/scada/config
+cp ./install /usr/etc/scada
+```
+
+This also copies files into a known directory, this time the non executable files, and to the /usr/etc/scada directory. Again this was chosen arbitrarily. This is where the services will look for things like custom python libraries and the config file.
+
+```bash
+# copy service files for systemd
+cp sorter/sorter.service /etc/systemd/system
+cp calibrator/calibrator.service /etc/systemd/system
+cp logger/logger.service /etc/systemd/system
+```
+
+Finally copy the .service files into a place where systemd can find them. This directory is not arbitrary, and must be /etc/systemd/system
+
 
 ## Configuration
 
