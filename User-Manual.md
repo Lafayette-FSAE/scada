@@ -91,9 +91,40 @@ For the most part, programs communicate with eachother via Redis. Redis is an op
 
 [https://redis.io/](https://redis.io/)
 
+If a program needs to write non-volitile data, it does so using an SQL database via a Postgres server. 
+
+[https://www.postgresql.org/](https://www.postgresql.org/)
+
+#### Data Aquisition
+
+There are currently three in house services that deal with Data Aquisition. They are organized into a pipeline, with data being passed from one service to the next before eventually ending up in either the Redis or Postgres database  where it can be viewed by a client.
+
+These services are, in order, the sorter, calibrator, and logger. Their responsibilities are as follows:
+
+- **sorter**:
+listens to the CAN bus for incoming messages, upon receiving a message, it checks its ID and Structure against a config file to generate an associated set of key value pairs. It then writes these key value pairs into the Redis cache and sends a message to the calibrator that new data has been received. The sorter is the only service that is aware of CAN or CANOpen, meaning SCADA can be made to work with a different networking protocol simply by switching out the sorter service for one made to work with the new protocol, without affecting any services downstream.
+
+- **calibrator**:
+The calibrator is responsible for translating the raw data read by the sorter from the CAN bus into a more human readable form. This is usually a case of linear calibration of raw sensor data, such as with the TSI node, or the recombining of data that was transmitted as multiple bytes, like with the Throttle value reported by Motor Controller. However, it can be made to support calculations of arbitrary complexity, such as for example, the calculation of power from a given voltage and current, the averaging of multiple sensors, filtering, differentiation, and so on. All calibrator operations are defined by the user as functions in the user_cal.py file. Once data is calculated, it is written back into the Redis server as a different key.
+
+- **logger**:
+The logger takes the data gathered by the sorter and calculated by the calibrator and logs a subset of it into the Postgresql database at regular intervals. The subset of data to be logged is defined in config.yaml file.
+
+#### Clients
+
+Both the Redis and Postgres servers expose TCP ports, and any software capable of interacting with these TCP ports can be considered a SCADA client. These clients can be run either locally on the SCADA Pi or remotely over a network. There are already a number of SCADA clients to choose from, and the best one for any given application will depend largely on circumstance and preference.
+
+One potential 3rd party client that comes very highly recommended is Grafana. Grafana is an open source data viewing and monitoring tool that specializes in the construction of a wide range of data visualizations such as graphs, gauges, statistics, and logs based on a number of potential data sources. It supports Postgresql out of the box and is extremely easy to set up. It also has a rich community of plugin developers.
+
+[https://grafana.com/](https://grafana.com/)
+
+Other clients are in development as well, including a command line tool for basic management, a curses based monitoring tool for easy testing over ssh, a Java based tool for graph generation, and a Tkinter based tool for graphical live monitoring and management.
+
 # How to Use
 
 ## Installation
+
+One of the drawbacks of the small and modular approach to system development is that 
 
 ## Configuration
 
