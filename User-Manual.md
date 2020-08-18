@@ -194,7 +194,7 @@ cp calibrator/calibrator.py /usr/bin/scada_calibrator.py
 cp logger/logger.py /usr/bin/scada_logger.py
 ```
 
-Copy executable files into a known directory. The exact directory chosen is sort of arbitrary, so long as it matches the directory written in the .service file. /usr/bin is a good choice because it is the standard for user installed binary files and it is already in the PATH variable. 
+Copy executable files into a known directory. The exact directory chosen is sort of arbitrary, so long as it matches the directory written in the .service files. /usr/bin is a good choice because it is the standard for user installed binary files and it is already in the PATH variable. 
 
 ```bash
 # create a workspace and copy important files into it
@@ -206,7 +206,7 @@ cp -r config /usr/etc/scada/config
 cp ./install /usr/etc/scada
 ```
 
-This also copies files into a known directory, this time the non executable files, and to the /usr/etc/scada directory. Again this was chosen arbitrarily. This is where the services will look for things like custom python libraries and the config file.
+This also copies files into a known directory, this time the non executable files, and to the /usr/etc/scada directory. Again this was chosen arbitrarily. This is where the services will look for things like custom python libraries and config files.
 
 ```bash
 # copy service files for systemd
@@ -217,8 +217,144 @@ cp logger/logger.service /etc/systemd/system
 
 Finally copy the .service files into a place where systemd can find them. This directory is not arbitrary, and must be /etc/systemd/system
 
+### Verification
+
+TODO
 
 ## Configuration
+
+While SCADA consists of several distinct programs, for the sake of convenience, they all read from the same set of configuration files. At the moment, there are two, both of which can be found in the config directory. 
+
+`config.yaml` is a general purpose config file which handles the majority of options. `user_cal.py` is a python file specific to the calibrator which defines the calibration functions it will use to map data as it comes in. Together they make up the full set of configuration options for SCADA.
+
+The following sections explain the configuration options in further detail.
+
+
+### Bus Info
+
+The bus info section gives the sorter information about the CAN bus. For the most part these options are passed directly
+
+If you are running SCADA on a system without a CAN interface, set bustype to virtual.
+
+Virtual CAN networking can also be acheived by using the vcan0 channel of socketcan.
+
+As it is currently configured, the raspberry pi in the Dyno room talks to the rest of
+the network on the can0 channel of socketcan with a bitrate of 125000
+
+If bustype is set to virtual, channel and bitrate fields can be omitted
+
+```yaml
+bus_info:
+  bustype: socketcan
+  channel: can0 | vcan0 | (or any other socketcan channel)
+  bitrate: 125000
+```
+
+### Emulation
+
+SCADA offers the ability to emulate other nodes on the CAN network in order to simplify testing.
+While the current behavior is crude, there is a lot of potential for improvement.
+
+Turn this behavior on or off with the emulate_nodes field, or selectively enable or disable
+each node with the node specific fields
+
+It is not recommended to emulate nodes that are currently running on the bus
+
+```yaml
+emulate_nodes: yes
+
+emulate_tsi: yes
+emulate_packs: yes
+emulate_cockpit: no
+emulate_motorcontroller: no
+```
+
+### Data
+
+Most data is sent over the bus in 8 byte CAN packets called Process Data Objects, or PDOs,
+with each byte representing a different piece of from that node.
+
+The process_data fields tells SCADA where to expect each piece of data in each packet
+
+If the node listed is either SCADA itself, of one of the emulated nodes, this field will be used
+to define the behavior of its PDO when it is generated.
+
+```yaml
+process_data:
+  TSI:    [ COOLING_TEMP_1, COOLING_TEMP_2, FLOWRATE, STATE, TS_CURRENT, TS_VOLTAGE ]
+  PACK1:  [ VOLTAGE, CURRENT, SOC_1, SOC_2, AMBIENT_TEMP, 'MIN_CELL_TEMP', AVG_CELL_TEMP, MAX_CELL_TEMP ]
+  PACK2:  [ VOLTAGE, CURRENT, SOC_1, SOC_2, AMBIENT_TEMP, MIN_CELL_TEMP, AVG_CELL_TEMP, MAX_CELL_TEMP ]
+  SCADA:  [ TS_POWER ]
+```
+
+Because not all data needs to be read at a high frequency, the CANopen standard defines a way to
+read and write data at arbitrary times, called the Service Data Object.
+
+Each piece of data has a unique two byte index and a one byte subindex, and can be read with a special CAN packet
+
+The service_data field defines a list of data that needs be be manually polled in this way. Each piece of data needs
+to have a node_id, index, subindex, and poll_rate
+
+```yaml
+service_data:
+
+  Cell1Temp:
+    node_id: 2
+    index: 2011
+    poll_rate: 10
+
+  MotorTemp:
+    node_id: 1
+    index: 2010
+    subindex: 0
+    poll_rate: 0.5
+```
+
+NOTE: it is important to remember that not all nodes on the bus will support this,
+but the Motor Controller definitely will.
+
+A complete description of all data that can be accessed from the motor controller can be found
+[here](https://docplayer.net/48431275-Emdrive-firmware-specifications.html)
+
+Further reading on Service Data and Process Data can be found
+[here](http://www.byteme.org.uk/canopenparent/canopen/sdo-service-data-objects-canopen/)
+and
+[here](http://www.byteme.org.uk/canopenparent/canopen/pdo-process-data-objects-canopen/)
+
+
+### Calibration
+
+Calibration is configured in a separate python file called `user_cal.py` in the calibration folder. A Calibration function is defined using the `@cal_function` function decorator, which takes two arguments:
+
+- `output`: the name of the data being generated
+- `arguments`: a list of the data needed as arguments
+
+Because the calibrator operates only on data within the Redis cache, `output` and `arguments` should both contain Redis keys. These can be any string in theory, but, by convention, consist of all lower case characters, and are organized into a heirarchy via the : character. (For example, all keys that store data about the TSI take the form `tsi:*`)
+
+It is important that the keys written in the arguments list correspond to those those written in the data section of the `config.yaml` file. Otherwise, the sorter and calibrator will not agree on where to look for data. It is also important to ensure the output key does not conflict 
+
+```python
+# Converts ambient temp of pack1 to farenheit because
+# we live in America god damn it
+@cal_function(output='pack1:temp:farenheit', arguments=['pack1:temp'])
+def packtemp_farenheit(args):
+	temp, *other = args
+	temp_faranheit = temp * (9/5) + 32
+	return temp_faranheit
+
+# Calculates the TS power draw in kW
+@cal_function(output='tsi:power', arguments=['tsi:voltage', 'tsi:current'])
+def ts_power(args):
+	voltage, current, *other = args
+	power = (voltage * current) / 100
+	return power
+```
+
+Data generated by these functions will be outputed to the same data cache structure as the rest,
+and will have an index of `('SCADA', '<data_name>')`, allowing it to be accessed by other
+calibration functions or other parts of the program
+
+
 
 ## Viewing Data
 
