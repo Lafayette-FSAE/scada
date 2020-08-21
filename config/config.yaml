@@ -34,8 +34,6 @@ process_data:
   TSI:    [ conditions, 'mc_voltage:raw', 'voltage:raw', 'cooling_temp:raw', 'throttle:raw', 'flow_rate:raw', 'state:int', 'current:raw' ]
   PACK1:  [ voltage, current, state_of_charge_01, state_of_charge_02, temp, 'cells:temp:min', 'cells:temp:avg', 'cells:temp:max' ]
   PACK2:  [ voltage, current, state_of_charge_01, state_of_charge_02, temp, 'cells:temp:min', 'cells:temp:avg', 'cells:temp:max' ]
-  SCADA:  []
-
 
 # Other data to keep track of
 # need to poll this data manually

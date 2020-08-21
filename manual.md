@@ -1,6 +1,7 @@
 # SCADA
 
 ## User Manual
+
 ---
 
 # Introduction and Purpose
@@ -44,11 +45,33 @@ Here are some good resources for learning more about the protocol:
 
 As a supplement to these resources, a brief description of CANOpen is also provided here:
 
-CANOpen can best be thought of as the sum of several communication protocols, coupled with some defined behavior for each node.
+CANOpen can best be thought of as the sum of several communication protocols, coupled with some defined behavior for each node. Each has a different purpose, name, and associate acronym. A node can choose to implement any subset of these protocols and behaviors.
+
+The protocol being used is determined by the function code, which is transmitted in the id part of the CAN frame. In the CANOpen standard, the message id is formed by the sum of the function code and the node id, this is to take advantage of the CAN behavior of prioritizing messages with lower ids, so protocols that are more important are given lower function codes.
+
+**NMT**
+
+NMT stands for Network Management. It is a master slave protocol used to manage the state of the various nodes on the bus. Any node which wishes to interact with the NMT protocol as a slave must implement the following finite state machine. 
+
+![](https://i0.wp.com/www.byteme.org.uk/wp-content/uploads/2015/11/canopennmtstate3.png)
+
+This determines the functional state of the node. CAN packets can be sent by the master to move the node along this state machine, allowing it to perform actions, like soft resets, emergency stops, and bootups.
+
+**SDO and OD**
+
+Any node which wishes to expose internal data to the CAN network must implement a data structure know as an Object Dictionary, or OD. The Object Dictionary maps each piece of data to an address consisting of a two byte index followed by a one byte subindex. Certain addresses are reserved for general data like device name and eror registers. The manufacturer of a node can publish information about the Object Dictionary in a file called an Electronic Data Sheet, or EDS, which takes the form of an INI file that is both human and machine readable.
+
+Any node on the network can access information from the Object Dictionary of another node using the Service Data Object, or SDO protocol. The SDO packet consists of a byte of metadata followed by a three byte address and 4 bytes of data. This can be used to both read and write data, and can be used to control node behavior in real time. This is the technique used in the dyno room to spin the motor and query it for data like temperature and angular velocity.
+
+**PDO**
+
+Process Data Objects are a protocol meant to supplement SDO's by providing a data transfer method with a higher data rate and less overhead. They are meant to be the standard for high volume inter node data transfer during nominal operation of the network, and have the added benefit of being much simpler to implement than SDO. A node that chooses to implement only the smallest possible subset of the CANOpen protocol will most likely implement a PDO. 
+
+PDO's work on a producer / consumer, or broadcast / subscribe model of communication, where one or more CAN packets are sent at regular intervals, each containing 8 bytes of data with a structure agreed upon beforehand. Any node on the network can subscribe to these packets and update their behavior accordingly.Both the broadcast and subscribe behavior (called the Transmit PDO and Receive PDO respectively) can be configured by dedicated addresses in the Object Dictionary.
 
 ## Hardware
 
-SCADA runs on a Raspberry Pi that is mounted inside of the CarMan enclosure. Attached to it is a "hat" that enables CAN communication and provides a pass through for the Pi's GPIO pins. Together, these are connected to the GLV board via a set of 3 cables: A micro USB cable for power, DB9 serial cable for CAN high and low signals, and a homemade ribbon cable for certain GPIO pins. Additional cables can be run to connect the Pi to other parts of the car and/or Dyno Room. These include:
+SCADA runs on a Raspberry Pi that is mounted inside of the CarMan enclosure. Attached to it is a "hat" that enables CAN communication and provides a pass through for the Pi's GPIO pins. Together, these are connected to the GLV board via a set of 3 cables: A micro USB cable for power, DB9 serial cable for CAN high and low signals, and a homemade ribbon cable for certain GPIO pins. Additional cables can be run to connect the Pi to other parts of the car and/or Dyno Room. These include: 
 
 - Ribbon Cable to the CarMan Display
 - HDMI to to the Dyno Room Monitor
@@ -122,9 +145,16 @@ If a program needs to write non-volitile data, it does so using an SQL database 
 
 ### Concurrency
 
-Concurrency is handled by the operating system via systemd. All programs which are meant to be run as a service have an associated .service file, and can be managed with the systemctl interface.
+Concurrency is handled by the operating system via systemd. All programs which are meant to be run as a service have an associated .service file, and can be managed with the systemctl interface. All services are single threaded and should consist of only one update loop, delay statements are inserted into the loop in order to release the cpu for use by other services. A good example of an update loop for a service that responds to redis messages is included below:
 
-All services are single threaded and should consist of only one update loop, delay statements are inserted into the loop in order to release the cpu for use by other services.
+```python
+while True:
+	message = p.get_message()
+	if message:
+		update()
+	else:
+		time.sleep(0.1)
+```
 
 [https://www.digitalocean.com/community/tutorials/how-to-use-systemctl-to-manage-systemd-services-and-units](https://www.digitalocean.com/community/tutorials/how-to-use-systemctl-to-manage-systemd-services-and-units)
 
@@ -176,6 +206,8 @@ For such events, the 2020 team has begun work on a series of Subsystem Emulators
 **SDOs**
 
 The instruction parser would also be required for reading SDO data from the network. This is because the SDO operates on the client server communication model, rather than the producer consumer model used by PDO data.  
+
+<div style="page-break-after: always"></div>
 
 # How to Use
 
@@ -274,10 +306,40 @@ cp logger/logger.service /etc/systemd/system
 
 Finally copy the .service files into a place where systemd can find them. This directory is not arbitrary, and must be /etc/systemd/system
 
-### Verification
+## Verification and Troubleshooting
 
-TODO
+If SCADA was installed correctly, you should now have a command line helper tool that can be used for basic system management. Verify this by typing `scada --help` into the command line and running it. You should see a help message describing the possible sub commands that can be used. 
 
+The status of each service can be verified using the command `scada status`, which is equivilant to running `systemcmtl status <service>` for each service included in scada. You should see an entry for calibrator.service, logger.service, and sorter.service, if all is working they should all be green and have a status of active. If one or more service is missing, they were probably not installed correctly, you can look for their service files in the directory `/etc/systemd/system`.
+
+If one or more of these services is in the failed state, that usually indicates that there was an error running their associated python script. These errors can usually be found by checking the logs, which are accessed with the command `sudo scada logs`.
+
+Services can also be troubleshooted by stopping them and running the script manually. The command `sudo scada stop <service>` will stop a given service, and `sudo scada start <service>` can be used to restart it. Any service can be run manually by invoking its python script file directly. For example `python3 ~/scada/sorter/sorter.py`
+
+If all services are present and running without errors you should begin testing the system against some real can data. If no external can bus is available, the included subsystem emulators will generally be the easiest way. These do not have associated .service files and must be run manually. Navigate to the `~/scada/emulator` directory and run `python3 main.py`. For convenience, it is best to run this in a tmux window so that other tasks can be performed with this program in the background.
+
+This is a very good guide about how to set up and use tmux. [https://www.hamvocke.com/blog/a-quick-and-easy-guide-to-tmux/](https://www.hamvocke.com/blog/a-quick-and-easy-guide-to-tmux/)
+
+Once the emulator is up and running, you should test to see if it is generating CAN traffic. The best way to do this is by using the `candump` command that is built in to can-utils. Type the command `candump vcan0` and run it, you should see a regular stream of can packets. If the TSI emulator is running, you will see a regular packet with the can id of 183, this is the sum of the function code 0x180, indicating that it is a PDO packet, and the node id of 3, indicating that it is coming from the TSI. If you are using a different CAN interface, you will need to switch the `vcan0` argument to the correct one. This will be `can0` in the live system.
+
+The sorter and calibrator can be verified by looking at the Redis cache directly. Type the command `redis-cli --scan` to get a printout of all active keys. Redis data written by the sorter and calibrator will expire after a period of 10 seconds, so a lack of data usually indicates that one or both of them have stopped. The value of one of these fields can be read using the command `redis-cli get <key>`. A good test is to query the `tsi:throttle` key, it should be changing over time.
+
+The redis-cli is a very powerful tool, and is effectively its own SCADA client. More info about how to use the redis-cli tool can be found here:
+
+[https://redis.io/topics/rediscli](https://redis.io/topics/rediscli)
+
+The last step is to verify that the logger is writing data into the database correctly. The easiest way to do this is by querying the database with the `psql` command.
+
+Running the command 
+
+```bash
+psql -h localhost -p 5432 -d <databasename> -U <username>
+```
+
+The databasename and username will be the ones chosen while setting up Postgres. This will prompt you for a password, which is also chosen during the setup process. If successful, you will be entered into a REPL where you can excecute SQL commands against the database.
+
+Typing `\dt` will show the list of tables, and shoudl include at least a data and sensors table. Running the command `select * from data;` will show the contents of the data table. Confirm that the logger is working correctly by checking the end of the table to see if new data is being written.
+ 
 ## Configuration
 
 While SCADA consists of several distinct programs, for the sake of convenience, they all read from the same set of configuration files. At the moment, there are two, both of which can be found in the config directory. 
@@ -289,16 +351,7 @@ The following sections explain the configuration options in further detail.
 
 ### Bus Info
 
-The bus info section gives the sorter information about the CAN bus. For the most part these options are passed directly
-
-If you are running SCADA on a system without a CAN interface, set bustype to virtual.
-
-Virtual CAN networking can also be acheived by using the vcan0 channel of socketcan.
-
-As it is currently configured, the raspberry pi in the Dyno room talks to the rest of
-the network on the can0 channel of socketcan with a bitrate of 125000
-
-If bustype is set to virtual, channel and bitrate fields can be omitted
+The bus info section gives the sorter information about the CAN bus. If you are running SCADA on a system with a virtual CAN interface, set channel to vcan0. As it is currently configured, the raspberry pi in the Dyno room talks to the rest of the network on the can0 channel of socketcan with a bitrate of 125000
 
 ```yaml
 bus_info:
@@ -307,50 +360,25 @@ bus_info:
   bitrate: 125000
 ```
 
-### Emulation
-
-SCADA offers the ability to emulate other nodes on the CAN network in order to simplify testing.
-While the current behavior is crude, there is a lot of potential for improvement.
-
-Turn this behavior on or off with the emulate_nodes field, or selectively enable or disable
-each node with the node specific fields
-
-It is not recommended to emulate nodes that are currently running on the bus
-
-```yaml
-emulate_nodes: yes
-
-emulate_tsi: yes
-emulate_packs: yes
-emulate_cockpit: no
-emulate_motorcontroller: no
-```
-
 ### Data
 
-Most data is sent over the bus in 8 byte CAN packets called Process Data Objects, or PDOs,
-with each byte representing a different piece of from that node.
-
-The process_data fields tells SCADA where to expect each piece of data in each packet
-
-If the node listed is either SCADA itself, of one of the emulated nodes, this field will be used
-to define the behavior of its PDO when it is generated.
+Most data is sent over the bus in 8 byte CAN packets called Process Data Objects, or PDOs, with each byte representing a different piece of from that node. The process_data fields tells SCADA where to expect each piece of data in each packet
 
 ```yaml
 process_data:
-  TSI:    [ COOLING_TEMP_1, COOLING_TEMP_2, FLOWRATE, STATE, TS_CURRENT, TS_VOLTAGE ]
-  PACK1:  [ VOLTAGE, CURRENT, SOC_1, SOC_2, AMBIENT_TEMP, 'MIN_CELL_TEMP', AVG_CELL_TEMP, MAX_CELL_TEMP ]
-  PACK2:  [ VOLTAGE, CURRENT, SOC_1, SOC_2, AMBIENT_TEMP, MIN_CELL_TEMP, AVG_CELL_TEMP, MAX_CELL_TEMP ]
-  SCADA:  [ TS_POWER ]
+  MOTOR:   [ STATUS, DUMMY2, TORQUE, DUMMY4, DUMMY5, DUMMY6, DUMMY7, DUMMY9 ]
+  MOTOR-2: [ MOTOR_TEMP, CONTROLLER_TEMP, DC_LINK_VOLTAGE, WARNING, CURRENT_DEMAND, TEST ]
+  MOTOR-3: [ THROTTLE-byte0, THROTTLE-byte1,  AUX, BRAKE, PHASEB_CURRENT, DUMMY5, DUMMY6, DUMMY7 ]
+  MOTOR-4: [ TORQUE_REGULATOR, FLUX_REGULATOR, VELOCITY ]
+
+  TSI:    [ conditions, 'mc_voltage:raw', 'voltage:raw', 'cooling_temp:raw', 'throttle:raw', 'flow_rate:raw', 'state:int', 'current:raw' ]
+  PACK1:  [ voltage, current, state_of_charge_01, state_of_charge_02, temp, 'cells:temp:min', 'cells:temp:avg', 'cells:temp:max' ]
+  PACK2:  [ voltage, current, state_of_charge_01, state_of_charge_02, temp, 'cells:temp:min', 'cells:temp:avg', 'cells:temp:max' ]
 ```
 
-Because not all data needs to be read at a high frequency, the CANopen standard defines a way to
-read and write data at arbitrary times, called the Service Data Object.
+While not yet implemented, SCADA should eventually implement an SDO client for the ability to poll the network for additional data not included the the devices PDOs. For that reason, a service data section is also defined to give instructions to this client about what data it needs to poll and how often.
 
-Each piece of data has a unique two byte index and a one byte subindex, and can be read with a special CAN packet
-
-The service_data field defines a list of data that needs be be manually polled in this way. Each piece of data needs
-to have a node_id, index, subindex, and poll_rate
+The service_data section defines a list of data that needs be be manually polled in this way. Each piece of data needs to have a node_id, index, subindex, and poll_rate
 
 ```yaml
 service_data:
@@ -367,16 +395,18 @@ service_data:
     poll_rate: 0.5
 ```
 
-NOTE: it is important to remember that not all nodes on the bus will support this,
-but the Motor Controller definitely will.
+NOTE: it is important to remember that not all nodes on the bus will support this, but the Motor Controller definitely will.
 
 A complete description of all data that can be accessed from the motor controller can be found
 [here](https://docplayer.net/48431275-Emdrive-firmware-specifications.html)
 
 Further reading on Service Data and Process Data can be found
-[here](http://www.byteme.org.uk/canopenparent/canopen/sdo-service-data-objects-canopen/)
+
+[http://www.byteme.org.uk/canopenparent/canopen/sdo-service-data-objects-canopen/](http://www.byteme.org.uk/canopenparent/canopen/sdo-service-data-objects-canopen/)
+
 and
-[here](http://www.byteme.org.uk/canopenparent/canopen/pdo-process-data-objects-canopen/)
+
+[http://www.byteme.org.uk/canopenparent/canopen/pdo-process-data-objects-canopen/](http://www.byteme.org.uk/canopenparent/canopen/pdo-process-data-objects-canopen/)
 
 
 ### Calibration
@@ -462,10 +492,35 @@ def throttle(args):
 
 Data generated by these functions will be written to the same data cache structure as the rest, and will have an index determined by the `output` argument, allowing it to be accesed by other programs downstream.
 
-
-
 ## Viewing Data
 
-### Setting up Grafana
+SCADA data can be viewed by any SCADA client. A client is defined here as any program meant to interface with the SCADA services through the TCP ports exposed by Redis and Postgresql. For reference, these are by default port 6379 and 5432, respectively. As seen in some of the previous sections, command line tools provided by both Redis and Postgres can be used as crude SCADA clients, and are useful for quick debugging. However, most people will want to use something more visual.
+
+In order to support at a glance system monitoring over ssh, a curses based client is under development and included with scada. It can be run with the command `scada tui`. Unfortunately, it is not yet considered complete. There is a lot of potential for improvement, and could prove quite powerful, but like all user interfaces, it is mainly a matter of preference, and future teams should develop the client they find most useful.
+
+### Grafana
+
+Grafana is an open source tool for generating live graphs and other data visualizations with an emphasis on system monitoring and diagnostics. It was built primarily for the web development community as a frontend for timeseries databases and monitoring tools like prometheus and graphite, but it is flexible enough to be used for a wide range of applications, such as SCADA systems.
+
+The best way to get a sense for what grafana is how to use it is to try out their playground server, found here:
+
+[https://play.grafana.org](https://play.grafana.org)
+
+You can also read more about the project here:
+[https://grafana.com/](https://grafana.com/)
+
+or here:
+[https://github.com/grafana/grafana](https://github.com/grafana/grafana)
+
+#### Setting up Grafana
+
+Grafana runs as its own server, so it can be installed anywhere with an internet connection, and most likely shouldn't be installed on the same Raspberry Pi as SCADA. There are a number of ways that a Grafana server can be installed, including through the apt-get repository or into a docker container via the official docker image: 
+
+[https://grafana.com/docs/grafana/latest/installation/docker/](https://grafana.com/docs/grafana/latest/installation/docker/)
+
+Once installed log into the grafana server by navigating to the ip address of the device you installed it on with the default port of 3000.
+
+
+
 
 # Extending SCADA
