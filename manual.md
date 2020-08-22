@@ -1,3 +1,11 @@
+<style>
+img {
+	width: 100%;	
+}
+
+</style>
+
+
 # SCADA
 
 ## User Manual
@@ -9,6 +17,10 @@
 SCADA is an acronym for Supervisory Control And Data Aquisition. It is a term borrowed from industrial control applications, where a single server is often used to oversee large industrial plants such as oil refineries and assembly lines. In general, SCADA systems have three functions, they aquire data from the network of sensors connected to the plant, send control signals to the plant's other subsystems, and provide an interface for humans to interact with the plant by viewing aggregated data and issueing commands.
 
 The Lafayette FSAE team has been working to develop a SCADA system that can be fully integrated into its electric vehichle, with the goal of performing all of the above three functions both during normal operation and throughout the various testing and maintenacne procedures that it will undergo. At times in the past, this system has been referred to as VSCADA, short for Vehichle SCADA, to distinguish it from the industrial systems described above, but for brevity this document will refer to it simply as SCADA.
+
+This document is referred to as a user manual, but could perhaps be better described as an inheritance manual. It includes information about how to use the software, but it also includes a bunch of other information that wouldn't be useful to an end user, but would be to someone inheriting this project with the intention of expanding upon or improving it. It includes information such as the overall design and structure of the project, why it was designed the way that it was, what I was thinking while designing it, and my personal thoughts for how it can be improved and expanded on. For that reason, it is more verbose than an ordinary user manual might be, but I hope that the reader will find this information useful.
+
+<div style="page-break-after: always"></div>
 
 # Design Overview
 
@@ -498,6 +510,8 @@ SCADA data can be viewed by any SCADA client. A client is defined here as any pr
 
 In order to support at a glance system monitoring over ssh, a curses based client is under development and included with scada. It can be run with the command `scada tui`. Unfortunately, it is not yet considered complete. There is a lot of potential for improvement, and could prove quite powerful, but like all user interfaces, it is mainly a matter of preference, and future teams should develop the client they find most useful.
 
+<div style="page-break-after: always"></div>
+
 ### Grafana
 
 Grafana is an open source tool for generating live graphs and other data visualizations with an emphasis on system monitoring and diagnostics. It was built primarily for the web development community as a frontend for timeseries databases and monitoring tools like prometheus and graphite, but it is flexible enough to be used for a wide range of applications, such as SCADA systems.
@@ -520,7 +534,88 @@ Grafana runs as its own server, so it can be installed anywhere with an internet
 
 Once installed log into the grafana server by navigating to the ip address of the device you installed it on with the default port of 3000.
 
+#### Loging In
+
+The login screen will look something like this. Enter the default username and password of admin, admin.
+
+![](https://raw.githubusercontent.com/Lafayette-FSAE/scada/master/screenshots/grafana-login.png)
+
+#### Adding a Data Source
+
+Click the configuration icon on the left hand side of the screen. Go to data sources, and click the add data source button on the right. Choose PostgreSQL from the list.
+
+![](https://raw.githubusercontent.com/Lafayette-FSAE/scada/master/screenshots/grafana-postgres.png)
+
+Fill out the form with the appropriate info. The host should be the ip address of the computer SCADA is running on, followed by the port 5432. The rest will have been info chosen when settin up the database. In my case, I use the database "demo" with the user fsae and password cables. Be sure to set SSL Mode to disable.
+
+![](https://raw.githubusercontent.com/Lafayette-FSAE/scada/master/screenshots/grafana-add-database.png)
+
+#### Creating a Panel
+
+Once the database has been added, you can begin creating dashboards. On the grafana homescreen, click the plus button on the left hand side of the screen and select create dashboard. Once created, you can add to the dashboard any number of panels. Each panel combines an SQL query with a number of additional settings to create one of several visualizations. Some examples are included below: 
+ 
+![](https://raw.githubusercontent.com/Lafayette-FSAE/scada/master/screenshots/grafana-new-panel.png)
 
 
+#### Drive State
 
-# Extending SCADA
+A drive state indicator can be made from the STAT visualization. The following SQL query is used to get the most recent entry of the drive state sensor in the data table:
+
+```sql
+SELECT
+  value
+FROM
+  data
+WHERE
+  sensor_id='tsi:state'
+ORDER BY timestamp desc
+LIMIT 1
+```
+
+In the settings tab, set calculation to last and fields to all fields. The resulting panel should be a string describing the most rescently logged Drive State. This can be verified by restarting the TSI emulator or board, and taking it through the start up sequence.
+
+![](https://raw.githubusercontent.com/Lafayette-FSAE/scada/master/screenshots/grafana-stat.png)
+
+<div style="page-break-after: always"></div>
+
+#### Throttle Value
+
+The gauge panel is a great way to visualize numerical data, like throttle value or pack state of charge. The following SQL is used to query for the most recently logged throttle data
+
+```sql
+SELECT
+  timestamp as time,
+  sensor_id as metric,
+  cast(value as float) as value
+FROM
+  data
+WHERE
+  $__timeFilter(timestamp) and
+  sensor_id = 'tsi:throttle'
+```
+
+Note that we have to explicitly cast the value to a float here, because otherwise it will be treated as a string. Again, calculation should be set to last.
+
+![](https://raw.githubusercontent.com/Lafayette-FSAE/scada/master/screenshots/grafana-gauge.png)
+
+<div style="page-break-after: always"></div>
+
+#### Throttle History
+
+The same query can also be used to graph a history of throttle values over time, simply by choosing the graph visualizer instead of the gauge. Here we can see that the throttle value is following a sinusoid, which matches what we expect based on the mock behavior of the TSI board.
+
+![](https://raw.githubusercontent.com/Lafayette-FSAE/scada/master/screenshots/grafana-graph.png)
+
+<div style="page-break-after: always"></div>
+
+#### Final Dashboard
+
+The result of all these panels will be a dashboard that looks something like this. We now can log in to the grafana server and see a live display of the car's drive state, its current throttle input as a voltage, and the history of that input over any given timerange. As the team adds more sensors and CAN nodes, it can seamlessly add additional panels for viewing their data in whichever way is most appropriate.
+
+![](https://raw.githubusercontent.com/Lafayette-FSAE/scada/master/screenshots/grafana-finished-panel.png)
+
+***author's note***
+
+Grafana is awesome. It is flexible, easy to use, and can be integrated into the existing SCADA system for free and at no cost to performance or complexity. Frankly I regret not discovering it sooner, since it would have provided an easy answer to most of the questions we had while SCADA was being developed. I have personally been involved in many, many discussions about the requirements for a SCADA graphical client, and to my knowledge, this meets every one of them and then some. Some of the features which I did not describe above include timed graph annotations, automatic alerting, exporting data to CSV files, embedding panels in other HTML files and more. Because it is open source, any feature that is not already included with Grafana will most likely exist as a plugin, and if not, could be easily written.
+
+The team should strongly consider adopting Grafana as its default SCADA client for all data visualization and monitoring purposes. A server could be set up in the dyno room and provide live insight of tests being performed to any number of computers on the network. It is easy enough to use that each subsystem could have its own, dedicated dashboard, written by the team in charge of it, and displaying only the data needed for a given use case or test.
