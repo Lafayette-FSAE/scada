@@ -14,9 +14,9 @@ img {
 
 # Introduction and Purpose
 
-SCADA is an acronym for Supervisory Control And Data Aquisition. It is a term borrowed from industrial control applications, where a single server is often used to oversee large industrial plants such as oil refineries and assembly lines. In general, SCADA systems have three functions, they aquire data from the network of sensors connected to the plant, send control signals to the plant's other subsystems, and provide an interface for humans to interact with the plant by viewing aggregated data and issueing commands.
+SCADA is an acronym for Supervisory Control And Data Acquisition. It is a term borrowed from industrial control applications, where a single server is often used to oversee large industrial plants such as oil refineries and assembly lines. In general, SCADA systems have three functions, they acquire data from the network of sensors connected to the plant, send control signals to the plant's other subsystems, and provide an interface for humans to interact with the plant by viewing aggregated data and issuing commands.
 
-The Lafayette FSAE team has been working to develop a SCADA system that can be fully integrated into its electric vehichle, with the goal of performing all of the above three functions both during normal operation and throughout the various testing and maintenacne procedures that it will undergo. At times in the past, this system has been referred to as VSCADA, short for Vehichle SCADA, to distinguish it from the industrial systems described above, but for brevity this document will refer to it simply as SCADA.
+The Lafayette FSAE team has been working to develop a SCADA system that can be fully integrated into its electric vehicle, with the goal of performing all of the above three functions both during normal operation and throughout the various testing and maintenance procedures that it will undergo. At times in the past, this system has been referred to as VSCADA, short for Vehicle SCADA, to distinguish it from the industrial systems described above, but for brevity this document will refer to it simply as SCADA.
 
 This document is referred to as a user manual, but could perhaps be better described as an inheritance manual. It includes information about how to use the software, but it also includes a bunch of other information that wouldn't be useful to an end user, but would be to someone inheriting this project with the intention of expanding upon or improving it. It includes information such as the overall design and structure of the project, why it was designed the way that it was, what I was thinking while designing it, and my personal thoughts for how it can be improved and expanded on. For that reason, it is more verbose than an ordinary user manual might be, but I hope that the reader will find this information useful.
 
@@ -26,7 +26,7 @@ This document is referred to as a user manual, but could perhaps be better descr
 
 ## CAN Network
 
-The existence of a SCADA system implies a network. There must be communication taking place between SCADA and the other subsystems for it to succesfully perform any of its responsibilities. There are a number of network protocols to choose from, but the defacto standard for automotive use is CAN (Controller Area Network) and so that is what is used in the Lafayette FSAE Car.
+The existence of a SCADA system implies a network. There must be communication taking place between SCADA and the other subsystems for it to successfully perform any of its responsibilities. There are a number of network protocols to choose from, but the de facto standard for automotive use is CAN (Controller Area Network) and so that is what is used in the Lafayette FSAE Car.
 
 A good explanation of CAN can be found here:
 
@@ -43,9 +43,9 @@ At the time of writing, the CAN Network contains between 6 and 7 nodes, dependin
 
 ### CANOpen
 
-CAN is a very low level protocol. It defines a way for a node to broadcast up to 8 bytes of data and an ID, but very few of the other things needed to perform sophisticated network operations. For this, a higher level protocol needs to be defined on top of CAN, and currently there are several competing standards. These have been described as the equivilant of something like http to the tcp/ip stack, adding an additional layer of abstraction for easier use.
+CAN is a very low level protocol. It defines a way for a node to broadcast up to 8 bytes of data and an ID, but very few of the other things needed to perform sophisticated network operations. For this, a higher level protocol needs to be defined on top of CAN, and currently there are several competing standards. These have been described as the equivalent of something like http to the tcp/ip stack, adding an additional layer of abstraction for easier use.
 
-While it is not the most popular, the Lafayette FSAE team has chosen the CANOpen Standard for its vehichle in order to match that of the already purchased Motor Controller, which includes a rich set of CANOpen based tools.
+While it is not the most popular, the Lafayette FSAE team has chosen the CANOpen Standard for its vehicle in order to match that of the already purchased Motor Controller, which includes a rich set of CANOpen based tools.
 
 CANOpen can also be thought of as a subset of CAN, meaning if a node is added to the network that does not comply with the CANOpen standard, the behavior of the other nodes is undefined. For this reason, it is very important that every node added to the network, even if it does not intend to make use of the full set of CANOpen features, at least comply with a subset of the protocol.
 
@@ -67,11 +67,11 @@ NMT stands for Network Management. It is a master slave protocol used to manage 
 
 ![](https://i0.wp.com/www.byteme.org.uk/wp-content/uploads/2015/11/canopennmtstate3.png)
 
-This determines the functional state of the node. CAN packets can be sent by the master to move the node along this state machine, allowing it to perform actions, like soft resets, emergency stops, and bootups.
+This determines the functional state of the node. CAN packets can be sent by the master to move the node along this state machine, allowing it to perform actions, like soft resets, emergency stops, and boot ups.
 
 **SDO and OD**
 
-Any node which wishes to expose internal data to the CAN network must implement a data structure know as an Object Dictionary, or OD. The Object Dictionary maps each piece of data to an address consisting of a two byte index followed by a one byte subindex. Certain addresses are reserved for general data like device name and eror registers. The manufacturer of a node can publish information about the Object Dictionary in a file called an Electronic Data Sheet, or EDS, which takes the form of an INI file that is both human and machine readable.
+Any node which wishes to expose internal data to the CAN network must implement a data structure know as an Object Dictionary, or OD. The Object Dictionary maps each piece of data to an address consisting of a two byte index followed by a one byte subindex. Certain addresses are reserved for general data like device name and error registers. The manufacturer of a node can publish information about the Object Dictionary in a file called an Electronic Data Sheet, or EDS, which takes the form of an INI file that is both human and machine readable.
 
 Any node on the network can access information from the Object Dictionary of another node using the Service Data Object, or SDO protocol. The SDO packet consists of a byte of metadata followed by a three byte address and 4 bytes of data. This can be used to both read and write data, and can be used to control node behavior in real time. This is the technique used in the dyno room to spin the motor and query it for data like temperature and angular velocity.
 
@@ -138,7 +138,7 @@ It samples the data at regular intervals, and performs some basic logic to limit
 In keeping with the unix tradition, all data is stored in the same way as text. Programs reading from the database are responsible for translating the data into its expected type. A companion table, called `sensors` is included in the database to store metadata about each sensor. It has columns:
 
 - id
-- redis_key (equivilant to sensor_id, one of these should probably be renamed)
+- redis_key (equivalent to sensor_id, one of these should probably be renamed)
 - display_name
 - datatype
 - unit
@@ -151,7 +151,7 @@ For the most part, programs communicate with eachother via Redis. Redis is an op
 
 ### Postgres
 
-If a program needs to write non-volitile data, it does so using an SQL database via a Postgres server. 
+If a program needs to write non-volatile data, it does so using an SQL database via a Postgres server. 
 
 [https://www.postgresql.org/](https://www.postgresql.org/)
 
@@ -183,9 +183,9 @@ Other clients are in development as well, including a command line tool for basi
 
 ## Future Goals
 
-At the moment, SCADA is a strictly passive system in its relationship to the CAN bus. The services described above implement a pure data aquisition system which listens to the CAN bus and presents the incoming data to the user, but does not have the ability to talk on that bus to issue commands or configure the network for certain behaviors. This means that SCADA is, by definition, incomplete. There needs to be a way to perform supervisory control functions by talking back to the network.
+At the moment, SCADA is a strictly passive system in its relationship to the CAN bus. The services described above implement a pure data acquisition system which listens to the CAN bus and presents the incoming data to the user, but does not have the ability to talk on that bus to issue commands or configure the network for certain behaviors. This means that SCADA is, by definition, incomplete. There needs to be a way to perform supervisory control functions by talking back to the network.
 
-Because data aquisition is the most important part of the FSAE team's need for a SCADA system, these were the services that were built first, but more work is required to turn this into a complete SCADA system. In addition, the SCADA PI needs to perform some secondary services that are not strictly part of the SCADA system. An example of a more complete SCADA design that includes non-implemented features is shown below.
+Because data acquisition is the most important part of the FSAE team's need for a SCADA system, these were the services that were built first, but more work is required to turn this into a complete SCADA system. In addition, the SCADA PI needs to perform some secondary services that are not strictly part of the SCADA system. An example of a more complete SCADA design that includes non-implemented features is shown below.
 
 ![](https://raw.githubusercontent.com/Lafayette-FSAE/scada/master/diagrams/planned-final-design.svg)
 
@@ -197,7 +197,7 @@ The instruction parser would serve as a counterpart to the sorter. Instead of re
 
 ### Watcher
 
-The instruction parser would, by default, receive most of its instructionss from client programs, which would in turn receive instructions from the User, who would make decisions about which comands to send by viewing the incoming data. This forms a feedback loop for doing certain kinds manual system control. However, there will most likely be a need for an additional, automatic feedback loop which can take place at a higher frequency and without user intervention.
+The instruction parser would, by default, receive most of its instructions from client programs, which would in turn receive instructions from the User, who would make decisions about which commands to send by viewing the incoming data. This forms a feedback loop for doing certain kinds manual system control. However, there will most likely be a need for an additional, automatic feedback loop which can take place at a higher frequency and without user intervention.
 
 In theory, a client could be written to perform such a task, but it would not continue to run after it was disconnected. Instead, a dedicated service should be written, which regularly polls the Redis server for the state of the car, and makes decisions about what commands to send based on this data. It could be configured as a list of condition, instruction pairs, and would be useful for things like opening the safety loop during emergency conditions.
 
@@ -209,9 +209,9 @@ Nevertheless, the GLV-CAN interface should be thought of as distinct from SCADA,
 
 ### Subsystem Emulators
 
-In the absence of a fully integrated system, testing the CAN interface of a given subsystem can be a difficult task. For example, you may want one of the batteries to behave differently based on the state of the other one, but only have constructed a single prototype. The DashMan system may want to test the way it responds to a certain TSI state, but the last TSI board may have been fried do to a wiring error. And of course, you may be forced by unforseen circumstances to develop SCADA and all other subsystems remotely and while forbidden to come within six feet of the lab, the car, or eachother.
+In the absence of a fully integrated system, testing the CAN interface of a given subsystem can be a difficult task. For example, you may want one of the batteries to behave differently based on the state of the other one, but only have constructed a single prototype. The DashMan system may want to test the way it responds to a certain TSI state, but the last TSI board may have been fried do to a wiring error. And of course, you may be forced by unforeseen circumstances to develop SCADA and all other subsystems remotely and while forbidden to come within six feet of the lab, the car, or eachother.
 
-For such events, the 2020 team has begun work on a series of Subsystem Emulators, which are meant to be run either on the SCADA Pi or a separate CAN connected computer, and mimic the CAN interface of each subsystem. Each emulator should mimic its subsystems's Object Dictionay, SDO server, and Transmit PDO messages. While not necessary, additional hardware like LEDs and buzzers would also be fun. 
+For such events, the 2020 team has begun work on a series of Subsystem Emulators, which are meant to be run either on the SCADA Pi or a separate CAN connected computer, and mimic the CAN interface of each subsystem. Each emulator should mimic its subsystem's Object Dictionary, SDO server, and Transmit PDO messages. While not necessary, additional hardware like LEDs and buzzers would also be fun. 
 
 ### Extra Ideas
 
@@ -231,7 +231,7 @@ SCADA assumes it is being run on a debian based linux distribution. This will al
 
 It is recommended to set up a dedicated development server for SCADA using a spare raspberry pi and ideally something resembling the GLV hardware. This could be expanded over time into include a mock CAN bus for integration testing with other subsystems.
 
-Because the Lafayette network can be difficult to navigate, it is recommended that this be bypassed using either a dedicated physical network or vpn. This could be set up in such a way as to prevent ip address changes and to enable offsite work.
+Because the Lafayette network can be difficult to navigate, it is recommended that this be bypassed using either a dedicated physical network or vpn. This could be set up in such a way as to prevent ip address changes and to enable off site work.
 
 ### Install Script
 
@@ -245,7 +245,7 @@ $ cd scada
 $ sudo bash install
 ```
 
-However, becasue SCADA is still relatively new software, the install script is likely to fail in some environments, requireing manual intervention. In addition, updates will need to be made to the install script periodically as new features are added to SCADA. To that end, an explanation of the install script and what it does is provided here.
+However, because SCADA is still relatively new software, the install script is likely to fail in some environments, requiring manual intervention. In addition, updates will need to be made to the install script periodically as new features are added to SCADA. To that end, an explanation of the install script and what it does is provided here.
 
 
 ```bash
@@ -322,7 +322,7 @@ Finally copy the .service files into a place where systemd can find them. This d
 
 If SCADA was installed correctly, you should now have a command line helper tool that can be used for basic system management. Verify this by typing `scada --help` into the command line and running it. You should see a help message describing the possible sub commands that can be used. 
 
-The status of each service can be verified using the command `scada status`, which is equivilant to running `systemcmtl status <service>` for each service included in scada. You should see an entry for calibrator.service, logger.service, and sorter.service, if all is working they should all be green and have a status of active. If one or more service is missing, they were probably not installed correctly, you can look for their service files in the directory `/etc/systemd/system`.
+The status of each service can be verified using the command `scada status`, which is equivalent to running `systemcmtl status <service>` for each service included in scada. You should see an entry for calibrator.service, logger.service, and sorter.service, if all is working they should all be green and have a status of active. If one or more service is missing, they were probably not installed correctly, you can look for their service files in the directory `/etc/systemd/system`.
 
 If one or more of these services is in the failed state, that usually indicates that there was an error running their associated python script. These errors can usually be found by checking the logs, which are accessed with the command `sudo scada logs`.
 
@@ -348,9 +348,9 @@ Running the command
 psql -h localhost -p 5432 -d <databasename> -U <username>
 ```
 
-The databasename and username will be the ones chosen while setting up Postgres. This will prompt you for a password, which is also chosen during the setup process. If successful, you will be entered into a REPL where you can excecute SQL commands against the database.
+The databasename and username will be the ones chosen while setting up Postgres. This will prompt you for a password, which is also chosen during the setup process. If successful, you will be entered into a REPL where you can execute SQL commands against the database.
 
-Typing `\dt` will show the list of tables, and shoudl include at least a data and sensors table. Running the command `select * from data;` will show the contents of the data table. Confirm that the logger is working correctly by checking the end of the table to see if new data is being written.
+Typing `\dt` will show the list of tables, and should include at least a data and sensors table. Running the command `select * from data;` will show the contents of the data table. Confirm that the logger is working correctly by checking the end of the table to see if new data is being written.
  
 ## Configuration
 
@@ -388,7 +388,7 @@ process_data:
   PACK2:  [ voltage, current, state_of_charge_01, state_of_charge_02, temp, 'cells:temp:min', 'cells:temp:avg', 'cells:temp:max' ]
 ```
 
-While not yet implemented, SCADA should eventually implement an SDO client for the ability to poll the network for additional data not included the the devices PDOs. For that reason, a service data section is also defined to give instructions to this client about what data it needs to poll and how often.
+While not yet implemented, SCADA should eventually implement an SDO client for the ability to poll the network for additional data not included the devices PDOs. For that reason, a service data section is also defined to give instructions to this client about what data it needs to poll and how often.
 
 The service_data section defines a list of data that needs be be manually polled in this way. Each piece of data needs to have a node_id, index, subindex, and poll_rate
 
@@ -428,7 +428,7 @@ Calibration is configured in a separate python file called `user_cal.py` in the 
 - `output`: the name of the data being generated
 - `arguments`: a list of the data needed as arguments
 
-Because the calibrator operates only on data within the Redis cache, `output` and `arguments` should both contain Redis keys. These can be any string in theory, but, by convention, consist of all lower case characters, and are organized into heirarchies via the `:` character. (For example, all keys that store data about the TSI take the form `tsi:*`)
+Because the calibrator operates only on data within the Redis cache, `output` and `arguments` should both contain Redis keys. These can be any string in theory, but, by convention, consist of all lower case characters, and are organized into hierarchies via the `:` character. (For example, all keys that store data about the TSI take the form `tsi:*`)
 
 It is important that the keys written in the arguments list correspond to those those written in the data section of the `config.yaml` file. Otherwise, the sorter and calibrator will not agree on where to look for data. It is also important to ensure the output key does not conflict with any other input or output keys.
 
@@ -436,7 +436,7 @@ To help avoid key collisions, when multiple keys are used to represent the same 
 
 #### Examples
 
-**1. celcius to farenheit**
+**1. Celsius to Fahrenheit**
 
  ```python
 # Converts ambient temp of pack1 to farenheit because
@@ -448,7 +448,7 @@ def packtemp_farenheit(args):
 	return temp_faranheit
 ```
 
-**2. voltage and current to power**
+**2. Voltage and Current to Power**
 
  ```python
 # Calculates the TS power draw in kW
@@ -460,7 +460,7 @@ def ts_power(args):
 ```
 
 
-**3. motor controller voltage from sensor data**
+**3. Motor Controller Voltage from Sensor Data**
 
 ```python
 @cal_function(output='tsi:mc_voltage', arguments=['tsi:mc_voltage:raw'])
@@ -502,7 +502,7 @@ def throttle(args):
 	return msb * 256 + lsb
 ```
 
-Data generated by these functions will be written to the same data cache structure as the rest, and will have an index determined by the `output` argument, allowing it to be accesed by other programs downstream.
+Data generated by these functions will be written to the same data cache structure as the rest, and will have an index determined by the `output` argument, allowing it to be accessed by other programs downstream.
 
 ## Viewing Data
 
@@ -546,7 +546,7 @@ Click the configuration icon on the left hand side of the screen. Go to data sou
 
 ![](https://raw.githubusercontent.com/Lafayette-FSAE/scada/master/screenshots/grafana-postgres.png)
 
-Fill out the form with the appropriate info. The host should be the ip address of the computer SCADA is running on, followed by the port 5432. The rest will have been info chosen when settin up the database. In my case, I use the database "demo" with the user fsae and password cables. Be sure to set SSL Mode to disable.
+Fill out the form with the appropriate info. The host should be the ip address of the computer SCADA is running on, followed by the port 5432. The rest will have been info chosen when setting up the database. In my case, I use the database "demo" with the user fsae and password cables. Be sure to set SSL Mode to disable.
 
 ![](https://raw.githubusercontent.com/Lafayette-FSAE/scada/master/screenshots/grafana-add-database.png)
 
@@ -572,7 +572,7 @@ ORDER BY timestamp desc
 LIMIT 1
 ```
 
-In the settings tab, set calculation to last and fields to all fields. The resulting panel should be a string describing the most rescently logged Drive State. This can be verified by restarting the TSI emulator or board, and taking it through the start up sequence.
+In the settings tab, set calculation to last and fields to all fields. The resulting panel should be a string describing the most recently logged Drive State. This can be verified by restarting the TSI emulator or board, and taking it through the start up sequence.
 
 ![](https://raw.githubusercontent.com/Lafayette-FSAE/scada/master/screenshots/grafana-stat.png)
 
