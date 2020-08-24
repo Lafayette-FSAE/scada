@@ -94,7 +94,9 @@ SCADA runs on a Raspberry Pi that is mounted inside of the CarMan enclosure. Att
 
 The three cables connecting the SCADA Pi to the GLV board are a bad design decision and should be removed at the next possible opportunity. With the exception of the DB9, these cables and their connectors are not rated for automotive use, and could easily become disconnected during heavy vibrations and render SCADA inoperable. In addition, the adjacency of the SCADA Pi and the GLV Board within the CarMan enclosure make these cables appear comically large, forcing space to be used for cable routing that could otherwise be taken up by something more useful. It would be a far better solution to integrate the SCADA Pi and the CAN hat into the GLV board.
 
-### Alternative Hardware
+Raspberry Pi offers a compute module, which is the computer as the ordinary Raspberry Pi 3, but with some peripherals removed, and condensed into a much smaller form factor with a single card edge connector as its only interface. I highly recomend that future teams replace the existing SCADA Pi with one of these, with external components like the CAN interface and ethernet jack integrated into the GLV board.
+
+[https://www.raspberrypi.org/products/compute-module-3-plus/](https://www.raspberrypi.org/products/compute-module-3-plus/)
 
 ## Software
 
@@ -194,6 +196,8 @@ A list of the additional services depicted and a description of their function i
 ### Instruction Parser
 
 The instruction parser would serve as a counterpart to the sorter. Instead of reading from the CAN bus, it would write to it, and serve as the bridge through which the rest of SCADA could send control signals to the car's other subsystems.In order to keep the other SCADA services agnostic about exact CAN message syntax, a text based format should be agreed upon for representing control signals that can sent over the CAN network. The instruction parser would then have the sole responsibility of parsing this format into CAN messages.
+
+
 
 ### Watcher
 

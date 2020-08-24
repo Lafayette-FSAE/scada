@@ -28,6 +28,8 @@ A general purpose scripting language like python or javascript could accomplish 
 
 Instead, a new scripting language is proposed, which is highly specific to the task of sending read and write commands over a Master/Slave network. It aims to be simple enough that basic tasks can be done without much effort or thought, but also flexible enough to allow for very complex behavior.
 
+<div style="page-break-after: always"></div>
+
 # Syntax
 
 Each CANOpener script is conceptually just a list of instructions. Every instruction takes up exactly one line, it begins with a keyword representing the instruction name and is followed by a series of 0 or more arguments, separated by spaces.
