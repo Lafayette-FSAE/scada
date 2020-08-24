@@ -6,9 +6,11 @@ img {
 </style>
 
 
-# SCADA
+# SCADA - User Manual
 
-## User Manual
+<!-- ## User Manual -->
+
+**Author: Connor Winiarczyk**
 
 ---
 
@@ -197,7 +199,9 @@ A list of the additional services depicted and a description of their function i
 
 The instruction parser would serve as a counterpart to the sorter. Instead of reading from the CAN bus, it would write to it, and serve as the bridge through which the rest of SCADA could send control signals to the car's other subsystems.In order to keep the other SCADA services agnostic about exact CAN message syntax, a text based format should be agreed upon for representing control signals that can sent over the CAN network. The instruction parser would then have the sole responsibility of parsing this format into CAN messages.
 
+A proposal for such an instruction set is included with SCADA documentation and can be read here:
 
+ [https://raw.githubusercontent.com/Lafayette-FSAE/scada/master/documentation/sparkyscript.pdf](https://raw.githubusercontent.com/Lafayette-FSAE/scada/master/documentation/sparkyscript.pdf)
 
 ### Watcher
 
@@ -560,6 +564,7 @@ Once the database has been added, you can begin creating dashboards. On the graf
  
 ![](https://raw.githubusercontent.com/Lafayette-FSAE/scada/master/screenshots/grafana-new-panel.png)
 
+<div style="page-break-after: always"></div>
 
 #### Drive State
 
