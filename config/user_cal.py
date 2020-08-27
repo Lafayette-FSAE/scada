@@ -16,7 +16,7 @@ def state(args):
 	if state_number == 1:
 		return 'GLV-ON'
 	elif state_number == 2:
-		return 'AIRS-CLOSED'
+		return 'PRECHARGE'
 	elif state_number == 3:
 		return 'DRIVE SETUP'
 	elif state_number == 4:

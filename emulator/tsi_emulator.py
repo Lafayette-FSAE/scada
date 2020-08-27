@@ -2,6 +2,10 @@
 
 import sys, os
 import can
+import math
+
+import redis
+data = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)	
 
 import utils
 from utils import object_dictionary
@@ -20,46 +24,72 @@ od.add_keys(pdo_structure)
 od.set_pdo_map(pdo_structure)
 
 od.set('state:int', 1)
+data.set('emulator:simulation_time', 0)
+data.publish('new-session', 0)
 
-maxval = 255
-def ramp(t):
-	return t % maxval
+state_transitions = [5, 10, 30, 35, 40]
+def get_state(time):
+	global state_transitions
+	temp = state_transitions.copy()
+	temp.append(time)
+	temp.sort()
+	
+	return temp.index(time)
+	
+# Calculate the value of the precharge
+# curve at a given point in time
+def precharge_curve(time):
+	return 100 * (1 - math.exp(-1 * 0.25 * time))
 
-def get_state(t):
-	if t < 20:
-		return 1 
-	elif t < 40:
-		return 2
-	elif t < 45:
-		return 3
-	elif t < 50:
-		return 4
-	else:
-		return 5
+def fix_voltage(v):
+	return int((((v / 61) + 1.28) / 5) * 255)
 
-time = 0
 def update():
-	global time
+	time = data.incr('emulator:simulation_time')
+	state = get_state(time)
+	od.set('state:int', state)
 
-	od.set('current:raw', ramp(time))
-	od.set('throttle:raw', ramp(time))
-	od.set('state:int', get_state(time))	
+	# GLV-OFF
+	if state == 0:
+		od.set('voltage:raw', fix_voltage(0))
+		od.set('mc_voltage:raw', fix_voltage(0))
+		od.set('throttle:raw', 0)
 
-	time = time + 1
+	# GLV-ON
+	if state == 1:
+		od.set('voltage:raw', fix_voltage(0))
+		od.set('mc_voltage:raw', 0)
+		od.set('throttle:raw', 0)
 
-	od.set('voltage:raw', 100)
+	# PRECHARGE
+	if state == 2:
+		elapsed_time = time - state_transitions[1]
+		mc_voltage = precharge_curve(elapsed_time)
 
-class Listener(can.Listener):
-	def __init__(self, node_id):
-		self.node_id = node_id
+		od.set('voltage:raw', fix_voltage(100))
+		od.set('mc_voltage:raw', fix_voltage(mc_voltage))
+		od.set('throttle:raw', 0)
 
-	def on_message_received(self, msg):
+	# DRIVE SETUP
+	if state == 3:
+		od.set('voltage:raw', fix_voltage(100))
+		od.set('mc_voltage:raw', fix_voltage(100))
+		od.set('throttle:raw', 0)
 
-		function, node = messages.get_info(msg)
+	# READY TO DRIVE SOUND
+	if state == 4:
+		od.set('voltage:raw', fix_voltage(100))
+		od.set('mc_voltage:raw', fix_voltage(100))
+		od.set('throttle:raw', 0)
+		
+	# DRIVE
+	if state == 5:
+		od.set('voltage:raw', fix_voltage(100))
+		od.set('mc_voltage:raw', fix_voltage(100))
+		od.set('throttle:raw', int(127 * (1 + math.sin(time / 180))))
 
-		if function == 'SYNC':
-
-			# Send Process Data
-			data = od.get_pdo_data()
-			message = messages.pdo(self.node_id, data)
-			bus.send(message)
+node_id = 3
+def send_pdo():
+	data = od.get_pdo_data()
+	message = messages.pdo(node_id, data)
+	bus.send(message)

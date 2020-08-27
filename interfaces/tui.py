@@ -17,10 +17,7 @@ import time
 
 data = redis.Redis(host='localhost', port=6379, db=0)
 
-columns = config.get('GUI').get('Sensors')
-
-Motor = config.get('GUI').get('Sensors').get('Motor')
-TSI = config.get('GUI').get('Sensors').get('TSI')
+columns = config.get('Display')
 
 def print_column(data, label, x=0, y=0):
 	
@@ -77,6 +74,6 @@ def update():
 
 	print_column(tsi_data, 'TSI:', 50, 0)
 
-while True:
-	update()
-	time.sleep(0.5)
+#while True:
+#update()
+#time.sleep(0.5)

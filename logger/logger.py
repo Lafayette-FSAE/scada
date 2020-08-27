@@ -9,7 +9,7 @@ sys.path.append(lib_path)
 sys.path.append(config_path)
 
 import config
-import time
+import time, datetime
 import redis
 import psycopg2
 
@@ -64,8 +64,30 @@ def delimit_session():
 		VALUES ('scada:session', 'NEW-SESSION');
 	""") 
 
+def check_update_ready(key):
+	"""
+	For a given key, determine if a new row should be added
+	to the data table or not
+	"""
+	value, timestamp = previous_values.get(key, (None, datetime.datetime.now()))
+
+	# Always update if the current and previous values are different
+	if value != car_state.get(key):
+		return True
+
+	# If they are the same, only update if a set amount of time has elapsed
+	elapsed_time = datetime.datetime.now() - timestamp
+	if elapsed_time > datetime.timedelta(seconds=60):
+		return True
+
+	# default
+	return False
+
 def update(message, key):
-	if car_state.get(key) == previous_values.get(key, None):
+	# Don't log the value if an identical
+	# value has been logged recently
+
+	if not check_update_ready(key):
 		return
 
 	ignore_keys = []
@@ -85,7 +107,7 @@ def update(message, key):
 			VALUES (%s, %s)
 		""", [key, car_state.get(key)])
 
-		previous_values[key] = car_state.get(key)
+		previous_values[key] = (car_state.get(key), datetime.datetime.now())
 
 while True:
 	message = p.get_message()
