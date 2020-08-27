@@ -2,8 +2,18 @@
 Project Kalman part 2, Supervisory Control And Data Acquisition written in python for the Lafayette FSAE Car
 
 ## Block Diagram
-![](https://github.com/Lafayette-FSAE/scada/blob/refactor/block-diagram_plain.svg)
+![](https://raw.githubusercontent.com/Lafayette-FSAE/scada/master/diagrams/data-aquisition.svg)
 
+
+## Installation
+
+```bash
+git clone https://github.com/Lafayette-FSAE/scada.git
+cd scada
+sudo bash install
+```
+you will need to do setup for postgres manually, since it has not yet been added to the install script.
+See [this link](https://linuxize.com/post/how-to-install-postgresql-on-debian-9/)
 
 ## Configuration
 ---
