@@ -29,46 +29,62 @@ p.subscribe('new-session')
 
 cursor = database.cursor()
 
-cursor.execute(""" 
-	DROP TABLE IF EXISTS sensors;
-	DROP TABLE IF EXISTS data;
+# Uncomment this to wipe the database on startup of 
+# this script, sometimes useful when debugging
+# 
+# cursor.execute(""" 
+# 	DROP TABLE IF EXISTS sensors;
+# 	DROP TABLE IF EXISTS data;
+# """)
+
+# Make sure both of our tables exist before starting
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS data(
+	id SERIAL PRIMARY KEY,
+	sensor_id VARCHAR(255) NOT NULL,
+	value VARCHAR(255),
+	timestamp TIMESTAMP DEFAULT NOW()
+);
 """)
 
 cursor.execute("""
-	CREATE TABLE IF NOT EXISTS data(
-		id SERIAL PRIMARY KEY,
-		sensor_id VARCHAR(255) NOT NULL,
-		value VARCHAR(255),
-		timestamp TIMESTAMP DEFAULT NOW()
-	);
+CREATE TABLE IF NOT EXISTS sensors(
+	id SERIAL PRIMARY KEY,
+	redis_key VARCHAR(255) NOT NULL UNIQUE,
+	display_name VARCHAR(255),
+	datatype VARCHAR(255),
+	unit VARCHAR(255)
+);		  
 """)
-
-cursor.execute("""
-	CREATE TABLE IF NOT EXISTS sensors(
-		id SERIAL PRIMARY KEY,
-		redis_key VARCHAR(255) NOT NULL UNIQUE,
-		display_name VARCHAR(255),
-		datatype VARCHAR(255),
-		unit VARCHAR(255)
-	);		  
-""")
-
 
 database.commit()
 
-previous_values = {}
+
 
 def delimit_session():
+        """
+        Insert a session delimiter into the data table.
+        This is a row with sensor_id of "scada:session"
+        and value of "NEW-SESSION"
+        """
+
 	cursor.execute("""
 		INSERT INTO data (sensor_id, value)		   
 		VALUES ('scada:session', 'NEW-SESSION');
 	""") 
 
+previous_values = {}
 def check_update_ready(key):
 	"""
 	For a given key, determine if a new row should be added
-	to the data table or not
+	to the data table or not. It does this by checking the 
+        key against a locally stored dictionary of recently logged
+        keys, called previous_values. The dictionary stores both the
+        last value logged and the time it was logged. The function
+        will return true if either the values are different, or if
+        it has been more than a minute since the key was logged last.
 	"""
+
 	value, timestamp = previous_values.get(key, (None, datetime.datetime.now()))
 
 	# Always update if the current and previous values are different
